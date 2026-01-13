@@ -1,109 +1,340 @@
-# CLAUDE.md
+# ARC Labs Studio - Coding Standards for ARCIntelligence
 
-**You are a Senior iOS engineer focused on crafting scalable and maintainable SwiftUI apps with an SLC (Simple, Lovable, Complete) mindset. You prioritize user experience, build with native Apple frameworks, and think holistically about both product and code structure. Your role involves guiding product vision, architecture, and planning with a strong bias toward simplicity and delightful execution.**
+This document outlines the coding standards and best practices for the ARCIntelligence Swift package.
 
----
+## Swift Version & Platform Requirements
 
-# General Engineering Guidelines for Swift
+- **Swift**: 6.0+
+- **Platforms**: iOS 17.0+, macOS 14.0+
+- **Architecture**: Clean Architecture with Protocol-Oriented Design
+- **Concurrency**: Full Swift Concurrency support with strict checking enabled
 
-## One Type per File
+## File Organization
 
-- **Every new `struct`, `class`, or `enum` must be declared in its own Swift file**, named after the type (e.g., `GameSession.swift`, `LetterView.swift`).
-  - *Rationale*: Improves code readability, discoverability, and modular re-use, in line with Apple best practices.
-  - *Enforcement*: If a file defines more than one type, refactor and move each type to a dedicated file.
-  - *Exceptions*: Only closely related nested types (e.g., private extensions, helper enums) may be placed together for clarity.
+### One Type Per File
+- Each file should contain **exactly one** public type (class, struct, enum, protocol, actor)
+- Private nested types are allowed within the same file
+- File name must match the type name exactly (e.g., `IntelligenceProvider.swift` for `IntelligenceProvider` protocol)
 
-- **Code Splitting**: When a file exceeds ~300 lines or becomes unwieldy, split it into smaller, more modular files. When a function exceeds ~30 lines or does more than one thing, split it into smaller, purpose-driven functions.
-
-- **Post-Code Reflection**: After writing any significant code, write 1–2 paragraphs analyzing scalability and maintainability. If applicable, recommend next steps or technical improvements.
-
-- **SPM Packages**: Ask before adding 3rd‑party libraries. Prefer native SwiftUI solutions for UI and system features.
-
-- **Xcode Integration**: All new files must be added to the Xcode project to compile correctly. Ask for help editing `.xcodeproj` if needed.
-
-- **SwiftUI Previews**: Every `View` must include a SwiftUI preview, in both dark and light mode, using static mock data. Avoid live fetches or dependencies in preview code.
-
-## Swift Code Organization & Structure
-
-A well-structured Swift file improves readability, discoverability, and long-term maintainability.
-All Swift files in this project should follow the same structure and sectioning conventions.
-
-- **File Header**: Each Swift file should have a header following this format:
-
+### File Header Template
+All files must include this header:
 ```swift
 //
 //  [FileName].swift
-//  [ProjectName]
+//  ARCIntelligence
 //
 //  Created by ARC Labs Studio on [Date].
 //
 ```
 
-- **File Structure**: Each Swift file should follow a clear top-down order:
-    1.	Imports (alphabetical order)
-    2.	Type Declaration (class, struct, enum)
-    3.	MARK sections inside the main type
-    4.	Extensions, grouped by responsibility or protocol conformance
-    5.	Private Helpers and Constants
+### Directory Structure
+```
+Sources/
+├── ARCIntelligence/
+│   ├── Core/
+│   │   ├── Protocols/     # All protocol definitions
+│   │   ├── Models/        # Data models and DTOs
+│   │   └── Errors/        # Error types
+│   ├── Providers/         # Provider implementations
+│   ├── UseCases/          # Business logic & use cases
+│   └── Utilities/         # Helper utilities
+└── ARCIntelligenceMocks/  # Mock implementations for testing
+```
 
-- **MARK Conventions**: Use MARK: to separate logical sections within the same type. Use MARK: - to separate major blocks (e.g. extensions or conceptual groups). Always must be a space above and below MARK. Do not overuse MARKs – they should clarify structure, not add noise.
+## Swift 6 Concurrency Requirements
+
+### Sendable Compliance
+- **All public types** must conform to `Sendable`
+- Use `actor` for types with mutable shared state
+- Use `@Sendable` closures where required
+- Avoid `@unchecked Sendable` unless absolutely necessary (document why)
+
+### Async/Await
+- Use `async/await` for all asynchronous operations
+- Prefer `AsyncThrowingStream` for streaming data
+- Use `Task` for concurrent operations
+- Enable strict concurrency checking in all targets
+
+## Code Organization
+
+### MARK Comments
+Use MARK comments to organize code sections:
+```swift
+// MARK: - Properties
+// MARK: - Initialization
+// MARK: - Public Methods
+// MARK: - Private Methods
+// MARK: - Protocol Conformance
+```
+
+### Access Control
+- Use `public` for external API
+- Use `internal` for package-internal code (default)
+- Use `private` for implementation details
+- Use `fileprivate` sparingly (prefer `private`)
+
+## Documentation
+
+### DocC Documentation
+All public APIs require documentation comments:
+```swift
+/// Brief one-line summary.
+///
+/// Extended description with usage details and important notes.
+///
+/// - Parameters:
+///   - parameter1: Description of parameter1
+///   - parameter2: Description of parameter2
+/// - Returns: Description of return value
+/// - Throws: Description of errors that can be thrown
+///
+/// - Note: Additional notes if needed
+/// - Important: Critical information
+public func exampleMethod(parameter1: String, parameter2: Int) async throws -> String {
+    // Implementation
+}
+```
+
+### Documentation Language
+- All documentation must be in **English**
+- Use clear, concise language
+- Include usage examples for complex APIs
+- Document thread-safety guarantees
+- Explain error conditions
+
+## Error Handling
+
+### Custom Errors
+- Use `enum` with `LocalizedError` conformance
+- Provide clear, actionable error messages
+- Include context in error cases (associated values)
+- Handle all error cases explicitly
+
+### Error Propagation
+```swift
+// Preferred: Let errors propagate
+func riskyOperation() async throws -> Result {
+    try await performOperation()
+}
+
+// Avoid: Silent failures
+func riskyOperation() async -> Result? {
+    try? await performOperation()  // Don't do this
+}
+```
+
+## Testing
+
+### Test Coverage
+- Aim for **100% coverage** on core protocols and models
+- Write unit tests for all public APIs
+- Use mocks for external dependencies
+- Test error conditions explicitly
+
+### Test Organization
+```swift
+import Testing
+@testable import ARCIntelligence
+import ARCIntelligenceMocks
+
+@Suite("Feature Tests")
+struct FeatureTests {
+
+    @Test("Test case description")
+    func testCaseMethod() async throws {
+        // Given
+        // When
+        // Then
+        #expect(condition)
+    }
+}
+```
+
+## Naming Conventions
+
+### General Rules
+- Use descriptive names that convey intent
+- Prefer clarity over brevity
+- Use camelCase for variables and methods
+- Use PascalCase for types
+
+### Protocols
+- Use noun names for capability protocols: `IntelligenceProvider`, `ConversationProvider`
+- Avoid `-able` or `-ible` suffixes unless truly appropriate
+
+### Methods
+- Start with verbs: `generate`, `fetch`, `calculate`, `send`
+- Use `is`/`has` prefixes for Boolean properties
+- Use `did`/`will`/`should` for delegate methods
+
+### Properties
+- Use nouns for properties: `displayName`, `version`, `configuration`
+- Avoid redundant prefixes (e.g., use `name`, not `providerName` in `Provider` context)
+
+## Code Quality
+
+### SwiftLint
+- All code must pass SwiftLint with zero warnings
+- Use the provided `.swiftlint.yml` configuration
+- Custom rules are defined for ARC Labs standards
+
+### Code Style
+```swift
+// Preferred: Clear and explicit
+let result = try await provider.complete(
+    prompt: userInput,
+    configuration: .default
+)
+
+// Avoid: Overly clever or compressed
+let r=try await p.complete(prompt:i,configuration:.default)
+```
+
+### Constants
+```swift
+// Preferred: Named constants
+private enum Constants {
+    static let defaultTimeout: TimeInterval = 30.0
+    static let maxRetries = 3
+}
+
+// Avoid: Magic numbers
+try await fetchData(timeout: 30.0)  // What does 30.0 mean?
+```
+
+## Protocol Design
+
+### Protocol Composition
+- Keep protocols focused and single-purpose
+- Use protocol composition for complex capabilities
+- Provide default implementations in extensions where appropriate
+
+### Protocol Requirements
+```swift
+public protocol Example: Sendable {
+    // Required properties
+    var id: String { get }
+
+    // Required methods
+    func performAction() async throws
+
+    // Optional methods (via extension with default implementation)
+}
+
+extension Example {
+    // Default implementation
+    func performAction() async throws {
+        // Default behavior
+    }
+}
+```
+
+## Performance Considerations
+
+### Lazy Evaluation
+- Use `lazy` for expensive computed properties
+- Avoid unnecessary work in initializers
+- Cache expensive computations when appropriate
+
+### Memory Management
+- Avoid retain cycles with `[weak self]` or `[unowned self]`
+- Use value types (struct) for immutable data
+- Use reference types (class, actor) for shared mutable state
+
+## Security
+
+### Data Privacy
+- Never log sensitive data (API keys, user content)
+- Use secure storage for credentials
+- Sanitize user input before processing
+
+### Input Validation
+```swift
+public func process(input: String) async throws {
+    guard !input.isEmpty else {
+        throw IntelligenceError.invalidRequest("Input cannot be empty")
+    }
+
+    guard input.count <= maxInputLength else {
+        throw IntelligenceError.invalidRequest("Input exceeds maximum length")
+    }
+
+    // Process validated input
+}
+```
+
+## Version Control
+
+### Commits
+- Write clear, descriptive commit messages
+- Use conventional commits format:
+  - `feat:` for new features
+  - `fix:` for bug fixes
+  - `docs:` for documentation
+  - `test:` for tests
+  - `refactor:` for refactoring
+  - `chore:` for maintenance
+
+### Branches
+- Use descriptive branch names
+- Follow pattern: `feature/description`, `fix/description`
+- Keep branches focused on single tasks
+
+## Dependencies
+
+### External Dependencies
+- Minimize external dependencies
+- Prefer standard library when possible
+- Document why each dependency is needed
+- Pin to specific versions in Package.swift
+
+### Internal Dependencies
+- Use protocols to define dependencies
+- Inject dependencies through initializers
+- Avoid singletons (prefer dependency injection)
+
+## Deprecation
+
+### Marking Deprecated APIs
+```swift
+@available(*, deprecated, message: "Use newMethod() instead")
+public func oldMethod() {
+    // Implementation
+}
+```
+
+### Migration Path
+- Always provide a migration path
+- Document the replacement in deprecation message
+- Maintain deprecated APIs for at least one major version
+
+## Professional Standards
+
+### Code Review
+- All code must be reviewed before merging
+- Address all review comments
+- Maintain professional and constructive feedback
+
+### Quality Checklist
+Before submitting code, verify:
+- [ ] Compiles without warnings
+- [ ] All tests pass
+- [ ] SwiftLint passes
+- [ ] Documentation is complete
+- [ ] No TODO comments remain
+- [ ] File headers are correct
+- [ ] One type per file
+- [ ] 100% test coverage for core features
 
 ---
 
-## Plan Mode
+## Questions or Clarifications?
 
-When instructed to enter **Plan Mode**:
-
-1. Deeply reflect on the requested change.
-2. Ask **4–6 clarifying questions** to assess scope and edge cases.
-3. Once questions are answered, draft a **step‑by‑step plan**.
-4. Ask for approval before implementing.
-5. During implementation, after each phase:
-   - Announce what was completed.
-   - Summarize remaining steps.
-   - Indicate next action.
+For questions about these standards, consult:
+1. Swift API Design Guidelines: https://swift.org/documentation/api-design-guidelines/
+2. Swift Concurrency Documentation: https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html
+3. DocC Documentation: https://www.swift.org/documentation/docc/
 
 ---
 
-# Architecture
-
-The Xcode apps and packages follow MVVM+C architecture with SwiftUI, Clean Code, Clean Architecture and SOLID principles. This organization is for app and testing targets:
-
-- **Presentation**: Features (Views and ViewModels) and Coordinators in `../Presentation/`
-- **Domain**: Entities and UseCases in `../Domain/`
-- **Data**: Repositories in `../Data/`
-
-- **Views**: SwiftUI views in `../Presentation/Features/[FeatureName]/View/*` ending with `View`
-- **ViewModels**: Business logic in `../Presentation/Features/[FeatureName]/ViewModel/*` ending with `ViewModel`
-- **Coordinators**: Coordinators for navigation in `../Presentation/Features/[FeatureName]/Coordinator/*` ending with `Coordinator`
-- **Entities**: Simple data structures in `../Domain/Entities/`
-- **UseCases**: Business logic in `../Domain/UseCases/*` ending with `UseCase`
-- **Repositories**: Business logic in `../Data/Repositories/*` ending with `Repository`
-
----
-
-## Key Architectural Patterns
-
-1. **Feature-based organization**: Each feature (Home, Scanner, Details, Generator, etc.) has its own folder.
-2. **Dependency injection**: Using `@EnvironmentObject` for shared state (e.g., `NetworkingManager`).
-3. **Reactive updates**: Combine framework with `@Published` properties.
-4. **Data persistence**: Swift Data for local storage, CloudKit for cloud sync.
-
----
-
-# Testing Strategy
-
-Currently no automated tests. When adding tests:
-
-- Use Swift Testing for unit tests
-- Start every test with tested method followed by '_' and the test description (e.g., `@Test func execute_withSuccess() { ... }`).
-- Add Suite and Tests explicit descriptions
-- Test ViewModels and UseCases independently
-- Focus on business logic over UI
-
----
-
-# GitHub
-
-- For new branches, use `feature/...`, `bugfix/...`or `hotfix/...` according to the type of task.
-- It has to be followed by the Linear issue ID and a short description. For example: `feature/EX-1-main-screen`
+**ARC Labs Studio** - Building intelligent, reliable, and elegant Swift packages.

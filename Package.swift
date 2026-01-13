@@ -6,26 +6,44 @@ import PackageDescription
 let package = Package(
     name: "ARCIntelligence",
     platforms: [
-        .iOS(.v14),
-        .macOS(.v11),
-        .tvOS(.v14),
-        .watchOS(.v7)
+        .iOS(.v17),
+        .macOS(.v14)
     ],
     products: [
         .library(
             name: "ARCIntelligence",
             targets: ["ARCIntelligence"]
         ),
+        .library(
+            name: "ARCIntelligenceMocks",
+            targets: ["ARCIntelligenceMocks"]
+        )
+    ],
+    dependencies: [
+        // No external dependencies initially
+        // ARCLogger will be added later if needed
     ],
     targets: [
         .target(
             name: "ARCIntelligence",
-            path: "Sources"
+            dependencies: [],
+            path: "Sources/ARCIntelligence",
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        ),
+        .target(
+            name: "ARCIntelligenceMocks",
+            dependencies: ["ARCIntelligence"],
+            path: "Sources/ARCIntelligenceMocks"
         ),
         .testTarget(
             name: "ARCIntelligenceTests",
-            dependencies: ["ARCIntelligence"],
-            path: "Tests"
+            dependencies: [
+                "ARCIntelligence",
+                "ARCIntelligenceMocks"
+            ],
+            path: "Tests/ARCIntelligenceTests"
         )
     ]
 )
