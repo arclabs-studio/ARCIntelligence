@@ -1,0 +1,17 @@
+# Resources Directory
+
+This directory is reserved for DocC resources such as images, videos, and other media files used in the documentation.
+
+To add resources:
+1. Place image files (PNG, JPG, SVG) in this directory
+2. Reference them in documentation using:
+   ```markdown
+   ![Alt text](resource-name.png)
+   ```
+
+Example resources you might add:
+- Architecture diagrams
+- Flow charts
+- Screenshots
+- Tutorial images
+- Icons and logos
