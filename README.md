@@ -62,6 +62,26 @@ Then add it to your target:
 
 ---
 
+## 📱 Example App
+
+**NEW**: Check out the [ARCIntelligenceShowcase](Examples/ARCIntelligenceShowcase/) app for a complete, interactive demonstration of all features!
+
+The showcase app includes:
+- ✅ Text completions with different configurations
+- ✅ Real-time streaming responses
+- ✅ Multi-turn conversations
+- ✅ Prompt builder and token counter utilities
+- ✅ Provider switching (Mock vs Foundation Models)
+- ✅ Complete SwiftUI implementation
+
+**Quick Start:**
+```bash
+cd Examples/ARCIntelligenceShowcase
+open Package.swift
+```
+
+---
+
 ## 🚀 Quick Start
 
 ### Basic Completion
