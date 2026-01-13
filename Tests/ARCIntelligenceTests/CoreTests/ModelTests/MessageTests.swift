@@ -5,6 +5,7 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
+import Foundation
 import Testing
 @testable import ARCIntelligence
 

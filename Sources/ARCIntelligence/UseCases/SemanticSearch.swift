@@ -5,6 +5,7 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
+import ARCLogger
 import Foundation
 
 /// Engine for semantic search using embeddings.
@@ -16,6 +17,10 @@ public final class SemanticSearch: Sendable {
     // MARK: - Properties
 
     private let provider: EmbeddingProvider
+    private let logger = ARCLogger(
+        subsystem: "com.arclabs.intelligence",
+        category: "SemanticSearch"
+    )
 
     // MARK: - Initialization
 
@@ -37,15 +42,24 @@ public final class SemanticSearch: Sendable {
         in candidates: [String],
         topK: Int = 5
     ) async throws -> [(text: String, similarity: Float)] {
+        logger.debug("Starting semantic search", metadata: [
+            "queryLength": .public("\(query.count)"),
+            "candidateCount": .public("\(candidates.count)"),
+            "topK": .public("\(topK)")
+        ])
+
         guard !query.isEmpty else {
+            logger.warning("Search failed: empty query")
             throw IntelligenceError.invalidRequest("Query cannot be empty")
         }
 
         guard !candidates.isEmpty else {
+            logger.warning("Search failed: empty candidates")
             throw IntelligenceError.invalidRequest("Candidates array cannot be empty")
         }
 
         guard topK > 0 else {
+            logger.warning("Search failed: invalid topK value")
             throw IntelligenceError.invalidRequest("topK must be greater than 0")
         }
 
@@ -61,10 +75,16 @@ public final class SemanticSearch: Sendable {
         }
 
         // Sort by similarity (descending) and take top K
-        return results
+        let sortedResults = results
             .sorted { $0.similarity > $1.similarity }
             .prefix(topK)
             .map { $0 }
+
+        logger.info("Semantic search completed", metadata: [
+            "resultCount": .public("\(sortedResults.count)")
+        ])
+
+        return sortedResults
     }
 
     /// Find texts similar to a reference text
@@ -79,11 +99,19 @@ public final class SemanticSearch: Sendable {
         in candidates: [String],
         threshold: Float = 0.7
     ) async throws -> [(text: String, similarity: Float)] {
+        logger.debug("Finding similar texts", metadata: [
+            "referenceLength": .public("\(reference.count)"),
+            "candidateCount": .public("\(candidates.count)"),
+            "threshold": .public("\(threshold)")
+        ])
+
         guard !reference.isEmpty else {
+            logger.warning("Find similar failed: empty reference")
             throw IntelligenceError.invalidRequest("Reference text cannot be empty")
         }
 
         guard !candidates.isEmpty else {
+            logger.warning("Find similar failed: empty candidates")
             throw IntelligenceError.invalidRequest("Candidates array cannot be empty")
         }
 
@@ -103,7 +131,14 @@ public final class SemanticSearch: Sendable {
         }
 
         // Sort by similarity (descending)
-        return results.sorted { $0.similarity > $1.similarity }
+        let sortedResults = results.sorted { $0.similarity > $1.similarity }
+
+        logger.info("Find similar completed", metadata: [
+            "matchCount": .public("\(sortedResults.count)"),
+            "aboveThreshold": .public("\(sortedResults.count)")
+        ])
+
+        return sortedResults
     }
 
     /// Calculate semantic similarity between two texts
@@ -113,10 +148,22 @@ public final class SemanticSearch: Sendable {
     /// - Returns: Similarity score (0.0 to 1.0)
     /// - Throws: `IntelligenceError` if calculation fails
     public func similarity(between text1: String, and text2: String) async throws -> Float {
+        logger.debug("Calculating similarity", metadata: [
+            "text1Length": .public("\(text1.count)"),
+            "text2Length": .public("\(text2.count)")
+        ])
+
         guard !text1.isEmpty, !text2.isEmpty else {
+            logger.warning("Similarity calculation failed: empty text")
             throw IntelligenceError.invalidRequest("Texts cannot be empty")
         }
 
-        return try await provider.similarity(between: text1, and: text2)
+        let result = try await provider.similarity(between: text1, and: text2)
+
+        logger.info("Similarity calculated", metadata: [
+            "similarity": .public("\(result)")
+        ])
+
+        return result
     }
 }

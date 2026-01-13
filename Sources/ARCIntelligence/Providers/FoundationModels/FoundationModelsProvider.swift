@@ -5,6 +5,7 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
+import ARCLogger
 import Foundation
 
 /// Provider implementation for Apple Foundation Models (iOS 18.0+).
@@ -23,6 +24,10 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
     public let version = "1.0"
 
     private let configuration: FoundationModelsConfiguration
+    private let logger = ARCLogger(
+        subsystem: "com.arclabs.intelligence",
+        category: "FoundationModels"
+    )
 
     // MARK: - Initialization
 
@@ -36,8 +41,10 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
         if #available(iOS 18.0, macOS 15.0, *) {
             // TODO: Implement actual capability check when API is finalized
             // This should check device capabilities, model availability, etc.
+            logger.debug("Foundation Models availability check: available")
             return true
         }
+        logger.info("Foundation Models not available on this platform")
         return false
     }
 
@@ -45,12 +52,19 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
         prompt: String,
         configuration: CompletionConfiguration
     ) async throws -> IntelligenceResponse {
+        logger.debug("Starting completion request", metadata: [
+            "promptLength": .public("\(prompt.count)"),
+            "temperature": .public("\(configuration.temperature)")
+        ])
+
         guard await isAvailable() else {
+            logger.warning("Provider unavailable for completion request")
             throw IntelligenceError.providerUnavailable
         }
 
         // TODO: Implement actual Foundation Models API call
         // For now, throw a clear error indicating this needs implementation
+        logger.error("Foundation Models API not yet implemented")
         throw IntelligenceError.requestFailed(
             "Foundation Models API implementation pending Apple's final API documentation"
         )
@@ -60,18 +74,27 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
         prompt: String,
         configuration: CompletionConfiguration
     ) -> AsyncThrowingStream<String, Error> {
-        AsyncThrowingStream { continuation in
-            Task {
+        logger.debug("Starting streaming completion request", metadata: [
+            "promptLength": .public("\(prompt.count)")
+        ])
+
+        return AsyncThrowingStream { continuation in
+            Task { [logger] in
                 do {
                     guard await isAvailable() else {
+                        logger.warning("Provider unavailable for streaming request")
                         throw IntelligenceError.providerUnavailable
                     }
 
                     // TODO: Implement streaming when API is available
+                    logger.error("Streaming not yet implemented")
                     continuation.finish(throwing: IntelligenceError.requestFailed(
                         "Streaming not yet implemented for Foundation Models"
                     ))
                 } catch {
+                    logger.error("Streaming request failed", metadata: [
+                        "error": .public(error.localizedDescription)
+                    ])
                     continuation.finish(throwing: error)
                 }
             }
@@ -84,6 +107,12 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
         _ message: Message,
         in conversation: Conversation
     ) async throws -> Message {
+        logger.debug("Sending message in conversation", metadata: [
+            "conversationId": .public(conversation.id.uuidString),
+            "messageRole": .public(message.role.rawValue),
+            "historyCount": .public("\(conversation.messages.count)")
+        ])
+
         // Build prompt from conversation history
         let prompt = buildPrompt(from: conversation, adding: message)
 
@@ -95,6 +124,10 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
                 systemPrompt: conversation.systemPrompt
             )
         )
+
+        logger.info("Message sent successfully", metadata: [
+            "tokensUsed": .public("\(response.tokensUsed)")
+        ])
 
         return Message(
             role: .assistant,

@@ -5,6 +5,7 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
+import ARCLogger
 import Foundation
 
 /// Engine for generating AI-powered recommendations.
@@ -16,6 +17,10 @@ public final class RecommendationEngine: Sendable {
     // MARK: - Properties
 
     private let provider: RecommendationProvider
+    private let logger = ARCLogger(
+        subsystem: "com.arclabs.intelligence",
+        category: "RecommendationEngine"
+    )
 
     // MARK: - Initialization
 
@@ -37,14 +42,26 @@ public final class RecommendationEngine: Sendable {
         count: Int = 5,
         configuration: RecommendationConfiguration = .default
     ) async throws -> [Recommendation] {
+        logger.debug("Generating recommendations", metadata: [
+            "requestedCount": .public("\(count)"),
+            "contextType": .public("\(type(of: context))")
+        ])
+
         guard count > 0 else {
+            logger.warning("Invalid recommendation request: count must be > 0")
             throw IntelligenceError.invalidRequest("Count must be greater than 0")
         }
 
-        return try await provider.generateRecommendations(
+        let recommendations = try await provider.generateRecommendations(
             for: context,
             count: count,
             configuration: configuration
         )
+
+        logger.info("Generated recommendations", metadata: [
+            "resultCount": .public("\(recommendations.count)")
+        ])
+
+        return recommendations
     }
 }

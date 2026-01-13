@@ -8,7 +8,7 @@
 import Foundation
 
 /// Errors that can occur when using ARCIntelligence providers.
-public enum IntelligenceError: LocalizedError, Sendable {
+public enum IntelligenceError: LocalizedError, Sendable, Equatable {
 
     /// Provider is not available on this device/environment
     case providerUnavailable
@@ -62,6 +62,35 @@ public enum IntelligenceError: LocalizedError, Sendable {
             return "No active conversation. Start a new conversation first."
         case .unknown(let error):
             return "An unexpected error occurred: \(error.localizedDescription)"
+        }
+    }
+
+    // MARK: - Equatable
+
+    public static func == (lhs: IntelligenceError, rhs: IntelligenceError) -> Bool {
+        switch (lhs, rhs) {
+        case (.providerUnavailable, .providerUnavailable):
+            return true
+        case (.providerNotConfigured(let lhsName), .providerNotConfigured(let rhsName)):
+            return lhsName == rhsName
+        case (.invalidRequest(let lhsReason), .invalidRequest(let rhsReason)):
+            return lhsReason == rhsReason
+        case (.requestFailed(let lhsReason), .requestFailed(let rhsReason)):
+            return lhsReason == rhsReason
+        case (.responseParseFailed(let lhsReason), .responseParseFailed(let rhsReason)):
+            return lhsReason == rhsReason
+        case (.rateLimitExceeded, .rateLimitExceeded):
+            return true
+        case (.authenticationFailed, .authenticationFailed):
+            return true
+        case (.tokenLimitExceeded(let lhsCurrent, let lhsMax), .tokenLimitExceeded(let rhsCurrent, let rhsMax)):
+            return lhsCurrent == rhsCurrent && lhsMax == rhsMax
+        case (.noActiveConversation, .noActiveConversation):
+            return true
+        case (.unknown(let lhsError), .unknown(let rhsError)):
+            return lhsError.localizedDescription == rhsError.localizedDescription
+        default:
+            return false
         }
     }
 }
