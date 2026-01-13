@@ -5,6 +5,7 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
+import ARCLogger
 import Foundation
 
 /// Main public API for ARCIntelligence package.
@@ -50,12 +51,21 @@ public enum ARCIntelligence {
     /// Current version of ARCIntelligence
     public static let version = "1.0.0"
 
+    // MARK: - Logging
+
+    /// Shared logger for the ARCIntelligence package.
+    static let logger = ARCLogger(
+        subsystem: "com.arclabs.intelligence",
+        category: "ARCIntelligence"
+    )
+
     // MARK: - Factory Methods
 
     /// Create a Foundation Models provider with default configuration
     /// - Returns: Configured Foundation Models provider
     public static func foundationModels() -> FoundationModelsProvider {
-        FoundationModelsProvider(configuration: .default)
+        logger.debug("Creating FoundationModelsProvider with default configuration")
+        return FoundationModelsProvider(configuration: .default)
     }
 
     /// Create a Foundation Models provider with custom configuration
@@ -64,7 +74,8 @@ public enum ARCIntelligence {
     public static func foundationModels(
         configuration: FoundationModelsConfiguration
     ) -> FoundationModelsProvider {
-        FoundationModelsProvider(configuration: configuration)
+        logger.debug("Creating FoundationModelsProvider with custom configuration")
+        return FoundationModelsProvider(configuration: configuration)
     }
 
     // MARK: - Use Case Factories
@@ -75,7 +86,8 @@ public enum ARCIntelligence {
     public static func conversationalAssistant(
         provider: ConversationProvider
     ) -> ConversationalAssistant {
-        ConversationalAssistant(provider: provider)
+        logger.debug("Creating ConversationalAssistant")
+        return ConversationalAssistant(provider: provider)
     }
 
     /// Create a recommendation engine with a provider
@@ -84,7 +96,8 @@ public enum ARCIntelligence {
     public static func recommendationEngine(
         provider: RecommendationProvider
     ) -> RecommendationEngine {
-        RecommendationEngine(provider: provider)
+        logger.debug("Creating RecommendationEngine")
+        return RecommendationEngine(provider: provider)
     }
 
     /// Create a semantic search engine with a provider
@@ -93,6 +106,7 @@ public enum ARCIntelligence {
     public static func semanticSearch(
         provider: EmbeddingProvider
     ) -> SemanticSearch {
-        SemanticSearch(provider: provider)
+        logger.debug("Creating SemanticSearch")
+        return SemanticSearch(provider: provider)
     }
 }
