@@ -45,7 +45,7 @@ public struct FoundationModelsConfiguration: Sendable, Equatable {
 
     /// Configuration optimized for performance (allow cloud fallback)
     public static let performance = FoundationModelsConfiguration(
-        onDeviceOnly: false,
-        maxTokensPerRequest: 4096
+        maxTokensPerRequest: 4096,
+        onDeviceOnly: false
     )
 }
