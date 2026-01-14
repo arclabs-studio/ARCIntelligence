@@ -114,14 +114,14 @@ public final class MockEmbeddingProvider: EmbeddingProvider, Sendable {
 
     // MARK: - Private Methods
 
-    /// Generates a deterministic vector based on text hash.
-    /// Similar texts will produce similar vectors for testing purposes.
+    /// Generates a deterministic vector based on text content.
+    /// Uses a stable hash (sum of UTF-8 bytes) instead of hashValue which varies between runs.
     private func generateDeterministicVector(for text: String) -> [Float] {
         var vector = [Float](repeating: 0.0, count: embeddingDimension)
 
-        // Use text hash to seed the vector generation
-        let hash = text.hashValue
-        var seed = UInt64(bitPattern: Int64(hash))
+        // Use sum of UTF-8 bytes for deterministic seeding (hashValue changes between runs)
+        let stableHash = text.utf8.reduce(0) { $0 &+ UInt64($1) }
+        var seed = stableHash &* 6_364_136_223_846_793_005 &+ 1
 
         for index in 0 ..< embeddingDimension {
             // Simple linear congruential generator for deterministic values
