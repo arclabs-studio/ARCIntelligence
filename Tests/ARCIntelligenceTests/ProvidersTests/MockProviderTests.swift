@@ -11,7 +11,6 @@ import Testing
 
 @Suite("Mock Provider Tests")
 struct MockProviderTests {
-
     @Test("Mock provider is always available")
     func mockProviderIsAvailable() async {
         let provider = MockIntelligenceProvider()

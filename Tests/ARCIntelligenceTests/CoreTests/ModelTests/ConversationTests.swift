@@ -10,7 +10,6 @@ import Testing
 
 @Suite("Conversation Tests")
 struct ConversationTests {
-
     @Test("Conversation initializes empty")
     func conversationInitializesEmpty() {
         let conversation = Conversation()

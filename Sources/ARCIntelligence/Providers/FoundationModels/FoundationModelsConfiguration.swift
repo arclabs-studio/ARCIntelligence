@@ -9,7 +9,6 @@ import Foundation
 
 /// Configuration for the Foundation Models provider.
 public struct FoundationModelsConfiguration: Sendable, Equatable {
-
     // MARK: - Properties
 
     /// Default temperature for completions

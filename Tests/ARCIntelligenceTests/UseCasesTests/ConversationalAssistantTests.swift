@@ -11,7 +11,6 @@ import Testing
 
 @Suite("Conversational Assistant Tests")
 struct ConversationalAssistantTests {
-
     @Test("Start conversation creates new conversation")
     func startConversationCreatesNew() async {
         let provider = MockIntelligenceProvider()

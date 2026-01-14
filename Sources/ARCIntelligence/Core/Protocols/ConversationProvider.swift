@@ -12,7 +12,6 @@ import Foundation
 /// Extends `IntelligenceProvider` with conversation-specific capabilities,
 /// including message history management and context preservation.
 public protocol ConversationProvider: IntelligenceProvider {
-
     /// Send a message within an existing conversation context
     /// - Parameters:
     ///   - message: The user message to send

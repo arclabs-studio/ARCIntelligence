@@ -10,7 +10,6 @@ import Testing
 
 @Suite("IntelligenceError Tests")
 struct IntelligenceErrorTests {
-
     @Test("Provider unavailable error has correct description")
     func providerUnavailableErrorDescription() {
         let error = IntelligenceError.providerUnavailable

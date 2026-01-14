@@ -9,7 +9,6 @@ import Foundation
 
 /// Response from an intelligence provider completion request.
 public struct IntelligenceResponse: Sendable, Equatable {
-
     // MARK: - Properties
 
     /// The generated content

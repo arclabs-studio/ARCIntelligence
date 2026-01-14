@@ -9,7 +9,6 @@ import Foundation
 
 /// Request for an intelligence provider completion.
 public struct IntelligenceRequest: Sendable, Equatable {
-
     // MARK: - Properties
 
     /// The input prompt or text

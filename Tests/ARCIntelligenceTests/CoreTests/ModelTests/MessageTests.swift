@@ -11,7 +11,6 @@ import Testing
 
 @Suite("Message Tests")
 struct MessageTests {
-
     @Test("Message initializes with default values")
     func messageInitializesWithDefaults() {
         let message = Message(

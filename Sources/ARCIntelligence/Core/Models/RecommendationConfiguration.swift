@@ -9,7 +9,6 @@ import Foundation
 
 /// Configuration for recommendation generation.
 public struct RecommendationConfiguration: Sendable, Equatable {
-
     // MARK: - Properties
 
     /// Diversity factor (0.0 = similar, 1.0 = diverse)

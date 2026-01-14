@@ -5,14 +5,13 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import Foundation
 import ARCIntelligence
+import Foundation
 
 /// Mock implementation of `ConversationProvider` for testing conversational features.
 ///
 /// Provides a simple echo-style conversation for testing purposes.
 public final class MockConversationProvider: ConversationProvider, Sendable {
-
     // MARK: - Properties
 
     public let id = "com.arclabs.intelligence.mock.conversation"
@@ -35,7 +34,7 @@ public final class MockConversationProvider: ConversationProvider, Sendable {
 
     public func complete(
         prompt: String,
-        configuration: CompletionConfiguration
+        configuration _: CompletionConfiguration
     ) async throws -> IntelligenceResponse {
         let response = responsePrefix + prompt
         return IntelligenceResponse(
@@ -47,7 +46,7 @@ public final class MockConversationProvider: ConversationProvider, Sendable {
 
     public func streamComplete(
         prompt: String,
-        configuration: CompletionConfiguration
+        configuration _: CompletionConfiguration
     ) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             Task {

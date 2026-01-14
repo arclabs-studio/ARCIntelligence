@@ -13,7 +13,6 @@ import Foundation
 /// Uses an `EmbeddingProvider` to generate vector representations of text
 /// and perform similarity-based search.
 public final class SemanticSearch: Sendable {
-
     // MARK: - Properties
 
     private let provider: EmbeddingProvider
@@ -75,10 +74,11 @@ public final class SemanticSearch: Sendable {
         }
 
         // Sort by similarity (descending) and take top K
-        let sortedResults = results
-            .sorted { $0.similarity > $1.similarity }
-            .prefix(topK)
-            .map { $0 }
+        let sortedResults = Array(
+            results
+                .sorted { $0.similarity > $1.similarity }
+                .prefix(topK)
+        )
 
         logger.info("Semantic search completed", metadata: [
             "resultCount": .public("\(sortedResults.count)")

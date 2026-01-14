@@ -13,7 +13,6 @@ import Foundation
 /// Maintains conversation state and handles multi-turn dialogues with an AI assistant.
 /// Thread-safe through actor isolation.
 public actor ConversationalAssistant {
-
     // MARK: - Properties
 
     private let provider: ConversationProvider
@@ -40,7 +39,7 @@ public actor ConversationalAssistant {
             systemPrompt: systemPrompt,
             messages: []
         )
-        self.activeConversation = conversation
+        activeConversation = conversation
 
         logger.info("Started new conversation", metadata: [
             "conversationId": .public(conversation.id.uuidString),
@@ -71,7 +70,7 @@ public actor ConversationalAssistant {
         // Update conversation history
         conversation.messages.append(userMessage)
         conversation.messages.append(response)
-        self.activeConversation = conversation
+        activeConversation = conversation
 
         logger.info("Received assistant response", metadata: [
             "conversationId": .public(conversation.id.uuidString),

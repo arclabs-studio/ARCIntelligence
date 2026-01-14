@@ -13,7 +13,6 @@ import Foundation
 /// and preferences. The context can be any Codable type representing the
 /// recommendation input data.
 public protocol RecommendationProvider: IntelligenceProvider {
-
     /// Generate recommendations based on typed context
     /// - Parameters:
     ///   - context: The context data (user history, preferences, etc.)
@@ -21,8 +20,8 @@ public protocol RecommendationProvider: IntelligenceProvider {
     ///   - configuration: Recommendation-specific configuration
     /// - Returns: Array of recommendations
     /// - Throws: `IntelligenceError` if generation fails
-    func generateRecommendations<T: Codable & Sendable>(
-        for context: T,
+    func generateRecommendations(
+        for context: some Codable & Sendable,
         count: Int,
         configuration: RecommendationConfiguration
     ) async throws -> [Recommendation]

@@ -12,7 +12,6 @@ import Foundation
 /// Embeddings are vector representations of text that capture semantic meaning,
 /// enabling similarity comparisons and semantic search capabilities.
 public protocol EmbeddingProvider: IntelligenceProvider {
-
     /// Generate an embedding vector for the given text
     /// - Parameter text: The input text
     /// - Returns: Vector representation of the text

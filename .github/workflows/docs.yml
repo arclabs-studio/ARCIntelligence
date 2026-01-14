@@ -1,0 +1,83 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-docs:
+    name: Build DocC Documentation
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+
+      - name: Build documentation
+        run: |
+          # Build DocC documentation using xcodebuild
+          xcodebuild docbuild \
+            -scheme ARCDevTools \
+            -destination 'platform=macOS' \
+            -derivedDataPath ./DerivedData
+
+      - name: Create documentation archive
+        run: |
+          # Find the .doccarchive (more robust approach)
+          DOCC_ARCHIVE=$(find ./DerivedData -name "*.doccarchive" -type d -print -quit)
+
+          if [ -z "$DOCC_ARCHIVE" ]; then
+            echo "❌ Error: .doccarchive not found"
+            echo "Searching for any .docc files:"
+            find ./DerivedData -name "*.docc*" -ls
+            exit 1
+          fi
+
+          echo "✅ Found documentation archive: $DOCC_ARCHIVE"
+
+          # Create zip directly from the found archive location
+          ARCHIVE_DIR=$(dirname "$DOCC_ARCHIVE")
+          ARCHIVE_NAME=$(basename "$DOCC_ARCHIVE")
+
+          cd "$ARCHIVE_DIR"
+          zip -r "$GITHUB_WORKSPACE/documentation.zip" "$ARCHIVE_NAME"
+
+          echo "✅ Created documentation.zip"
+          ls -lh "$GITHUB_WORKSPACE/documentation.zip"
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: documentation.zip
+          retention-days: 30
+
+  publish-docs:
+    name: Publish to GitHub Pages
+    needs: build-docs
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download documentation
+        uses: actions/download-artifact@v4
+        with:
+          name: documentation
+          path: ./
+
+      - name: Extract documentation
+        run: |
+          unzip documentation.zip -d docs/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs

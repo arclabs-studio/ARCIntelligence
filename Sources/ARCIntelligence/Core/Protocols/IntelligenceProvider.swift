@@ -12,7 +12,6 @@ import Foundation
 /// Providers can be Apple Foundation Models, OpenAI, Anthropic, or custom implementations.
 /// All providers must be thread-safe and support async operations.
 public protocol IntelligenceProvider: Sendable {
-
     // MARK: - Identification
 
     /// Unique identifier for the provider (e.g., "com.arclabs.intelligence.foundation")

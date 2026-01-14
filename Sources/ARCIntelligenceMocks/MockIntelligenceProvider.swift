@@ -5,15 +5,14 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import Foundation
 import ARCIntelligence
+import Foundation
 
 /// Mock implementation of `IntelligenceProvider` for testing.
 ///
 /// Allows configuring canned responses and simulating various scenarios
 /// including errors, delays, and streaming behavior.
 public final class MockIntelligenceProvider: IntelligenceProvider, ConversationProvider, Sendable {
-
     // MARK: - Properties
 
     public let id = "com.arclabs.intelligence.mock"
@@ -43,8 +42,8 @@ public final class MockIntelligenceProvider: IntelligenceProvider, ConversationP
     }
 
     public func complete(
-        prompt: String,
-        configuration: CompletionConfiguration
+        prompt _: String,
+        configuration _: CompletionConfiguration
     ) async throws -> IntelligenceResponse {
         try await Task.sleep(for: .seconds(simulatedDelay))
 
@@ -61,8 +60,8 @@ public final class MockIntelligenceProvider: IntelligenceProvider, ConversationP
     }
 
     public func streamComplete(
-        prompt: String,
-        configuration: CompletionConfiguration
+        prompt _: String,
+        configuration _: CompletionConfiguration
     ) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             Task {
@@ -85,7 +84,7 @@ public final class MockIntelligenceProvider: IntelligenceProvider, ConversationP
 
     public func sendMessage(
         _ message: Message,
-        in conversation: Conversation
+        in _: Conversation
     ) async throws -> Message {
         let response = try await complete(
             prompt: message.content,

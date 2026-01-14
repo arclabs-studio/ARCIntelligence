@@ -9,7 +9,6 @@ import Foundation
 
 /// Represents a single message in a conversation.
 public struct Message: Sendable, Identifiable, Codable, Equatable {
-
     // MARK: - Properties
 
     /// Unique identifier for the message
