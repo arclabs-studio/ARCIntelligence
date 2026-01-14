@@ -45,7 +45,6 @@ import Foundation
 /// ### Errors
 /// - ``IntelligenceError``
 public enum ARCIntelligence {
-
     // MARK: - Version
 
     /// Current version of ARCIntelligence

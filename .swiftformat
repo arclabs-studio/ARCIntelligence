@@ -1,0 +1,61 @@
+# ARCDevTools SwiftFormat Configuration
+# Version: 1.0.0
+
+# Indentation
+--indent 4
+--tabwidth 4
+--xcodeindentation enabled
+
+# Line width
+--maxwidth 120
+
+# Brace style
+--allman false
+--wraparguments before-first
+--wrapparameters before-first
+--wrapcollections before-first
+--closingparen balanced
+
+# Imports
+--importgrouping testable-bottom
+--stripunusedargs always
+
+# Spacing
+--trimwhitespace always
+--commas never
+--semicolons inline
+--ifdef no-indent
+--linebreaks lf
+
+# Self
+--self remove
+
+# Wrapping
+--wrapternary before-operators
+
+# Attributes - Declaration attributes on previous line (ARC Labs style)
+--type-attributes prev-line
+--func-attributes prev-line
+--stored-var-attributes same-line
+--computed-var-attributes same-line
+--complex-attributes prev-line
+
+# Attributes - Legacy options (ARC Labs style)
+--varattributes same-line
+--typeattributes prev-line
+--funcattributes prev-line
+--storedvarattrs same-line
+--computedvarattrs same-line
+
+# Organization
+--organizetypes actor,class,enum,struct
+--structthreshold 0
+--class-threshold 0
+--enumthreshold 0
+
+# Swift 6 specific
+--marktypes always
+--extensionacl on-declarations
+
+# Exclude
+--exclude .build,DerivedData,Pods,Carthage,Generated

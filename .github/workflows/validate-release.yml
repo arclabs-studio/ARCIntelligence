@@ -1,0 +1,178 @@
+name: Validate Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  validate-tag:
+    name: Validate Tag
+    runs-on: ubuntu-latest
+
+    outputs:
+      tag: ${{ steps.extract.outputs.tag }}
+      version: ${{ steps.extract.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract tag info
+        id: extract
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Tag: $TAG"
+          echo "📌 Version: $VERSION"
+
+      - name: Validate tag format
+        run: |
+          TAG=${{ steps.extract.outputs.tag }}
+
+          if [[ ! $TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid tag format: $TAG"
+            echo "Expected format: vX.Y.Z (semantic versioning)"
+            exit 1
+          fi
+
+          echo "✅ Tag format is valid"
+
+      - name: Check CHANGELOG entry
+        run: |
+          VERSION=${{ steps.extract.outputs.version }}
+
+          if ! grep -q "## \[$VERSION\]" CHANGELOG.md; then
+            echo "⚠️ Warning: No CHANGELOG entry found for version $VERSION"
+            echo "Please add release notes to CHANGELOG.md"
+          else
+            echo "✅ CHANGELOG entry found for $VERSION"
+          fi
+
+      - name: Verify tag is on main branch
+        run: |
+          TAG=${{ steps.extract.outputs.tag }}
+
+          # Check if tag is reachable from main
+          if ! git branch -r --contains $TAG | grep -q 'origin/main'; then
+            echo "⚠️ Warning: Tag $TAG is not on main branch"
+            echo "Releases should be tagged from main branch"
+          else
+            echo "✅ Tag is on main branch"
+          fi
+
+      - name: Generate validation summary
+        if: always()
+        run: |
+          echo "## 🏷️ Release Tag Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** \`${{ steps.extract.outputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** \`${{ steps.extract.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All validation checks completed. See job logs for details." >> $GITHUB_STEP_SUMMARY
+
+  build-release:
+    name: Build Release
+    needs: validate-tag
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: '6.0'
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build release configuration
+        run: |
+          echo "🔨 Building ARCDevTools in release mode..."
+          swift build -c release --verbose
+
+      - name: Test release configuration
+        run: |
+          echo "🧪 Testing ARCDevTools in release mode..."
+          swift test -c release --parallel
+
+      - name: Build executable
+        run: |
+          echo "⚙️ Building arcdevtools-setup executable..."
+          swift build -c release --product arcdevtools-setup
+
+      - name: Generate build summary
+        if: always()
+        run: |
+          echo "## 🔨 Release Build Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** \`${{ needs.validate-tag.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Configuration:** Release" >> $GITHUB_STEP_SUMMARY
+          echo "**Swift:** 6.0" >> $GITHUB_STEP_SUMMARY
+          echo "**Platform:** macOS 14" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ **Status:** Build and tests passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Status:** Build or tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  create-release:
+    name: Create GitHub Release
+    needs: [validate-tag, build-release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract release notes
+        id: notes
+        run: |
+          VERSION=${{ needs.validate-tag.outputs.version }}
+
+          # Extract changelog section for this version
+          if grep -q "## \[$VERSION\]" CHANGELOG.md; then
+            # Get content between this version and next version header
+            NOTES=$(awk "/## \[$VERSION\]/,/## \[/" CHANGELOG.md | sed '1d;$d')
+            echo "Found release notes in CHANGELOG.md"
+          else
+            NOTES="See CHANGELOG.md for details."
+            echo "Using default release notes"
+          fi
+
+          # Save to file for use in release
+          echo "$NOTES" > /tmp/release-notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.validate-tag.outputs.tag }}
+          name: Release ${{ needs.validate-tag.outputs.tag }}
+          body_path: /tmp/release-notes.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate release summary
+        run: |
+          echo "## 🚀 Release Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** \`${{ needs.validate-tag.outputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** \`${{ needs.validate-tag.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ GitHub Release created successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "View release: https://github.com/${{ github.repository }}/releases/tag/${{ needs.validate-tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY

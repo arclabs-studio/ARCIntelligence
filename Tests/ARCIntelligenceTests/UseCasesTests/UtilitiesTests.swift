@@ -10,7 +10,6 @@ import Testing
 
 @Suite("PromptBuilder Tests")
 struct PromptBuilderTests {
-
     @Test("Build simple prompt")
     func buildSimplePrompt() {
         let prompt = PromptBuilder.simple(query: "What is AI?")
@@ -55,7 +54,6 @@ struct PromptBuilderTests {
 
 @Suite("TokenCounter Tests")
 struct TokenCounterTests {
-
     @Test("Estimate tokens for text")
     func estimateTokensForText() {
         let counter = TokenCounter()

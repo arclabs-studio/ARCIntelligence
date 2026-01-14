@@ -16,7 +16,6 @@ import Foundation
 /// - Note: Foundation Models API is subject to change as Apple finalizes the API.
 /// - Important: Not all devices support all Foundation Models capabilities.
 public final class FoundationModelsProvider: IntelligenceProvider, ConversationProvider, Sendable {
-
     // MARK: - Properties
 
     public let id = "com.arclabs.intelligence.foundation"
@@ -72,7 +71,7 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
 
     public func streamComplete(
         prompt: String,
-        configuration: CompletionConfiguration
+        configuration _: CompletionConfiguration
     ) -> AsyncThrowingStream<String, Error> {
         logger.debug("Starting streaming completion request", metadata: [
             "promptLength": .public("\(prompt.count)")

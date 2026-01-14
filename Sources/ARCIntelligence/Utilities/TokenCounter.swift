@@ -12,7 +12,6 @@ import Foundation
 /// Provides rough token estimation for planning API calls and managing context windows.
 /// Uses a simple heuristic: ~4 characters per token (standard for English text).
 public struct TokenCounter: Sendable {
-
     // MARK: - Constants
 
     private enum Constants {

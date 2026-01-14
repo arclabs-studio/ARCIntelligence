@@ -11,7 +11,6 @@ import Foundation
 ///
 /// Helps construct prompts with proper structure, context, and formatting.
 public struct PromptBuilder: Sendable {
-
     // MARK: - Properties
 
     private var components: [String] = []

@@ -9,7 +9,6 @@ import Foundation
 
 /// Vector representation of text for semantic search and similarity comparison.
 public struct Embedding: Sendable, Equatable {
-
     // MARK: - Properties
 
     /// The embedding vector

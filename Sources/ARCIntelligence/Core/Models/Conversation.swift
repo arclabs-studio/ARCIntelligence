@@ -9,7 +9,6 @@ import Foundation
 
 /// Represents a multi-turn conversation with an AI assistant.
 public struct Conversation: Sendable, Identifiable, Codable, Equatable {
-
     // MARK: - Properties
 
     /// Unique identifier for the conversation

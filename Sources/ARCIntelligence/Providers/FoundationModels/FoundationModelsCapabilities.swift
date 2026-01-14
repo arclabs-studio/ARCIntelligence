@@ -9,7 +9,6 @@ import Foundation
 
 /// Capabilities available in the Foundation Models provider.
 public struct FoundationModelsCapabilities: Sendable, Equatable {
-
     // MARK: - Properties
 
     /// Supports text completion

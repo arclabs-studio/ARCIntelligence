@@ -12,7 +12,6 @@ import Foundation
 /// Controls the behavior of the AI provider when generating responses,
 /// including creativity (temperature), output length, and stopping conditions.
 public struct CompletionConfiguration: Sendable, Equatable {
-
     // MARK: - Properties
 
     /// Randomness in generation (0.0 = deterministic, 1.0 = maximum creativity)
