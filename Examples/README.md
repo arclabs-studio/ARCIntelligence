@@ -12,6 +12,10 @@ A complete iOS app showcasing all features of ARCIntelligence.
 - ✅ Text completions with different configurations
 - ✅ Real-time streaming responses
 - ✅ Multi-turn conversations
+- ✅ Guided generation (structured output)
+- ✅ Tool calling and function execution
+- ✅ Content tagging and analysis
+- ✅ Session transcripts
 - ✅ Prompt builder utility
 - ✅ Token counter utility
 - ✅ Provider switching (Mock vs Foundation Models)
@@ -39,7 +43,7 @@ Each example is a standalone Xcode project that references ARCIntelligence as a 
 - Xcode 16.0 or later
 - iOS 17.0+ deployment target
 - macOS 14.0+ (for Mac apps)
-- iOS 18.0+ (for Foundation Models features)
+- iOS 26+ (for Foundation Models features)
 
 ### Installation
 

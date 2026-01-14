@@ -61,6 +61,132 @@ func conversationMaintainsContext() async throws {
 }
 ```
 
+### MockGenerableProvider
+
+Mock for testing structured output generation:
+
+```swift
+import ARCIntelligenceMocks
+
+struct MovieReview: Codable, Sendable {
+    let title: String
+    let rating: Int
+}
+
+@Test("Generate structured output")
+func generateStructuredOutput() async throws {
+    let mock = MockGenerableProvider(
+        jsonResponse: #"{"title": "Inception", "rating": 9}"#
+    )
+
+    let review: MovieReview = try await mock.generate(
+        MovieReview.self,
+        prompt: "Review Inception",
+        configuration: .default
+    )
+
+    #expect(review.title == "Inception")
+    #expect(review.rating == 9)
+}
+```
+
+### MockToolProvider
+
+Mock for testing tool calling workflows:
+
+```swift
+import ARCIntelligenceMocks
+
+@Test("Tool provider returns tool calls")
+func toolProviderReturnsToolCalls() async throws {
+    let mock = MockToolProvider(
+        response: "The weather is sunny",
+        toolCallsToSimulate: [
+            ToolCallRecord(
+                toolName: "getWeather",
+                arguments: ["city": "Boston"],
+                output: "72°F, Sunny",
+                duration: 0.5
+            )
+        ]
+    )
+
+    let (response, toolCalls) = try await mock.respondWithToolCalls(
+        to: "What's the weather?",
+        tools: [],
+        configuration: .default
+    )
+
+    #expect(response.content == "The weather is sunny")
+    #expect(toolCalls.count == 1)
+    #expect(toolCalls[0].toolName == "getWeather")
+}
+```
+
+You can also use `MockTool` for testing tool implementations:
+
+```swift
+let mockTool = MockTool(
+    name: "calculator",
+    description: "Performs calculations",
+    responseToReturn: "42"
+)
+
+let result = try await mockTool.execute(arguments: ["operation": "6*7"])
+#expect(result == "42")
+```
+
+### MockContentTaggingProvider
+
+Mock for testing content tagging:
+
+```swift
+import ARCIntelligenceMocks
+
+@Test("Generate tags for content")
+func generateTagsForContent() async throws {
+    let mock = MockContentTaggingProvider(
+        tagsToReturn: [
+            ContentTag(value: "technology", category: .topic, confidence: 0.95),
+            ContentTag(value: "excited", category: .emotion, confidence: 0.88)
+        ]
+    )
+
+    let tags = try await mock.generateTags(
+        for: "I love programming!",
+        categories: [.topic, .emotion],
+        maxTags: 5
+    )
+
+    #expect(tags.count == 2)
+    #expect(tags[0].value == "technology")
+}
+```
+
+Use the category-specific initializer for more control:
+
+```swift
+let mock = MockContentTaggingProvider(
+    tagsByCategory: [
+        .topic: ["swift", "ios"],
+        .emotion: ["happy", "curious"],
+        .action: ["coding", "learning"]
+    ]
+)
+```
+
+Or use convenience factory methods:
+
+```swift
+// Standard test tags
+let mock = MockContentTaggingProvider.standard()
+
+// Always fails
+let failingMock = MockContentTaggingProvider.failing(
+    with: .requestFailed("Service unavailable")
+)
+```
+
 ## Testing Patterns
 
 ### Testing Success Scenarios
@@ -406,3 +532,8 @@ func uiRemainsResponsiveDuringLongOperation() async throws {
 - <doc:BestPractices>
 - ``MockIntelligenceProvider``
 - ``MockConversationProvider``
+- ``MockGenerableProvider``
+- ``MockToolProvider``
+- ``MockContentTaggingProvider``
+- ``MockEmbeddingProvider``
+- ``MockRecommendationProvider``
