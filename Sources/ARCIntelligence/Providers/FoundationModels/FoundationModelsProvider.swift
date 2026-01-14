@@ -50,8 +50,8 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
     public let displayName = "Apple Foundation Models"
     public let version = "1.0"
 
-    private let configuration: FoundationModelsConfiguration
-    private let logger = ARCLogger(
+    let configuration: FoundationModelsConfiguration
+    let logger = ARCLogger(
         subsystem: "com.arclabs.intelligence",
         category: "FoundationModels"
     )
@@ -306,7 +306,7 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
 
     @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
     // swiftlint:disable:next cyclomatic_complexity
-    private func mapFoundationModelsError(_ error: Error) -> IntelligenceError {
+    func mapFoundationModelsError(_ error: Error) -> IntelligenceError {
         // Map Apple's specific errors to our error types
         if let generationError = error as? LanguageModelSession.GenerationError {
             switch generationError {
