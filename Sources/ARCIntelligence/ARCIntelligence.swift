@@ -44,6 +44,8 @@ import Foundation
 /// - ``TagCategory``
 /// - ``ToolCallRecord``
 /// - ``IntelligenceTool``
+/// - ``SessionTranscript``
+/// - ``TranscriptEntry``
 ///
 /// ### Utilities
 /// - ``PromptBuilder``
