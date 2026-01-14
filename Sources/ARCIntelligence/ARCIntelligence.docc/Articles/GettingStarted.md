@@ -35,6 +35,13 @@ Then add it to your target dependencies:
 )
 ```
 
+## Requirements
+
+- **Swift:** 6.0+
+- **Platforms:** iOS 17.0+ / macOS 14.0+
+- **Foundation Models:** iOS 26+ (for on-device AI features)
+- **Xcode:** 16.0+
+
 ## Your First Completion
 
 Here's how to generate your first AI completion using Foundation Models:
@@ -194,6 +201,9 @@ Now that you understand the basics, explore these topics:
 
 - <doc:Architecture> - Learn about the package architecture
 - <doc:ChoosingAProvider> - Understand different AI providers
+- <doc:GuidedGeneration> - Generate structured Swift types
+- <doc:ToolCalling> - Extend model capabilities with tools
+- <doc:ContentTagging> - Extract tags from text content
 - <doc:Testing> - Test your AI features with mocks
 - <doc:BestPractices> - Follow best practices for AI integration
 

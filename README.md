@@ -20,10 +20,14 @@ The package is designed following Clean Architecture principles, making it easy 
 ### Key Features
 
 - ✅ **Protocol-Based Architecture** - Easy to swap AI providers without changing your code
-- ✅ **Apple Foundation Models** - Privacy-first, on-device AI (iOS 18.0+)
+- ✅ **Apple Foundation Models** - Privacy-first, on-device AI (iOS 26+)
 - ✅ **Conversational AI** - Multi-turn dialogue management with context preservation
+- ✅ **Guided Generation** - Generate structured Swift types with `@Generable` support
+- ✅ **Tool Calling** - Extend model capabilities with custom tools
+- ✅ **Content Tagging** - Extract topics, emotions, and actions from text
 - ✅ **Recommendations Engine** - Personalized suggestions based on user context
 - ✅ **Semantic Search** - Vector-based similarity search with embeddings
+- ✅ **Session Transcripts** - Observable history of interactions with persistence support
 - ✅ **Swift 6 Concurrency** - Full `async/await` and `Sendable` compliance
 - ✅ **Comprehensive Mocks** - Test your AI features without making real API calls
 
@@ -193,6 +197,134 @@ for (text, similarity) in results {
 }
 ```
 
+### Guided Generation
+
+Generate structured Swift types directly from prompts:
+
+```swift
+import ARCIntelligence
+
+// Define your output type
+struct MovieReview: Codable, Sendable {
+    let title: String
+    let rating: Int
+    let summary: String
+    let pros: [String]
+    let cons: [String]
+}
+
+// Create the provider
+let provider = ARCIntelligence.generableProvider()
+
+// Generate structured data
+let review: MovieReview = try await provider.generate(
+    MovieReview.self,
+    prompt: "Review the movie Inception",
+    configuration: .factual
+)
+
+print("\(review.title): \(review.rating)/10")
+print("Pros: \(review.pros.joined(separator: ", "))")
+```
+
+### Tool Calling
+
+Extend model capabilities with custom tools:
+
+```swift
+import ARCIntelligence
+
+// Define a tool
+struct WeatherTool: IntelligenceTool {
+    let name = "getWeather"
+    let description = "Get current weather for a city"
+
+    var parametersSchema: ToolParametersSchema? {
+        ToolParametersSchema(
+            parameters: [
+                ToolParameter(
+                    name: "city",
+                    type: .string,
+                    description: "The city name"
+                )
+            ],
+            required: ["city"]
+        )
+    }
+
+    func execute(arguments: [String: Any]) async throws -> String {
+        let city = arguments["city"] as? String ?? "Unknown"
+        // Call your weather API here
+        return "Weather in \(city): 72°F, Sunny"
+    }
+}
+
+// Use the provider with tools
+let provider = ARCIntelligence.toolProvider()
+let response = try await provider.respond(
+    to: "What's the weather in San Francisco?",
+    tools: [WeatherTool()],
+    configuration: .default
+)
+
+print(response.content)
+```
+
+### Content Tagging
+
+Extract topics, emotions, and actions from text:
+
+```swift
+import ARCIntelligence
+
+let provider = ARCIntelligence.contentTaggingProvider()
+
+let tags = try await provider.generateTags(
+    for: "I love hiking in the mountains on sunny days!",
+    categories: [.topic, .emotion, .action],
+    maxTags: 5
+)
+
+for tag in tags {
+    print("\(tag.category): \(tag.value) (\(tag.confidence))")
+}
+// Output:
+// topic: hiking (0.95)
+// topic: mountains (0.90)
+// emotion: joy (0.88)
+// action: outdoor activity (0.85)
+```
+
+### Session Transcript
+
+Track conversation history with observable transcripts:
+
+```swift
+import ARCIntelligence
+
+// Access transcript from a conversation
+let transcript = await assistant.transcript
+
+// Iterate over entries
+for entry in transcript.entries {
+    switch entry {
+    case .prompt(let prompt):
+        print("User: \(prompt.content)")
+    case .response(let response):
+        print("Assistant: \(response.content)")
+    case .toolCall(let call):
+        print("Tool Call: \(call.toolName)")
+    case .toolOutput(let output):
+        print("Tool Output: \(output.content)")
+    case .instructions(let instructions):
+        print("System: \(instructions.content)")
+    }
+}
+
+// Persist transcript
+let data = try JSONEncoder().encode(transcript)
+```
+
 ### Advanced Usage
 
 ```swift
@@ -233,10 +365,13 @@ if counter.fitsWithinLimit(text, limit: 1000) {
 - **`ConversationProvider`** - Multi-turn conversations with context
 - **`RecommendationProvider`** - Context-based recommendations
 - **`EmbeddingProvider`** - Vector embeddings for semantic search
+- **`GenerableProvider`** - Structured output generation (iOS 26+)
+- **`ToolProvider`** - Tool calling and function execution
+- **`ContentTaggingProvider`** - Text analysis and tagging
 
 ### Providers
 
-- **`FoundationModelsProvider`** - Apple's on-device AI (iOS 18.0+)
+- **`FoundationModelsProvider`** - Apple's on-device AI (iOS 26+)
 - More providers coming soon (OpenAI, Anthropic, etc.)
 
 ### Use Cases
@@ -257,6 +392,12 @@ Core data types:
 - **`Embedding`** - Vector representation of text
 - **`IntelligenceResponse`** - Completion response with metadata
 - **`CompletionConfiguration`** - Configuration for text generation
+- **`SessionTranscript`** - Observable history of session interactions
+- **`TranscriptEntry`** - Individual entry (prompt, response, tool call, etc.)
+- **`ContentTag`** - Tag with category and confidence score
+- **`TagCategory`** - Tag categories (topic, action, object, emotion)
+- **`IntelligenceTool`** - Protocol for custom tool definitions
+- **`ToolCallRecord`** - Record of tool execution with timing
 
 ### Utilities
 
@@ -297,6 +438,11 @@ func myAIFeatureWorks() async throws {
 
 - **`MockIntelligenceProvider`** - Configurable mock with canned responses
 - **`MockConversationProvider`** - Echo-style conversation for testing
+- **`MockEmbeddingProvider`** - Mock embeddings for semantic search testing
+- **`MockRecommendationProvider`** - Mock recommendations for engine testing
+- **`MockGenerableProvider`** - Mock structured output generation
+- **`MockToolProvider`** - Mock tool calling with configurable results
+- **`MockContentTaggingProvider`** - Mock content tagging for text analysis
 
 ### Coverage
 

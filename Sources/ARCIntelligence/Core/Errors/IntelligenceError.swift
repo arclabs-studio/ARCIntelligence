@@ -39,6 +39,26 @@ public enum IntelligenceError: LocalizedError, Sendable, Equatable {
     /// Unknown error occurred
     case unknown(Error)
 
+    // MARK: - Apple Foundation Models Specific Errors
+
+    /// Content violated Apple's safety guardrails
+    case guardrailViolation(String)
+
+    /// Model refused to generate content for the given prompt
+    case modelRefusal(String)
+
+    /// Context window size exceeded (iOS 26+ Foundation Models limit: 4096 tokens)
+    case contextWindowExceeded(used: Int, limit: Int)
+
+    /// Apple Intelligence is not enabled on this device
+    case appleIntelligenceDisabled
+
+    /// Device does not support Apple Intelligence
+    case deviceNotEligible
+
+    /// Model is not ready (downloading or other system reasons)
+    case modelNotReady
+
     public var errorDescription: String? {
         switch self {
         case .providerUnavailable:
@@ -61,6 +81,18 @@ public enum IntelligenceError: LocalizedError, Sendable, Equatable {
             "No active conversation. Start a new conversation first."
         case let .unknown(error):
             "An unexpected error occurred: \(error.localizedDescription)"
+        case let .guardrailViolation(details):
+            "Content violated safety guidelines: \(details)"
+        case let .modelRefusal(reason):
+            "The model declined to generate content: \(reason)"
+        case let .contextWindowExceeded(used, limit):
+            "Context window exceeded (\(used)/\(limit) tokens)."
+        case .appleIntelligenceDisabled:
+            "Apple Intelligence is not enabled. Please enable it in Settings."
+        case .deviceNotEligible:
+            "This device does not support Apple Intelligence."
+        case .modelNotReady:
+            "The AI model is not ready. It may be downloading or initializing."
         }
     }
 
@@ -89,6 +121,18 @@ public enum IntelligenceError: LocalizedError, Sendable, Equatable {
             true
         case let (.unknown(lhsError), .unknown(rhsError)):
             lhsError.localizedDescription == rhsError.localizedDescription
+        case let (.guardrailViolation(lhsDetails), .guardrailViolation(rhsDetails)):
+            lhsDetails == rhsDetails
+        case let (.modelRefusal(lhsReason), .modelRefusal(rhsReason)):
+            lhsReason == rhsReason
+        case let (.contextWindowExceeded(lhsUsed, lhsLimit), .contextWindowExceeded(rhsUsed, rhsLimit)):
+            lhsUsed == rhsUsed && lhsLimit == rhsLimit
+        case (.appleIntelligenceDisabled, .appleIntelligenceDisabled):
+            true
+        case (.deviceNotEligible, .deviceNotEligible):
+            true
+        case (.modelNotReady, .modelNotReady):
+            true
         default:
             false
         }

@@ -11,10 +11,14 @@ The package is built with Swift 6 concurrency in mind, providing full `async/awa
 ### Key Features
 
 - **Protocol-Based Architecture**: Easily swap AI providers without changing your code
-- **Apple Foundation Models**: Privacy-first, on-device AI for iOS 18.0+
+- **Apple Foundation Models**: Privacy-first, on-device AI for iOS 26+
 - **Conversational AI**: Multi-turn dialogue management with context preservation
+- **Guided Generation**: Generate structured Swift types with `@Generable` support
+- **Tool Calling**: Extend model capabilities with custom tools
+- **Content Tagging**: Extract topics, emotions, and actions from text
 - **Recommendations**: Personalized suggestions based on user context
 - **Semantic Search**: Vector-based similarity search with embeddings
+- **Session Transcripts**: Observable history of interactions with persistence
 - **Swift 6 Ready**: Full concurrency support with strict checking
 - **Testing Support**: Comprehensive mocks for testing without real API calls
 - **Zero Dependencies**: Pure Swift implementation
@@ -33,6 +37,9 @@ The package is built with Swift 6 concurrency in mind, providing full `async/awa
 - ``ConversationProvider``
 - ``RecommendationProvider``
 - ``EmbeddingProvider``
+- ``GenerableProvider``
+- ``ToolProvider``
+- ``ContentTaggingProvider``
 
 ### Providers
 
@@ -56,6 +63,14 @@ The package is built with Swift 6 concurrency in mind, providing full `async/awa
 - ``IntelligenceRequest``
 - ``CompletionConfiguration``
 - ``RecommendationConfiguration``
+- ``SessionTranscript``
+- ``TranscriptEntry``
+- ``ContentTag``
+- ``TagCategory``
+- ``IntelligenceTool``
+- ``ToolParametersSchema``
+- ``ToolParameter``
+- ``ToolCallRecord``
 
 ### Utilities
 
@@ -69,6 +84,12 @@ The package is built with Swift 6 concurrency in mind, providing full `async/awa
 ### Testing
 
 - <doc:Testing>
+
+### Advanced Features
+
+- <doc:GuidedGeneration>
+- <doc:ToolCalling>
+- <doc:ContentTagging>
 
 ### Advanced Topics
 
