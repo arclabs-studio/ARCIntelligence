@@ -305,75 +305,51 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
     }
 
     @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    // swiftlint:disable:next cyclomatic_complexity
     func mapFoundationModelsError(_ error: Error) -> IntelligenceError {
-        // Map Apple's specific errors to our error types
         if let generationError = error as? LanguageModelSession.GenerationError {
-            switch generationError {
-            case let .guardrailViolation(details):
-                logger.warning("Guardrail violation", metadata: [
-                    "details": .public(String(describing: details))
-                ])
-                return .guardrailViolation(String(describing: details))
-
-            case let .refusal(refusal, _):
-                logger.info("Model refused request")
-                return .modelRefusal(String(describing: refusal))
-
-            case let .exceededContextWindowSize(details):
-                logger.warning("Context window exceeded", metadata: [
-                    "details": .public(String(describing: details))
-                ])
-                return .contextWindowExceeded(used: 0, limit: 4096)
-
-            case let .assetsUnavailable(details):
-                logger.error("Model assets unavailable", metadata: [
-                    "details": .public(String(describing: details))
-                ])
-                return .modelNotReady
-
-            case let .unsupportedGuide(details):
-                logger.error("Unsupported generation guide", metadata: [
-                    "details": .public(String(describing: details))
-                ])
-                return .invalidRequest("Unsupported generation guide: \(details)")
-
-            case let .unsupportedLanguageOrLocale(details):
-                logger.warning("Unsupported language or locale", metadata: [
-                    "details": .public(String(describing: details))
-                ])
-                return .invalidRequest("Unsupported language or locale: \(details)")
-
-            case let .decodingFailure(details):
-                logger.error("Response decoding failed", metadata: [
-                    "details": .public(String(describing: details))
-                ])
-                return .responseParseFailed(String(describing: details))
-
-            case let .rateLimited(details):
-                logger.warning("Rate limited", metadata: [
-                    "details": .public(String(describing: details))
-                ])
-                return .rateLimitExceeded
-
-            case let .concurrentRequests(details):
-                logger.warning("Concurrent request limit exceeded", metadata: [
-                    "details": .public(String(describing: details))
-                ])
-                return .requestFailed("Too many concurrent requests: \(details)")
-
-            @unknown default:
-                logger.error("Unknown generation error", metadata: [
-                    "error": .public(error.localizedDescription)
-                ])
-                return .requestFailed(error.localizedDescription)
-            }
+            return mapGenerationError(generationError, originalError: error)
         }
-
-        logger.error("Request failed", metadata: [
-            "error": .public(error.localizedDescription)
-        ])
+        logger.error("Request failed", metadata: ["error": .public(error.localizedDescription)])
         return .requestFailed(error.localizedDescription)
+    }
+
+    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
+    private func mapGenerationError(
+        _ error: LanguageModelSession.GenerationError,
+        originalError: Error
+    ) -> IntelligenceError {
+        switch error {
+        case let .guardrailViolation(details):
+            logger.warning("Guardrail violation", metadata: ["details": .public(String(describing: details))])
+            return .guardrailViolation(String(describing: details))
+        case let .refusal(refusal, _):
+            logger.info("Model refused request")
+            return .modelRefusal(String(describing: refusal))
+        case let .exceededContextWindowSize(details):
+            logger.warning("Context window exceeded", metadata: ["details": .public(String(describing: details))])
+            return .contextWindowExceeded(used: 0, limit: 4096)
+        case let .assetsUnavailable(details):
+            logger.error("Model assets unavailable", metadata: ["details": .public(String(describing: details))])
+            return .modelNotReady
+        case let .unsupportedGuide(details):
+            logger.error("Unsupported generation guide", metadata: ["details": .public(String(describing: details))])
+            return .invalidRequest("Unsupported generation guide: \(details)")
+        case let .unsupportedLanguageOrLocale(details):
+            logger.warning("Unsupported language", metadata: ["details": .public(String(describing: details))])
+            return .invalidRequest("Unsupported language or locale: \(details)")
+        case let .decodingFailure(details):
+            logger.error("Response decoding failed", metadata: ["details": .public(String(describing: details))])
+            return .responseParseFailed(String(describing: details))
+        case let .rateLimited(details):
+            logger.warning("Rate limited", metadata: ["details": .public(String(describing: details))])
+            return .rateLimitExceeded
+        case let .concurrentRequests(details):
+            logger.warning("Concurrent requests exceeded", metadata: ["details": .public(String(describing: details))])
+            return .requestFailed("Too many concurrent requests: \(details)")
+        @unknown default:
+            logger.error("Unknown generation error", metadata: ["error": .public(originalError.localizedDescription)])
+            return .requestFailed(originalError.localizedDescription)
+        }
     }
     #endif
 
