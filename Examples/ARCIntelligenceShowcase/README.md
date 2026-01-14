@@ -56,8 +56,6 @@ This showcase app provides interactive examples of every major feature in ARCInt
 
 ## Installation
 
-### Option 1: Open in Xcode
-
 1. Navigate to the Examples directory:
    ```bash
    cd Examples/ARCIntelligenceShowcase
@@ -70,11 +68,9 @@ This showcase app provides interactive examples of every major feature in ARCInt
 
 3. Select a simulator or device
 
-4. Build and run (⌘R)
+4. Build and run (Cmd+R)
 
-### Option 2: Use Swift Package Manager
-
-The showcase app is configured to use the local ARCIntelligence package automatically.
+The showcase app is configured to use the local ARCIntelligence package automatically via Xcode's Swift Package Manager integration.
 
 ## Project Structure
 

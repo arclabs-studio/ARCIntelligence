@@ -22,31 +22,33 @@ A complete iOS app showcasing all features of ARCIntelligence.
 **Quick Start:**
 
 ```bash
-cd ARCIntelligenceShowcase
+cd Examples/ARCIntelligenceShowcase
 open ARCIntelligenceShowcase.xcodeproj
 ```
 
-Then build and run in Xcode.
+Then select a simulator and press Cmd+R to build and run.
 
 **Read more:** [ARCIntelligenceShowcase README](ARCIntelligenceShowcase/README.md)
 
 ## Running Examples
 
-Each example is a standalone Xcode project that includes ARCIntelligence as a local package dependency.
+Each example is a standalone Xcode project that references ARCIntelligence as a local package dependency. This follows ARC Labs Studio standards for example apps.
 
 ### Requirements
 
 - Xcode 16.0 or later
 - iOS 17.0+ deployment target
 - macOS 14.0+ (for Mac apps)
+- iOS 18.0+ (for Foundation Models features)
 
 ### Installation
 
 1. Navigate to the example directory
-2. Open the `.xcodeproj` file
-3. Build and run
+2. Open the `.xcodeproj` file in Xcode
+3. Select a simulator or device
+4. Build and run (Cmd+R)
 
-No additional setup required - the examples automatically reference the local ARCIntelligence package.
+No additional setup required - the examples automatically reference the local ARCIntelligence package through Xcode's Swift Package Manager integration.
 
 ## Learning Path
 
