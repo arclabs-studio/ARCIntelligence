@@ -7,7 +7,8 @@ let package = Package(
     name: "ARCIntelligence",
     platforms: [
         .iOS(.v17),
-        .macOS(.v14)
+        .macOS(.v14),
+        .visionOS(.v1)
     ],
     products: [
         .library(
