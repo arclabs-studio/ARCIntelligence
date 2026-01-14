@@ -1,0 +1,378 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05BBC1C60F5F44CC0244AB5E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 146C1D997EAB22486865A612 /* ContentView.swift */; };
+		0815AA0AC101592A9ADE6D00 /* ARCIntelligenceMocks in Frameworks */ = {isa = PBXBuildFile; productRef = 039B03FBA345B7B39576FE95 /* ARCIntelligenceMocks */; };
+		201CB17F7D95491F8A7A82CA /* ARCIntelligenceShowcaseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCB39E202EC956F3BA5CF37 /* ARCIntelligenceShowcaseApp.swift */; };
+		29CBAFACB93A15137B4A47E6 /* ARCIntelligence in Frameworks */ = {isa = PBXBuildFile; productRef = DDA5327507C786267A7CED8E /* ARCIntelligence */; };
+		33D2BAECEB8D63B8E6B6DA4A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7ED629D121945586EA49CF /* SettingsView.swift */; };
+		34CC2FBC0AD1A8E5C3EF61DD /* CompletionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB01E70D1FE3AF18308992EE /* CompletionsView.swift */; };
+		526B0DF5BAB8160D5A1706D8 /* StreamingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48EAD15BD9AFC7E6919C1269 /* StreamingView.swift */; };
+		5DFBAC8F378B7999EB9A8B83 /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8575DA3AB5DD8931ED3703C5 /* ConversationView.swift */; };
+		E39582DECA9EDB086EC090E3 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A761876C8BA932D2D83E63A4 /* AboutView.swift */; };
+		E52FC71980C42460140A1F31 /* UtilitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2003D6879B26F1F6FC8A34A6 /* UtilitiesView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		13F399845A900BD015E9C412 /* ARCIntelligenceShowcase.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ARCIntelligenceShowcase.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		146C1D997EAB22486865A612 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2003D6879B26F1F6FC8A34A6 /* UtilitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilitiesView.swift; sourceTree = "<group>"; };
+		2CCB39E202EC956F3BA5CF37 /* ARCIntelligenceShowcaseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCIntelligenceShowcaseApp.swift; sourceTree = "<group>"; };
+		3CB45BE446EFCA503E58772A /* ARCIntelligence */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ARCIntelligence; path = ../..; sourceTree = SOURCE_ROOT; };
+		48EAD15BD9AFC7E6919C1269 /* StreamingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingView.swift; sourceTree = "<group>"; };
+		7D7ED629D121945586EA49CF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8575DA3AB5DD8931ED3703C5 /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
+		A761876C8BA932D2D83E63A4 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		CB01E70D1FE3AF18308992EE /* CompletionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionsView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		24F72BEC4E1253FBB724020F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29CBAFACB93A15137B4A47E6 /* ARCIntelligence in Frameworks */,
+				0815AA0AC101592A9ADE6D00 /* ARCIntelligenceMocks in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0FAAB9B14F60F4A2542016DA /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				3CB45BE446EFCA503E58772A /* ARCIntelligence */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		1ACF2ACB8CB6D66E367E9B2B /* ARCIntelligenceShowcase */ = {
+			isa = PBXGroup;
+			children = (
+				2CCB39E202EC956F3BA5CF37 /* ARCIntelligenceShowcaseApp.swift */,
+				146C1D997EAB22486865A612 /* ContentView.swift */,
+				79BF7B807CD66971BBFB5F9A /* Views */,
+			);
+			path = ARCIntelligenceShowcase;
+			sourceTree = "<group>";
+		};
+		5489C8140060D793E73E6EFF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13F399845A900BD015E9C412 /* ARCIntelligenceShowcase.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		79BF7B807CD66971BBFB5F9A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A761876C8BA932D2D83E63A4 /* AboutView.swift */,
+				CB01E70D1FE3AF18308992EE /* CompletionsView.swift */,
+				8575DA3AB5DD8931ED3703C5 /* ConversationView.swift */,
+				7D7ED629D121945586EA49CF /* SettingsView.swift */,
+				48EAD15BD9AFC7E6919C1269 /* StreamingView.swift */,
+				2003D6879B26F1F6FC8A34A6 /* UtilitiesView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		C0F7D52089176A64A3BA4F57 = {
+			isa = PBXGroup;
+			children = (
+				1ACF2ACB8CB6D66E367E9B2B /* ARCIntelligenceShowcase */,
+				0FAAB9B14F60F4A2542016DA /* Packages */,
+				5489C8140060D793E73E6EFF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7A1CA6F1FF0EC1057ED0BB45 /* ARCIntelligenceShowcase */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 425ABE6DFD9FBCEAA6A646B5 /* Build configuration list for PBXNativeTarget "ARCIntelligenceShowcase" */;
+			buildPhases = (
+				F02D48BA9889371E66CA8EA0 /* Sources */,
+				24F72BEC4E1253FBB724020F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ARCIntelligenceShowcase;
+			packageProductDependencies = (
+				DDA5327507C786267A7CED8E /* ARCIntelligence */,
+				039B03FBA345B7B39576FE95 /* ARCIntelligenceMocks */,
+			);
+			productName = ARCIntelligenceShowcase;
+			productReference = 13F399845A900BD015E9C412 /* ARCIntelligenceShowcase.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		080B715AA5F6EF647AF3EF9F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 87E93B95EC0826B2091E210F /* Build configuration list for PBXProject "ARCIntelligenceShowcase" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C0F7D52089176A64A3BA4F57;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B1A4C37D979A7964B748DCA8 /* XCLocalSwiftPackageReference "../.." */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7A1CA6F1FF0EC1057ED0BB45 /* ARCIntelligenceShowcase */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F02D48BA9889371E66CA8EA0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				201CB17F7D95491F8A7A82CA /* ARCIntelligenceShowcaseApp.swift in Sources */,
+				E39582DECA9EDB086EC090E3 /* AboutView.swift in Sources */,
+				34CC2FBC0AD1A8E5C3EF61DD /* CompletionsView.swift in Sources */,
+				05BBC1C60F5F44CC0244AB5E /* ContentView.swift in Sources */,
+				5DFBAC8F378B7999EB9A8B83 /* ConversationView.swift in Sources */,
+				33D2BAECEB8D63B8E6B6DA4A /* SettingsView.swift in Sources */,
+				526B0DF5BAB8160D5A1706D8 /* StreamingView.swift in Sources */,
+				E52FC71980C42460140A1F31 /* UtilitiesView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0EC410D4A2D90D252CA35DDB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		872F812FA80DA3A26D8EBE9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedFile;
+				INFOPLIST_KEY_CFBundleDisplayName = "Intelligence Demo";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.arclabs.intelligence.showcase;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BA56A235F341C311B8D29DA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		DBC76E5CE4C0546D8561AB4A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedFile;
+				INFOPLIST_KEY_CFBundleDisplayName = "Intelligence Demo";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.arclabs.intelligence.showcase;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		425ABE6DFD9FBCEAA6A646B5 /* Build configuration list for PBXNativeTarget "ARCIntelligenceShowcase" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				872F812FA80DA3A26D8EBE9B /* Debug */,
+				DBC76E5CE4C0546D8561AB4A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		87E93B95EC0826B2091E210F /* Build configuration list for PBXProject "ARCIntelligenceShowcase" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0EC410D4A2D90D252CA35DDB /* Debug */,
+				BA56A235F341C311B8D29DA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B1A4C37D979A7964B748DCA8 /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		039B03FBA345B7B39576FE95 /* ARCIntelligenceMocks */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ARCIntelligenceMocks;
+		};
+		DDA5327507C786267A7CED8E /* ARCIntelligence */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ARCIntelligence;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 080B715AA5F6EF647AF3EF9F /* Project object */;
+}

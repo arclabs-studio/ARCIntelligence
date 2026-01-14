@@ -1,0 +1,51 @@
+name: ARCIntelligenceShowcase
+options:
+  bundleIdPrefix: com.arclabs.intelligence
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+  defaultConfig: Debug
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: false
+  configs:
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+    Release:
+      SWIFT_COMPILATION_MODE: wholemodule
+
+packages:
+  ARCIntelligence:
+    path: ../..
+
+targets:
+  ARCIntelligenceShowcase:
+    type: application
+    platform: iOS
+    sources:
+      - ARCIntelligenceShowcase
+    dependencies:
+      - package: ARCIntelligence
+        product: ARCIntelligence
+      - package: ARCIntelligence
+        product: ARCIntelligenceMocks
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.arclabs.intelligence.showcase
+        INFOPLIST_GENERATION_MODE: GeneratedFile
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: true
+        INFOPLIST_KEY_UILaunchScreen_Generation: true
+        INFOPLIST_KEY_CFBundleDisplayName: "Intelligence Demo"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: true
+        ENABLE_PREVIEWS: true
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: "-"
+        Release:
+          CODE_SIGN_IDENTITY: "-"

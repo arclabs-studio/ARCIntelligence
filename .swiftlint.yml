@@ -1,0 +1,141 @@
+# ARCDevTools SwiftLint Configuration
+# Version: 1.0.0
+
+# Included directories
+included:
+  - Sources
+  - Tests
+
+# Excluded directories
+excluded:
+  - .build
+  - DerivedData
+  - Pods
+  - Carthage
+  - ARCDevTools
+  - "*/Generated/*"
+  - "*.generated.swift"
+
+# Disabled rules
+disabled_rules:
+  - trailing_whitespace  # SwiftFormat handles this
+  - todo                 # We allow TODOs
+  - sorted_imports       # Conflicts with @testable imports preference (should be last)
+  - attributes           # SwiftFormat handles this (always same line in ARC Labs)
+
+# Opt-in rules (explicitly enabled per ARCKnowledge)
+opt_in_rules:
+  # Already enabled (keep these)
+  - empty_count
+  - closure_spacing
+  - explicit_init
+  - redundant_type_annotation
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+
+  # New rules from ARCKnowledge code-style.md
+  - array_init
+  - closure_end_indentation
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_first_not_nil
+  - discouraged_object_literal
+  - empty_string
+  - fatal_error_message
+  - first_where
+  - flatmap_over_map_reduce
+  - force_unwrapping
+  - implicit_return
+  - joined_default_parameter
+  - last_where
+  - literal_expression_end_indentation
+  - multiline_arguments
+  - multiline_function_chains
+  - multiline_literal_brackets
+  - multiline_parameters
+  - operator_usage_whitespace
+  - overridden_super_call
+  - prefer_self_type_over_type_of_self
+  - redundant_nil_coalescing
+  - sorted_first_last
+  - toggle_bool
+  - unneeded_parentheses_in_closure_argument
+  - yoda_condition
+
+# Analyzer rules (require 'swiftlint analyze')
+analyzer_rules:
+  - unused_import
+  - unused_declaration
+
+# Rule-specific configuration
+
+identifier_name:
+  min_length: 2
+  max_length: 60
+  excluded:
+    - id
+    - ok
+    - x
+    - y
+    - db
+    - vm  # ViewModel común
+
+type_name:
+  min_length: 3
+  max_length: 50
+  excluded:
+    - ID
+    - URL
+
+line_length:
+  warning: 120
+  error: 150
+  ignores_comments: true
+  ignores_urls: true
+  ignores_function_declarations: true
+
+type_body_length:
+  warning: 300
+  error: 500
+
+function_body_length:
+  warning: 50
+  error: 100
+
+file_length:
+  warning: 500
+  error: 1000
+
+# Custom rules for ARC Labs
+custom_rules:
+
+  # ViewModels should use @Observable
+  observable_viewmodel:
+    name: "ViewModels should use @Observable"
+    regex: "final\\s+class\\s+\\w+ViewModel(?!.*@Observable)"
+    message: "ViewModels must use @Observable in Swift 6"
+    severity: warning
+
+  # No empty line after guard (from ARCKnowledge)
+  no_empty_line_after_guard:
+    name: "No Empty Line After Guard"
+    regex: 'guard\s+.+\{\s*\n\s*\n'
+    message: "Remove empty line after guard statement"
+    severity: warning
+
+  # No force cast (from ARCKnowledge)
+  no_force_cast:
+    name: "No Force Cast"
+    regex: 'as!'
+    message: "Avoid force casting. Use conditional cast (as?) instead"
+    severity: error
+
+  # No force try (from ARCKnowledge)
+  no_force_try:
+    name: "No Force Try"
+    regex: 'try!'
+    message: "Avoid force try. Use proper error handling"
+    severity: error
+
+# Reporter (output format)
+reporter: "xcode"

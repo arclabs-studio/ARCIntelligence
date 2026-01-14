@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,26 +6,44 @@ import PackageDescription
 let package = Package(
     name: "ARCIntelligence",
     platforms: [
-        .iOS(.v14),
-        .macOS(.v11),
-        .tvOS(.v14),
-        .watchOS(.v7)
+        .iOS(.v17),
+        .macOS(.v14),
+        .visionOS(.v1)
     ],
     products: [
         .library(
             name: "ARCIntelligence",
             targets: ["ARCIntelligence"]
         ),
+        .library(
+            name: "ARCIntelligenceMocks",
+            targets: ["ARCIntelligenceMocks"]
+        )
+    ],
+    dependencies: [
+        .package(url: "https://github.com/arclabs-studio/ARCLogger", from: "1.0.0")
     ],
     targets: [
         .target(
             name: "ARCIntelligence",
-            path: "Sources"
+            dependencies: ["ARCLogger"],
+            path: "Sources/ARCIntelligence",
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        ),
+        .target(
+            name: "ARCIntelligenceMocks",
+            dependencies: ["ARCIntelligence"],
+            path: "Sources/ARCIntelligenceMocks"
         ),
         .testTarget(
             name: "ARCIntelligenceTests",
-            dependencies: ["ARCIntelligence"],
-            path: "Tests"
+            dependencies: [
+                "ARCIntelligence",
+                "ARCIntelligenceMocks"
+            ],
+            path: "Tests/ARCIntelligenceTests"
         )
     ]
 )

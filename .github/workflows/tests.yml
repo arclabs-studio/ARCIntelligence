@@ -1,0 +1,64 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, develop, feature/*]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  check-platforms:
+    name: Check Platform Support
+    runs-on: ubuntu-latest
+    outputs:
+      supports-linux: ${{ steps.check.outputs.supports-linux }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if Apple-only
+        id: check
+        run: |
+          if grep -qE "^[[:space:]]*platforms:[[:space:]]*\[" Package.swift; then
+            echo "supports-linux=false" >> $GITHUB_OUTPUT
+            echo "📱 Package has platform constraints - Linux build will be skipped"
+          else
+            echo "supports-linux=true" >> $GITHUB_OUTPUT
+            echo "🐧 Package supports Linux"
+          fi
+
+  test-macos:
+    name: Build (macOS)
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Display Swift version
+        run: swift --version
+
+      - name: Run tests
+        run: swift test --parallel
+
+  test-linux:
+    name: Build (Linux)
+    needs: check-platforms
+    if: needs.check-platforms.outputs.supports-linux == 'true'
+    runs-on: ubuntu-latest
+    container:
+      image: swift:6.0
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Display Swift version
+        run: swift --version
+
+      - name: Run tests
+        run: swift test --parallel
