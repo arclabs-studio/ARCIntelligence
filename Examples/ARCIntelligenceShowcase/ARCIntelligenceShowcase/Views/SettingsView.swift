@@ -5,8 +5,8 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
@@ -47,6 +47,30 @@ struct SettingsView: View {
                 Text("AI Provider")
             } footer: {
                 Text("Select which AI provider to use for examples. Mock provider is recommended for demo purposes.")
+            }
+
+            if appState.selectedProvider == .anthropic {
+                Section {
+                    SecureField("API Key (sk-ant-...)", text: $appState.anthropicAPIKey)
+                        .textContentType(.password)
+                        .autocorrectionDisabled()
+                        .onChange(of: appState.anthropicAPIKey) {
+                            appState.updateProvider(to: .anthropic)
+                        }
+
+                    Picker("Model", selection: $appState.anthropicModel) {
+                        Text("Haiku (Fast)").tag(AnthropicModel.haiku)
+                        Text("Sonnet (Balanced)").tag(AnthropicModel.sonnet)
+                        Text("Opus (Quality)").tag(AnthropicModel.opus)
+                    }
+                    .onChange(of: appState.anthropicModel) {
+                        appState.updateProvider(to: .anthropic)
+                    }
+                } header: {
+                    Text("Anthropic Settings")
+                } footer: {
+                    Text("Enter your Anthropic API key. Do not use in production apps — use AIProxy instead.")
+                }
             }
 
             Section {
@@ -104,17 +128,21 @@ struct SettingsView: View {
             }
 
             Section {
-                Link(destination: URL(string: "https://github.com/arclabs-studio/ARCIntelligence")!) {
-                    HStack {
-                        Image(systemName: "link")
-                        Text("View on GitHub")
+                if let githubURL = URL(string: "https://github.com/arclabs-studio/ARCIntelligence") {
+                    Link(destination: githubURL) {
+                        HStack {
+                            Image(systemName: "link")
+                            Text("View on GitHub")
+                        }
                     }
                 }
 
-                Link(destination: URL(string: "https://arclabs.studio")!) {
-                    HStack {
-                        Image(systemName: "globe")
-                        Text("ARC Labs Studio Website")
+                if let websiteURL = URL(string: "https://arclabs.studio") {
+                    Link(destination: websiteURL) {
+                        HStack {
+                            Image(systemName: "globe")
+                            Text("ARC Labs Studio Website")
+                        }
                     }
                 }
             } header: {
