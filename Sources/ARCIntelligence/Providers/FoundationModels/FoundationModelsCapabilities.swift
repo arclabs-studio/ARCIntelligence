@@ -44,6 +44,6 @@ public struct FoundationModelsCapabilities: Sendable, Equatable {
 
     // MARK: - Default Capabilities
 
-    /// Default capabilities for iOS 18.0+
+    /// Default capabilities for iOS 26.0+
     public static let `default` = FoundationModelsCapabilities()
 }
