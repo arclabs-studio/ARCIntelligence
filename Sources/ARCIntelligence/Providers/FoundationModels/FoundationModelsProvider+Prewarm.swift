@@ -120,19 +120,3 @@ extension FoundationModelsProvider {
         }
     }
 }
-
-// MARK: - Model Status
-
-extension FoundationModelsProvider {
-    /// Check if the model is currently responding to a request.
-    ///
-    /// This can be used to show loading indicators or prevent duplicate requests.
-    ///
-    /// - Note: This requires an active session. Returns false if no session exists.
-    /// - Returns: True if the model is currently generating a response.
-    public var isResponding: Bool {
-        // This would require maintaining session state, which we don't currently do.
-        // For now, return false. In a future implementation, we could track active sessions.
-        false
-    }
-}
