@@ -5,8 +5,8 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct ConversationView: View {
     @EnvironmentObject var appState: AppState
@@ -36,7 +36,7 @@ struct ConversationView: View {
                     }
                     .padding()
                 }
-                .onChange(of: viewModel.messages.count) { _ in
+                .onChange(of: viewModel.messages.count) {
                     if let lastMessage = viewModel.messages.last {
                         withAnimation {
                             proxy.scrollTo(lastMessage.id, anchor: .bottom)
@@ -132,7 +132,7 @@ class ConversationViewModel: ObservableObject {
         )
     }
 
-    func sendMessage(provider: ConversationProvider) async {
+    func sendMessage(provider _: ConversationProvider) async {
         guard !inputText.isEmpty else { return }
 
         let userMessageContent = inputText
