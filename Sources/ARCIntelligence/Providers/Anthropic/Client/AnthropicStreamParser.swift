@@ -78,29 +78,27 @@ struct AnthropicStreamParser: Sendable {
             return nil
         }
 
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let type = json["type"] as? String
-        else {
-            return nil
-        }
+        let envelope = try decoder.decode(StreamEventEnvelope.self, from: data)
 
-        switch type {
+        switch envelope.type {
         case "message_start":
             let wrapper = try decoder.decode(MessageStartWrapper.self, from: data)
             return .messageStart(wrapper.message)
 
         case "content_block_start":
-            return try parseContentBlockStart(json: json, data: data)
+            let wrapper = try decoder.decode(ContentBlockStartWrapper.self, from: data)
+            return .contentBlockStart(index: wrapper.index, wrapper.contentBlock)
 
         case "content_block_delta":
-            return try parseContentBlockDelta(json: json)
+            let wrapper = try decoder.decode(ContentBlockDeltaWrapper.self, from: data)
+            return wrapper.toEvent()
 
         case "content_block_stop":
-            let index = json["index"] as? Int ?? 0
-            return .contentBlockStop(index: index)
+            return .contentBlockStop(index: envelope.index ?? 0)
 
         case "message_delta":
-            return parseMessageDelta(json: json)
+            let wrapper = try decoder.decode(MessageDeltaWrapper.self, from: data)
+            return .messageDelta(stopReason: wrapper.delta?.stopReason, usage: wrapper.usage)
 
         case "message_stop":
             return .messageStop
@@ -112,68 +110,66 @@ struct AnthropicStreamParser: Sendable {
             return nil
         }
     }
-
-    // MARK: - Private Helpers
-
-    private func parseContentBlockStart(
-        json: [String: Any],
-        data: Data
-    ) throws -> AnthropicStreamEvent? {
-        let index = json["index"] as? Int ?? 0
-        let wrapper = try decoder.decode(ContentBlockStartWrapper.self, from: data)
-        return .contentBlockStart(index: index, wrapper.contentBlock)
-    }
-
-    private func parseContentBlockDelta(json: [String: Any]) throws -> AnthropicStreamEvent? {
-        let index = json["index"] as? Int ?? 0
-
-        guard let delta = json["delta"] as? [String: Any],
-              let deltaType = delta["type"] as? String
-        else {
-            return nil
-        }
-
-        switch deltaType {
-        case "text_delta":
-            let text = delta["text"] as? String ?? ""
-            return .contentBlockDelta(index: index, text: text)
-
-        case "input_json_delta":
-            let partialJson = delta["partial_json"] as? String ?? ""
-            return .toolUseDelta(index: index, partialJson: partialJson)
-
-        default:
-            return nil
-        }
-    }
-
-    private func parseMessageDelta(json: [String: Any]) -> AnthropicStreamEvent? {
-        let delta = json["delta"] as? [String: Any]
-        let stopReason = delta?["stop_reason"] as? String
-
-        var usage: AnthropicUsage?
-        if let usageDict = json["usage"] as? [String: Any] {
-            let outputTokens = usageDict["output_tokens"] as? Int ?? 0
-            usage = AnthropicUsage(
-                inputTokens: usageDict["input_tokens"] as? Int ?? 0,
-                outputTokens: outputTokens
-            )
-        }
-
-        return .messageDelta(stopReason: stopReason, usage: usage)
-    }
 }
 
-// MARK: - Decoding Wrappers
+// MARK: - Decodable Wrappers
+
+/// Lightweight envelope to route events by type without JSONSerialization.
+private struct StreamEventEnvelope: Decodable {
+    let type: String
+    let index: Int?
+}
 
 private struct MessageStartWrapper: Decodable {
     let message: AnthropicMessageResponse
 }
 
 private struct ContentBlockStartWrapper: Decodable {
+    let index: Int
     let contentBlock: AnthropicResponseContentBlock
 
     enum CodingKeys: String, CodingKey {
+        case index
         case contentBlock = "content_block"
     }
+}
+
+private struct ContentBlockDeltaPayload: Decodable {
+    let type: String
+    let text: String?
+    let partialJson: String?
+
+    enum CodingKeys: String, CodingKey {
+        case type, text
+        case partialJson = "partial_json"
+    }
+}
+
+private struct ContentBlockDeltaWrapper: Decodable {
+    let index: Int
+    let delta: ContentBlockDeltaPayload
+
+    func toEvent() -> AnthropicStreamEvent? {
+        switch delta.type {
+        case "text_delta":
+            .contentBlockDelta(index: index, text: delta.text ?? "")
+        case "input_json_delta":
+            .toolUseDelta(index: index, partialJson: delta.partialJson ?? "")
+        default:
+            nil
+        }
+    }
+}
+
+private struct MessageDeltaPayload: Decodable {
+    let stopReason: String?
+
+    enum CodingKeys: String, CodingKey {
+        case stopReason = "stop_reason"
+    }
+}
+
+private struct MessageDeltaWrapper: Decodable {
+    let delta: MessageDeltaPayload?
+    let usage: AnthropicUsage?
 }
