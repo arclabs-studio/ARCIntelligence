@@ -129,7 +129,7 @@ public enum AnthropicAuthentication: Sendable, Equatable {
 // MARK: - Model
 
 /// Available Anthropic Claude models.
-public enum AnthropicModel: Sendable, Equatable {
+public enum AnthropicModel: Sendable, Hashable {
     /// Claude 3.5 Haiku - Fast, economical.
     case haiku
 
