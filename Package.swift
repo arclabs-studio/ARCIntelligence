@@ -21,12 +21,13 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/arclabs-studio/ARCLogger", from: "1.0.0")
+        .package(url: "https://github.com/arclabs-studio/ARCLogger", from: "1.0.0"),
+        .package(url: "https://github.com/arclabs-studio/ARCNetworking", from: "1.0.0")
     ],
     targets: [
         .target(
             name: "ARCIntelligence",
-            dependencies: ["ARCLogger"],
+            dependencies: ["ARCLogger", "ARCNetworking"],
             path: "Sources/ARCIntelligence",
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")

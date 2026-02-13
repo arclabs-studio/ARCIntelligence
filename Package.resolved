@@ -1,5 +1,5 @@
 {
-  "originHash" : "54b421b4284ebec2276cb2bddcdad2940e57ec7c360d62aef76a739709999dd9",
+  "originHash" : "12f2305da7192e3abfeb884fecbb5224974860b3e66c5a44e625c8423f20e4d8",
   "pins" : [
     {
       "identity" : "arclogger",
@@ -7,6 +7,15 @@
       "location" : "https://github.com/arclabs-studio/ARCLogger",
       "state" : {
         "revision" : "c6fcb3571628d315e9fc7c00f28c12ac99fe42ca",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "arcnetworking",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/arclabs-studio/ARCNetworking",
+      "state" : {
+        "revision" : "ab878f591fa164f3ea852507fa15c88ce069b1fb",
         "version" : "1.0.0"
       }
     }
