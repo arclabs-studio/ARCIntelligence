@@ -25,8 +25,12 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
     // MARK: - Constants
 
     private static let apiVersion = "2023-06-01"
-    // swiftlint:disable:next force_unwrapping
-    private static let defaultBaseURL = URL(string: "https://api.anthropic.com")!
+    private static let defaultBaseURL: URL = {
+        guard let url = URL(string: "https://api.anthropic.com") else {
+            fatalError("Invalid hardcoded Anthropic API URL")
+        }
+        return url
+    }()
 
     // MARK: - Initialization
 
@@ -46,7 +50,8 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
         try validateAuthentication()
 
         let endpoint = AnthropicMessagesEndpoint(
-            authentication: authentication,
+            resolvedBaseURL: baseURL(),
+            resolvedHeaders: authHeaders(),
             request: request
         )
 
@@ -65,7 +70,7 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
                 do {
                     try validateAuthentication()
 
-                    let urlRequest = buildStreamingURLRequest(for: request)
+                    let urlRequest = try buildStreamingURLRequest(for: request)
                     let (bytes, response) = try await session.bytes(for: urlRequest)
 
                     if let httpResponse = response as? HTTPURLResponse {
@@ -141,7 +146,7 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
         return headers
     }
 
-    private func buildStreamingURLRequest(for request: AnthropicMessageRequest) -> URLRequest {
+    private func buildStreamingURLRequest(for request: AnthropicMessageRequest) throws -> URLRequest {
         let url = baseURL().appendingPathComponent("v1/messages")
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "POST"
@@ -150,9 +155,7 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
             urlRequest.setValue(value, forHTTPHeaderField: key)
         }
 
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        urlRequest.httpBody = try? encoder.encode(request)
+        urlRequest.httpBody = try JSONEncoder().encode(request)
 
         return urlRequest
     }
@@ -218,44 +221,17 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
 private struct AnthropicMessagesEndpoint: Endpoint {
     typealias Response = AnthropicMessageResponse
 
-    let authentication: AnthropicAuthentication
+    let resolvedBaseURL: URL
+    let resolvedHeaders: [String: String]
     let request: AnthropicMessageRequest
 
-    // swiftlint:disable:next force_unwrapping
-    private static let anthropicURL = URL(string: "https://api.anthropic.com")!
-
-    var baseURL: URL {
-        switch authentication {
-        case .apiKey:
-            Self.anthropicURL
-        case let .aiProxy(_, serviceURL):
-            URL(string: serviceURL) ?? Self.anthropicURL
-        }
-    }
-
+    var baseURL: URL { resolvedBaseURL }
     var path: String { "v1/messages" }
     var method: HTTPMethod { .POST }
-
-    var headers: [String: String]? {
-        var headers: [String: String] = [
-            "Content-Type": "application/json",
-            "anthropic-version": "2023-06-01"
-        ]
-
-        switch authentication {
-        case let .apiKey(key):
-            headers["x-api-key"] = key
-        case let .aiProxy(partialKey, _):
-            headers["x-api-key"] = partialKey
-        }
-
-        return headers
-    }
-
+    var headers: [String: String]? { resolvedHeaders }
     var queryItems: [URLQueryItem]? { nil }
 
     var body: Data? {
-        let encoder = JSONEncoder()
-        return try? encoder.encode(request)
+        try? JSONEncoder().encode(request)
     }
 }
