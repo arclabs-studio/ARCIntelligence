@@ -9,19 +9,106 @@ import Foundation
 @testable import ARCIntelligence
 
 /// Mock implementation of `AnthropicAPIClient` for testing.
-final class MockAnthropicAPIClient: AnthropicAPIClient, @unchecked Sendable {
-    // MARK: - Configuration
+///
+/// Uses `NSLock` to protect mutable state, making it safe for `Sendable`
+/// conformance without `@unchecked`.
+final class MockAnthropicAPIClient: AnthropicAPIClient, Sendable {
+    // MARK: - Thread-safe State
 
-    var messageResponses: [AnthropicMessageResponse] = []
-    var streamEvents: [AnthropicStreamEvent] = []
-    var errorToThrow: Error?
+    private let state = MockState()
 
-    // MARK: - Call Tracking
+    /// Mutable mock state protected by a lock.
+    private final class MockState: @unchecked Sendable {
+        private let lock = NSLock()
 
-    private(set) var sendMessageCallCount = 0
-    private(set) var streamMessageCallCount = 0
-    private(set) var lastRequest: AnthropicMessageRequest?
-    private(set) var allRequests: [AnthropicMessageRequest] = []
+        private var _messageResponses: [AnthropicMessageResponse] = []
+        private var _streamEvents: [AnthropicStreamEvent] = []
+        private var _errorToThrow: Error?
+        private var _sendMessageCallCount = 0
+        private var _streamMessageCallCount = 0
+        private var _lastRequest: AnthropicMessageRequest?
+        private var _allRequests: [AnthropicMessageRequest] = []
+
+        var messageResponses: [AnthropicMessageResponse] {
+            get { lock.withLock { _messageResponses } }
+            set { lock.withLock { _messageResponses = newValue } }
+        }
+
+        var streamEvents: [AnthropicStreamEvent] {
+            get { lock.withLock { _streamEvents } }
+            set { lock.withLock { _streamEvents = newValue } }
+        }
+
+        var errorToThrow: Error? {
+            get { lock.withLock { _errorToThrow } }
+            set { lock.withLock { _errorToThrow = newValue } }
+        }
+
+        var sendMessageCallCount: Int {
+            get { lock.withLock { _sendMessageCallCount } }
+            set { lock.withLock { _sendMessageCallCount = newValue } }
+        }
+
+        var streamMessageCallCount: Int {
+            get { lock.withLock { _streamMessageCallCount } }
+            set { lock.withLock { _streamMessageCallCount = newValue } }
+        }
+
+        var lastRequest: AnthropicMessageRequest? {
+            get { lock.withLock { _lastRequest } }
+            set { lock.withLock { _lastRequest = newValue } }
+        }
+
+        var allRequests: [AnthropicMessageRequest] {
+            get { lock.withLock { _allRequests } }
+            set { lock.withLock { _allRequests = newValue } }
+        }
+
+        func removeFirstResponse() -> AnthropicMessageResponse? {
+            lock.withLock {
+                guard !_messageResponses.isEmpty else { return nil }
+                return _messageResponses.removeFirst()
+            }
+        }
+
+        func recordSendMessage(_ request: AnthropicMessageRequest) {
+            lock.withLock {
+                _sendMessageCallCount += 1
+                _lastRequest = request
+                _allRequests.append(request)
+            }
+        }
+
+        func recordStreamMessage(_ request: AnthropicMessageRequest) {
+            lock.withLock {
+                _streamMessageCallCount += 1
+                _lastRequest = request
+                _allRequests.append(request)
+            }
+        }
+    }
+
+    // MARK: - Public Accessors
+
+    var messageResponses: [AnthropicMessageResponse] {
+        get { state.messageResponses }
+        set { state.messageResponses = newValue }
+    }
+
+    var streamEvents: [AnthropicStreamEvent] {
+        get { state.streamEvents }
+        set { state.streamEvents = newValue }
+    }
+
+    var errorToThrow: Error? {
+        get { state.errorToThrow }
+        set { state.errorToThrow = newValue }
+    }
+
+    var sendMessageCallCount: Int { state.sendMessageCallCount }
+    var streamMessageCallCount: Int { state.streamMessageCallCount }
+    var lastRequest: AnthropicMessageRequest? { state.lastRequest }
+    var allRequests: [AnthropicMessageRequest] { state.allRequests }
 
     // MARK: - Convenience Factories
 
@@ -32,7 +119,7 @@ final class MockAnthropicAPIClient: AnthropicAPIClient, @unchecked Sendable {
         outputTokens: Int = 20
     ) -> MockAnthropicAPIClient {
         let mock = MockAnthropicAPIClient()
-        mock.messageResponses = [
+        mock.state.messageResponses = [
             AnthropicMessageResponse(
                 id: "msg_test",
                 type: "message",
@@ -52,7 +139,7 @@ final class MockAnthropicAPIClient: AnthropicAPIClient, @unchecked Sendable {
         followUpText: String = "Done"
     ) -> MockAnthropicAPIClient {
         let mock = MockAnthropicAPIClient()
-        mock.messageResponses = [
+        mock.state.messageResponses = [
             // First response: tool_use
             AnthropicMessageResponse(
                 id: "msg_test_1",
@@ -77,43 +164,38 @@ final class MockAnthropicAPIClient: AnthropicAPIClient, @unchecked Sendable {
 
     static func withError(_ error: IntelligenceError) -> MockAnthropicAPIClient {
         let mock = MockAnthropicAPIClient()
-        mock.errorToThrow = error
+        mock.state.errorToThrow = error
         return mock
     }
 
     // MARK: - AnthropicAPIClient
 
     func sendMessage(_ request: AnthropicMessageRequest) async throws -> AnthropicMessageResponse {
-        sendMessageCallCount += 1
-        lastRequest = request
-        allRequests.append(request)
+        state.recordSendMessage(request)
 
-        if let error = errorToThrow {
+        if let error = state.errorToThrow {
             throw error
         }
 
-        guard !messageResponses.isEmpty else {
+        guard let response = state.removeFirstResponse() else {
             throw IntelligenceError.requestFailed("No mock responses configured")
         }
 
-        // Return responses in order, removing each as it's used
-        return messageResponses.removeFirst()
+        return response
     }
 
     func streamMessage(
         _ request: AnthropicMessageRequest
     ) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
-        streamMessageCallCount += 1
-        lastRequest = request
-        allRequests.append(request)
+        state.recordStreamMessage(request)
 
-        if let error = errorToThrow {
+        if let error = state.errorToThrow {
             return AsyncThrowingStream { continuation in
                 continuation.finish(throwing: error)
             }
         }
 
-        let events = streamEvents
+        let events = state.streamEvents
         return AsyncThrowingStream { continuation in
             Task {
                 for event in events {
