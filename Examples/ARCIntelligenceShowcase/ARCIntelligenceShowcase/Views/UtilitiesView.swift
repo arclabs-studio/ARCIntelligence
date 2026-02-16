@@ -5,8 +5,8 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct UtilitiesView: View {
     @State private var selectedTab = 0
@@ -151,7 +151,7 @@ struct TokenCounterDemo: View {
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
-                        .onChange(of: text) { _ in
+                        .onChange(of: text) {
                             updateTokenCount()
                         }
                 }
@@ -204,7 +204,7 @@ struct TokenCounterDemo: View {
                     Slider(value: Binding(
                         get: { Double(tokenLimit) },
                         set: { tokenLimit = Int($0) }
-                    ), in: 10...500, step: 10)
+                    ), in: 10 ... 500, step: 10)
 
                     HStack {
                         Text("Fits within limit:")
@@ -215,7 +215,7 @@ struct TokenCounterDemo: View {
                 }
                 .padding(.horizontal)
 
-                if !fitsWithinLimit && !truncatedText.isEmpty {
+                if !fitsWithinLimit, !truncatedText.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Truncated Text")
                             .font(.headline)

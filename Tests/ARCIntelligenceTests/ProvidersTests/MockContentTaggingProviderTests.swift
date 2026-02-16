@@ -30,11 +30,9 @@ struct MockContentTaggingProviderTests {
         ]
         let provider = MockContentTaggingProvider(tagsToReturn: expectedTags)
 
-        let tags = try await provider.generateTags(
-            for: "I love coding!",
-            categories: [.topic, .emotion],
-            maxTags: 5
-        )
+        let tags = try await provider.generateTags(for: "I love coding!",
+                                                   categories: [.topic, .emotion],
+                                                   maxTags: 5)
 
         #expect(tags.count == 2)
         #expect(tags.contains { $0.value == "technology" })
@@ -50,11 +48,9 @@ struct MockContentTaggingProviderTests {
         ]
         let provider = MockContentTaggingProvider(tagsToReturn: allTags)
 
-        let tags = try await provider.generateTags(
-            for: "Test",
-            categories: [.topic],
-            maxTags: 5
-        )
+        let tags = try await provider.generateTags(for: "Test",
+                                                   categories: [.topic],
+                                                   maxTags: 5)
 
         #expect(tags.count == 1)
         #expect(tags[0].value == "technology")
@@ -68,11 +64,9 @@ struct MockContentTaggingProviderTests {
         }
         let provider = MockContentTaggingProvider(tagsToReturn: manyTags)
 
-        let tags = try await provider.generateTags(
-            for: "Test",
-            categories: [.topic],
-            maxTags: 3
-        )
+        let tags = try await provider.generateTags(for: "Test",
+                                                   categories: [.topic],
+                                                   maxTags: 3)
 
         #expect(tags.count == 3)
     }
@@ -81,18 +75,14 @@ struct MockContentTaggingProviderTests {
 
     @Test("Generate tags from category dictionary")
     func generateTagsFromCategoryDictionary() async throws {
-        let provider = MockContentTaggingProvider(
-            tagsByCategory: [
-                .topic: ["swift", "programming"],
-                .emotion: ["excited"]
-            ]
-        )
+        let provider = MockContentTaggingProvider(tagsByCategory: [
+            .topic: ["swift", "programming"],
+            .emotion: ["excited"]
+        ])
 
-        let tags = try await provider.generateTags(
-            for: "Learning Swift",
-            categories: [.topic, .emotion],
-            maxTags: 5
-        )
+        let tags = try await provider.generateTags(for: "Learning Swift",
+                                                   categories: [.topic, .emotion],
+                                                   maxTags: 5)
 
         #expect(tags.count == 3)
         #expect(tags.count(where: { $0.category == .topic }) == 2)
@@ -101,15 +91,11 @@ struct MockContentTaggingProviderTests {
 
     @Test("Category-based tags have confidence scores")
     func categoryBasedTagsHaveConfidence() async throws {
-        let provider = MockContentTaggingProvider(
-            tagsByCategory: [.topic: ["test"]]
-        )
+        let provider = MockContentTaggingProvider(tagsByCategory: [.topic: ["test"]])
 
-        let tags = try await provider.generateTags(
-            for: "Test",
-            categories: [.topic],
-            maxTags: 1
-        )
+        let tags = try await provider.generateTags(for: "Test",
+                                                   categories: [.topic],
+                                                   maxTags: 1)
 
         #expect(tags.count == 1)
         #expect(tags[0].confidence >= 0.7)
@@ -122,11 +108,9 @@ struct MockContentTaggingProviderTests {
     func standardFactoryReturnsCommonTags() async throws {
         let provider = MockContentTaggingProvider.standard()
 
-        let tags = try await provider.generateTags(
-            for: "Test",
-            categories: TagCategory.allCases,
-            maxTags: 10
-        )
+        let tags = try await provider.generateTags(for: "Test",
+                                                   categories: TagCategory.allCases,
+                                                   maxTags: 10)
 
         #expect(!tags.isEmpty)
         #expect(tags.contains { $0.value == "technology" })
@@ -138,11 +122,9 @@ struct MockContentTaggingProviderTests {
         let provider = MockContentTaggingProvider.failing()
 
         await #expect(throws: IntelligenceError.self) {
-            _ = try await provider.generateTags(
-                for: "Test",
-                categories: [.topic],
-                maxTags: 5
-            )
+            _ = try await provider.generateTags(for: "Test",
+                                                categories: [.topic],
+                                                maxTags: 5)
         }
     }
 
@@ -152,11 +134,9 @@ struct MockContentTaggingProviderTests {
         let provider = MockContentTaggingProvider.failing(with: customError)
 
         await #expect(throws: IntelligenceError.self) {
-            _ = try await provider.generateTags(
-                for: "Test",
-                categories: [TagCategory.topic],
-                maxTags: 5
-            )
+            _ = try await provider.generateTags(for: "Test",
+                                                categories: [TagCategory.topic],
+                                                maxTags: 5)
         }
     }
 
@@ -164,15 +144,11 @@ struct MockContentTaggingProviderTests {
 
     @Test("Generate tags batch processes multiple texts")
     func generateTagsBatchProcessesMultipleTexts() async throws {
-        let provider = MockContentTaggingProvider(
-            tagsByCategory: [.topic: ["test"]]
-        )
+        let provider = MockContentTaggingProvider(tagsByCategory: [.topic: ["test"]])
 
-        let results = try await provider.generateTagsBatch(
-            for: ["Text 1", "Text 2", "Text 3"],
-            categories: [.topic],
-            maxTagsPerText: 2
-        )
+        let results = try await provider.generateTagsBatch(for: ["Text 1", "Text 2", "Text 3"],
+                                                           categories: [.topic],
+                                                           maxTagsPerText: 2)
 
         #expect(results.count == 3)
         #expect(results.allSatisfy { !$0.isEmpty })
@@ -185,28 +161,22 @@ struct MockContentTaggingProviderTests {
         let provider = MockContentTaggingProvider(shouldFail: true)
 
         await #expect(throws: IntelligenceError.self) {
-            _ = try await provider.generateTags(
-                for: "Test",
-                categories: [.topic],
-                maxTags: 5
-            )
+            _ = try await provider.generateTags(for: "Test",
+                                                categories: [.topic],
+                                                maxTags: 5)
         }
     }
 
     @Test("Provider throws configured error")
     func providerThrowsConfiguredError() async {
         let expectedError = IntelligenceError.contextWindowExceeded(used: 1000, limit: 500)
-        let provider = MockContentTaggingProvider(
-            shouldFail: true,
-            errorToThrow: expectedError
-        )
+        let provider = MockContentTaggingProvider(shouldFail: true,
+                                                  errorToThrow: expectedError)
 
         await #expect(throws: IntelligenceError.self) {
-            _ = try await provider.generateTags(
-                for: "Test",
-                categories: [TagCategory.topic],
-                maxTags: 5
-            )
+            _ = try await provider.generateTags(for: "Test",
+                                                categories: [TagCategory.topic],
+                                                maxTags: 5)
         }
     }
 
@@ -214,15 +184,11 @@ struct MockContentTaggingProviderTests {
 
     @Test("Complete returns tag descriptions as content")
     func completeReturnsTagDescriptions() async throws {
-        let tags = [
-            ContentTag(value: "tech", category: .topic)
-        ]
+        let tags = [ContentTag(value: "tech", category: .topic)]
         let provider = MockContentTaggingProvider(tagsToReturn: tags)
 
-        let response = try await provider.complete(
-            prompt: "Test",
-            configuration: .default
-        )
+        let response = try await provider.complete(prompt: "Test",
+                                                   configuration: .default)
 
         #expect(response.content.contains("topic"))
         #expect(response.content.contains("tech"))

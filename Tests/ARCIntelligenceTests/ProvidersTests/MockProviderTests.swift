@@ -21,15 +21,11 @@ struct MockProviderTests {
     @Test("Mock provider returns configured responses")
     func mockProviderReturnsConfiguredResponses() async throws {
         let expectedResponse = "Test response"
-        let provider = MockIntelligenceProvider(
-            responses: [expectedResponse],
-            shouldFail: false
-        )
+        let provider = MockIntelligenceProvider(responses: [expectedResponse],
+                                                shouldFail: false)
 
-        let response = try await provider.complete(
-            prompt: "Test",
-            configuration: .default
-        )
+        let response = try await provider.complete(prompt: "Test",
+                                                   configuration: .default)
 
         #expect(response.content == expectedResponse)
     }
@@ -39,26 +35,20 @@ struct MockProviderTests {
         let provider = MockIntelligenceProvider(shouldFail: true)
 
         await #expect(throws: IntelligenceError.self) {
-            try await provider.complete(
-                prompt: "Test",
-                configuration: .default
-            )
+            try await provider.complete(prompt: "Test",
+                                        configuration: .default)
         }
     }
 
     @Test("Mock provider streams responses")
     func mockProviderStreamsResponses() async throws {
         let expectedResponse = "Stream"
-        let provider = MockIntelligenceProvider(
-            responses: [expectedResponse],
-            simulatedDelay: 0.01
-        )
+        let provider = MockIntelligenceProvider(responses: [expectedResponse],
+                                                simulatedDelay: 0.01)
 
         var streamedContent = ""
-        for try await chunk in provider.streamComplete(
-            prompt: "Test",
-            configuration: .default
-        ) {
+        for try await chunk in provider.streamComplete(prompt: "Test",
+                                                       configuration: .default) {
             streamedContent += chunk
         }
 

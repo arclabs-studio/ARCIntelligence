@@ -49,12 +49,10 @@ public final class MockGenerableProvider: IntelligenceProvider, GenerableProvide
     ///   - shouldFail: Whether to simulate failure.
     ///   - simulatedDelay: Delay before returning response.
     ///   - errorToThrow: Specific error to throw when failing.
-    public init(
-        jsonResponse: String? = nil,
-        shouldFail: Bool = false,
-        simulatedDelay: TimeInterval = 0.1,
-        errorToThrow: IntelligenceError? = nil
-    ) {
+    public init(jsonResponse: String? = nil,
+                shouldFail: Bool = false,
+                simulatedDelay: TimeInterval = 0.1,
+                errorToThrow: IntelligenceError? = nil) {
         self.jsonResponse = jsonResponse
         self.shouldFail = shouldFail
         self.simulatedDelay = simulatedDelay
@@ -67,10 +65,8 @@ public final class MockGenerableProvider: IntelligenceProvider, GenerableProvide
         true
     }
 
-    public func complete(
-        prompt _: String,
-        configuration _: CompletionConfiguration
-    ) async throws -> IntelligenceResponse {
+    public func complete(prompt _: String,
+                         configuration _: CompletionConfiguration) async throws -> IntelligenceResponse {
         try await Task.sleep(for: .seconds(simulatedDelay))
 
         if shouldFail {
@@ -78,23 +74,17 @@ public final class MockGenerableProvider: IntelligenceProvider, GenerableProvide
         }
 
         let response = jsonResponse ?? "{}"
-        return IntelligenceResponse(
-            content: response,
-            tokensUsed: response.count / 4,
-            finishReason: .completed
-        )
+        return IntelligenceResponse(content: response,
+                                    tokensUsed: response.count / 4,
+                                    finishReason: .completed)
     }
 
-    public func streamComplete(
-        prompt _: String,
-        configuration _: CompletionConfiguration
-    ) -> AsyncThrowingStream<String, Error> {
+    public func streamComplete(prompt _: String,
+                               configuration _: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 if shouldFail {
-                    continuation.finish(
-                        throwing: errorToThrow ?? IntelligenceError.requestFailed("Mock failure")
-                    )
+                    continuation.finish(throwing: errorToThrow ?? IntelligenceError.requestFailed("Mock failure"))
                     return
                 }
 
@@ -107,11 +97,9 @@ public final class MockGenerableProvider: IntelligenceProvider, GenerableProvide
 
     // MARK: - GenerableProvider
 
-    public func generate<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt _: String,
-        configuration _: CompletionConfiguration
-    ) async throws -> T {
+    public func generate<T: Codable & Sendable>(_ type: T.Type,
+                                                prompt _: String,
+                                                configuration _: CompletionConfiguration) async throws -> T {
         try await Task.sleep(for: .seconds(simulatedDelay))
 
         if shouldFail {
@@ -130,9 +118,7 @@ public final class MockGenerableProvider: IntelligenceProvider, GenerableProvide
             let decoder = JSONDecoder()
             return try decoder.decode(type, from: data)
         } catch {
-            throw IntelligenceError.responseParseFailed(
-                "Failed to decode \(type): \(error.localizedDescription)"
-            )
+            throw IntelligenceError.responseParseFailed("Failed to decode \(type): \(error.localizedDescription)")
         }
     }
 }

@@ -28,13 +28,11 @@ public struct FoundationModelsCapabilities: Sendable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        supportsCompletion: Bool = true,
-        supportsStreaming: Bool = true,
-        supportsConversation: Bool = true,
-        supportsEmbeddings: Bool = false,
-        maxContextWindow: Int = 4096
-    ) {
+    public init(supportsCompletion: Bool = true,
+                supportsStreaming: Bool = true,
+                supportsConversation: Bool = true,
+                supportsEmbeddings: Bool = false,
+                maxContextWindow: Int = 4096) {
         self.supportsCompletion = supportsCompletion
         self.supportsStreaming = supportsStreaming
         self.supportsConversation = supportsConversation
@@ -44,6 +42,6 @@ public struct FoundationModelsCapabilities: Sendable, Equatable {
 
     // MARK: - Default Capabilities
 
-    /// Default capabilities for iOS 18.0+
+    /// Default capabilities for iOS 26.0+
     public static let `default` = FoundationModelsCapabilities()
 }

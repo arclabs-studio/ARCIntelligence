@@ -27,6 +27,10 @@ import Foundation
 /// ### Providers
 /// - ``FoundationModelsProvider``
 /// - ``FoundationModelsConfiguration``
+/// - ``AnthropicProvider``
+/// - ``AnthropicConfiguration``
+/// - ``AnthropicModel``
+/// - ``AnthropicAuthentication``
 ///
 /// ### Use Cases
 /// - ``ConversationalAssistant``
@@ -62,10 +66,8 @@ public enum ARCIntelligence {
     // MARK: - Logging
 
     /// Shared logger for the ARCIntelligence package.
-    static let logger = ARCLogger(
-        subsystem: "com.arclabs.intelligence",
-        category: "ARCIntelligence"
-    )
+    static let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
+                                  category: "ARCIntelligence")
 
     // MARK: - Factory Methods
 
@@ -79,11 +81,70 @@ public enum ARCIntelligence {
     /// Create a Foundation Models provider with custom configuration
     /// - Parameter configuration: Custom configuration
     /// - Returns: Configured Foundation Models provider
-    public static func foundationModels(
-        configuration: FoundationModelsConfiguration
-    ) -> FoundationModelsProvider {
+    public static func foundationModels(configuration: FoundationModelsConfiguration) -> FoundationModelsProvider {
         logger.debug("Creating FoundationModelsProvider with custom configuration")
         return FoundationModelsProvider(configuration: configuration)
+    }
+
+    // MARK: - Anthropic Factory Methods
+
+    /// Create an Anthropic Claude provider with the given configuration.
+    ///
+    /// ## Example
+    /// ```swift
+    /// let config = AnthropicConfiguration(
+    ///     authentication: .apiKey("sk-ant-..."),
+    ///     model: .sonnet
+    /// )
+    /// let provider = ARCIntelligence.anthropic(configuration: config)
+    /// ```
+    ///
+    /// - Parameter configuration: The Anthropic provider configuration.
+    /// - Returns: Configured Anthropic provider.
+    public static func anthropic(configuration: AnthropicConfiguration) -> AnthropicProvider {
+        logger.debug("Creating AnthropicProvider with custom configuration")
+        return AnthropicProvider(configuration: configuration)
+    }
+
+    /// Create an Anthropic Claude provider with an API key (development convenience).
+    ///
+    /// Uses Sonnet as the default model with standard settings.
+    ///
+    /// - Parameter apiKey: The Anthropic API key.
+    /// - Returns: Configured Anthropic provider.
+    public static func anthropic(apiKey: String) -> AnthropicProvider {
+        logger.debug("Creating AnthropicProvider with API key")
+        return AnthropicProvider(configuration: AnthropicConfiguration(authentication: .apiKey(apiKey)))
+    }
+
+    /// Create an Anthropic Claude provider with AIProxy authentication (production).
+    ///
+    /// - Parameters:
+    ///   - aiProxyPartialKey: The AIProxy partial key.
+    ///   - serviceURL: The AIProxy service URL.
+    /// - Returns: Configured Anthropic provider.
+    public static func anthropic(aiProxyPartialKey: String,
+                                 serviceURL: String) -> AnthropicProvider {
+        logger.debug("Creating AnthropicProvider with AIProxy")
+        let authentication = AnthropicAuthentication.aiProxy(partialKey: aiProxyPartialKey,
+                                                             serviceURL: serviceURL)
+        return AnthropicProvider(configuration: AnthropicConfiguration(authentication: authentication))
+    }
+
+    /// Create a tool provider backed by Anthropic Claude.
+    /// - Parameter anthropicConfiguration: The Anthropic configuration.
+    /// - Returns: A provider capable of tool calling.
+    public static func toolProvider(anthropicConfiguration: AnthropicConfiguration) -> some ToolProvider {
+        logger.debug("Creating ToolProvider (Anthropic)")
+        return AnthropicProvider(configuration: anthropicConfiguration)
+    }
+
+    /// Create a generable provider backed by Anthropic Claude.
+    /// - Parameter anthropicConfiguration: The Anthropic configuration.
+    /// - Returns: A provider capable of guided generation.
+    public static func generableProvider(anthropicConfiguration: AnthropicConfiguration) -> some GenerableProvider {
+        logger.debug("Creating GenerableProvider (Anthropic)")
+        return AnthropicProvider(configuration: anthropicConfiguration)
     }
 
     // MARK: - Use Case Factories
@@ -91,9 +152,7 @@ public enum ARCIntelligence {
     /// Create a conversational assistant with a provider
     /// - Parameter provider: The conversation provider to use
     /// - Returns: Configured conversational assistant
-    public static func conversationalAssistant(
-        provider: ConversationProvider
-    ) -> ConversationalAssistant {
+    public static func conversationalAssistant(provider: ConversationProvider) -> ConversationalAssistant {
         logger.debug("Creating ConversationalAssistant")
         return ConversationalAssistant(provider: provider)
     }
@@ -101,9 +160,7 @@ public enum ARCIntelligence {
     /// Create a recommendation engine with a provider
     /// - Parameter provider: The recommendation provider to use
     /// - Returns: Configured recommendation engine
-    public static func recommendationEngine(
-        provider: RecommendationProvider
-    ) -> RecommendationEngine {
+    public static func recommendationEngine(provider: RecommendationProvider) -> RecommendationEngine {
         logger.debug("Creating RecommendationEngine")
         return RecommendationEngine(provider: provider)
     }
@@ -111,9 +168,7 @@ public enum ARCIntelligence {
     /// Create a semantic search engine with a provider
     /// - Parameter provider: The embedding provider to use
     /// - Returns: Configured semantic search engine
-    public static func semanticSearch(
-        provider: EmbeddingProvider
-    ) -> SemanticSearch {
+    public static func semanticSearch(provider: EmbeddingProvider) -> SemanticSearch {
         logger.debug("Creating SemanticSearch")
         return SemanticSearch(provider: provider)
     }
@@ -148,9 +203,7 @@ public enum ARCIntelligence {
     /// Create a generable provider with custom configuration.
     /// - Parameter configuration: Custom Foundation Models configuration.
     /// - Returns: A provider capable of guided generation.
-    public static func generableProvider(
-        configuration: FoundationModelsConfiguration
-    ) -> some GenerableProvider {
+    public static func generableProvider(configuration: FoundationModelsConfiguration) -> some GenerableProvider {
         logger.debug("Creating GenerableProvider with custom configuration")
         return FoundationModelsProvider(configuration: configuration)
     }
@@ -187,9 +240,7 @@ public enum ARCIntelligence {
     /// Create a tool provider with custom configuration.
     /// - Parameter configuration: Custom Foundation Models configuration.
     /// - Returns: A provider capable of tool calling.
-    public static func toolProvider(
-        configuration: FoundationModelsConfiguration
-    ) -> some ToolProvider {
+    public static func toolProvider(configuration: FoundationModelsConfiguration) -> some ToolProvider {
         logger.debug("Creating ToolProvider with custom configuration")
         return FoundationModelsProvider(configuration: configuration)
     }
@@ -217,9 +268,8 @@ public enum ARCIntelligence {
     /// Create a content tagging provider with custom configuration.
     /// - Parameter configuration: Custom Foundation Models configuration.
     /// - Returns: A provider capable of content tagging.
-    public static func contentTaggingProvider(
-        configuration: FoundationModelsConfiguration
-    ) -> some ContentTaggingProvider {
+    public static func contentTaggingProvider(configuration: FoundationModelsConfiguration)
+    -> some ContentTaggingProvider {
         logger.debug("Creating ContentTaggingProvider with custom configuration")
         return FoundationModelsProvider(configuration: configuration)
     }

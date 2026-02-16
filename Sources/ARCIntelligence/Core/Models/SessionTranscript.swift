@@ -46,16 +46,24 @@ public struct SessionTranscript: Sendable, Equatable {
     public let entries: [TranscriptEntry]
 
     /// The number of entries in the transcript.
-    public var count: Int { entries.count }
+    public var count: Int {
+        entries.count
+    }
 
     /// Whether the transcript is empty.
-    public var isEmpty: Bool { entries.isEmpty }
+    public var isEmpty: Bool {
+        entries.isEmpty
+    }
 
     /// The first entry in the transcript, if any.
-    public var first: TranscriptEntry? { entries.first }
+    public var first: TranscriptEntry? {
+        entries.first
+    }
 
     /// The last entry in the transcript, if any.
-    public var last: TranscriptEntry? { entries.last }
+    public var last: TranscriptEntry? {
+        entries.last
+    }
 
     // MARK: - Computed Properties
 
@@ -148,11 +156,9 @@ public struct TranscriptInstructions: Sendable, Equatable, Identifiable, Codable
     /// When the instructions were set.
     public let timestamp: Date
 
-    public init(
-        id: String = UUID().uuidString,
-        content: String,
-        timestamp: Date = Date()
-    ) {
+    public init(id: String = UUID().uuidString,
+                content: String,
+                timestamp: Date = Date()) {
         self.id = id
         self.content = content
         self.timestamp = timestamp
@@ -170,11 +176,9 @@ public struct TranscriptPrompt: Sendable, Equatable, Identifiable, Codable {
     /// When the prompt was sent.
     public let timestamp: Date
 
-    public init(
-        id: String = UUID().uuidString,
-        content: String,
-        timestamp: Date = Date()
-    ) {
+    public init(id: String = UUID().uuidString,
+                content: String,
+                timestamp: Date = Date()) {
         self.id = id
         self.content = content
         self.timestamp = timestamp
@@ -195,12 +199,10 @@ public struct TranscriptResponse: Sendable, Equatable, Identifiable, Codable {
     /// Whether the response is complete.
     public let isComplete: Bool
 
-    public init(
-        id: String = UUID().uuidString,
-        content: String,
-        timestamp: Date = Date(),
-        isComplete: Bool = true
-    ) {
+    public init(id: String = UUID().uuidString,
+                content: String,
+                timestamp: Date = Date(),
+                isComplete: Bool = true) {
         self.id = id
         self.content = content
         self.timestamp = timestamp
@@ -222,12 +224,10 @@ public struct TranscriptToolCall: Sendable, Equatable, Identifiable, Codable {
     /// When the tool was called.
     public let timestamp: Date
 
-    public init(
-        id: String = UUID().uuidString,
-        toolName: String,
-        arguments: [String: String],
-        timestamp: Date = Date()
-    ) {
+    public init(id: String = UUID().uuidString,
+                toolName: String,
+                arguments: [String: String],
+                timestamp: Date = Date()) {
         self.id = id
         self.toolName = toolName
         self.arguments = arguments
@@ -249,12 +249,10 @@ public struct TranscriptToolOutput: Sendable, Equatable, Identifiable, Codable {
     /// When the output was produced.
     public let timestamp: Date
 
-    public init(
-        id: String = UUID().uuidString,
-        toolCallId: String,
-        content: String,
-        timestamp: Date = Date()
-    ) {
+    public init(id: String = UUID().uuidString,
+                toolCallId: String,
+                content: String,
+                timestamp: Date = Date()) {
         self.id = id
         self.toolCallId = toolCallId
         self.content = content
@@ -268,8 +266,13 @@ extension SessionTranscript: RandomAccessCollection {
     public typealias Index = Int
     public typealias Element = TranscriptEntry
 
-    public var startIndex: Int { entries.startIndex }
-    public var endIndex: Int { entries.endIndex }
+    public var startIndex: Int {
+        entries.startIndex
+    }
+
+    public var endIndex: Int {
+        entries.endIndex
+    }
 
     public func index(after index: Int) -> Int {
         entries.index(after: index)
@@ -315,11 +318,9 @@ extension TranscriptEntry: Codable {
         case "toolOutput":
             self = try .toolOutput(container.decode(TranscriptToolOutput.self, forKey: .value))
         default:
-            throw DecodingError.dataCorruptedError(
-                forKey: .type,
-                in: container,
-                debugDescription: "Unknown entry type: \(type)"
-            )
+            throw DecodingError.dataCorruptedError(forKey: .type,
+                                                   in: container,
+                                                   debugDescription: "Unknown entry type: \(type)")
         }
     }
 

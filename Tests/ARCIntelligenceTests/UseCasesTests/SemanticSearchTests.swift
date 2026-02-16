@@ -5,9 +5,8 @@
 //  Created by ARC Labs Studio on 14/01/2026.
 //
 
-import Testing
-
 import ARCIntelligenceMocks
+import Testing
 @testable import ARCIntelligence
 
 @Suite("Semantic Search Tests")
@@ -24,11 +23,9 @@ struct SemanticSearchTests {
         ]
 
         // Act
-        let results = try await search.search(
-            query: "Swift programming",
-            in: candidates,
-            topK: 3
-        )
+        let results = try await search.search(query: "Swift programming",
+                                              in: candidates,
+                                              topK: 3)
 
         // Assert
         #expect(results.count == 3)
@@ -50,11 +47,9 @@ struct SemanticSearchTests {
         ]
 
         // Act
-        let results = try await search.search(
-            query: "test query",
-            in: candidates,
-            topK: 2
-        )
+        let results = try await search.search(query: "test query",
+                                              in: candidates,
+                                              topK: 2)
 
         // Assert
         #expect(results.count == 2)
@@ -68,11 +63,9 @@ struct SemanticSearchTests {
 
         // Act & Assert
         await #expect(throws: IntelligenceError.self) {
-            _ = try await search.search(
-                query: "",
-                in: ["test"],
-                topK: 1
-            )
+            _ = try await search.search(query: "",
+                                        in: ["test"],
+                                        topK: 1)
         }
     }
 
@@ -84,11 +77,9 @@ struct SemanticSearchTests {
 
         // Act & Assert
         await #expect(throws: IntelligenceError.self) {
-            _ = try await search.search(
-                query: "test",
-                in: [],
-                topK: 1
-            )
+            _ = try await search.search(query: "test",
+                                        in: [],
+                                        topK: 1)
         }
     }
 
@@ -104,10 +95,9 @@ struct SemanticSearchTests {
         ]
 
         // Act
-        let results = try await search.findSimilar(
-            to: "Similar reference text",
-            in: candidates,
-            threshold: 0.0 // Low threshold to get all results
+        let results = try await search.findSimilar(to: "Similar reference text",
+                                                   in: candidates,
+                                                   threshold: 0.0 // Low threshold to get all results
         )
 
         // Assert
@@ -124,10 +114,8 @@ struct SemanticSearchTests {
         let search = SemanticSearch(provider: provider)
 
         // Act
-        let similarity = try await search.similarity(
-            between: "First text",
-            and: "Second text"
-        )
+        let similarity = try await search.similarity(between: "First text",
+                                                     and: "Second text")
 
         // Assert
         #expect(similarity >= -1.0)

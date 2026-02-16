@@ -18,10 +18,8 @@ struct PromptBuilderTests {
 
     @Test("Build prompt with context")
     func buildPromptWithContext() {
-        let prompt = PromptBuilder.withContext(
-            query: "Summarize",
-            context: "Some context"
-        )
+        let prompt = PromptBuilder.withContext(query: "Summarize",
+                                               context: "Some context")
 
         #expect(prompt.contains("Summarize"))
         #expect(prompt.contains("Some context"))
@@ -29,10 +27,8 @@ struct PromptBuilderTests {
 
     @Test("Build prompt with system instruction")
     func buildPromptWithSystemInstruction() {
-        let prompt = PromptBuilder.withSystem(
-            query: "Help me",
-            systemInstruction: "Be helpful"
-        )
+        let prompt = PromptBuilder.withSystem(query: "Help me",
+                                              systemInstruction: "Be helpful")
 
         #expect(prompt.contains("Help me"))
         #expect(prompt.contains("Be helpful"))

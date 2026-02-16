@@ -77,9 +77,8 @@ extension FoundationModelsProvider {
     /// - Note: Calling this method doesn't guarantee immediate loading if the app
     ///   is in the background or the system is under load.
     public func prewarm(promptPrefix: String) {
-        logger.debug("Prewarming Foundation Models with prompt prefix", metadata: [
-            "prefixLength": .public("\(promptPrefix.count)")
-        ])
+        logger.debug("Prewarming Foundation Models with prompt prefix",
+                     metadata: ["prefixLength": .public("\(promptPrefix.count)")])
 
         #if canImport(FoundationModels)
         if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
@@ -118,21 +117,5 @@ extension FoundationModelsProvider {
         } else {
             prewarm()
         }
-    }
-}
-
-// MARK: - Model Status
-
-extension FoundationModelsProvider {
-    /// Check if the model is currently responding to a request.
-    ///
-    /// This can be used to show loading indicators or prevent duplicate requests.
-    ///
-    /// - Note: This requires an active session. Returns false if no session exists.
-    /// - Returns: True if the model is currently generating a response.
-    public var isResponding: Bool {
-        // This would require maintaining session state, which we don't currently do.
-        // For now, return false. In a future implementation, we could track active sessions.
-        false
     }
 }

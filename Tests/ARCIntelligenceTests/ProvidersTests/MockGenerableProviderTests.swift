@@ -40,11 +40,9 @@ struct MockGenerableProviderTests {
         let json = #"{"name": "Alice", "age": 30}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 
-        let result: TestPerson = try await provider.generate(
-            TestPerson.self,
-            prompt: "Generate a person",
-            configuration: .default
-        )
+        let result: TestPerson = try await provider.generate(TestPerson.self,
+                                                             prompt: "Generate a person",
+                                                             configuration: .default)
 
         #expect(result.name == "Alice")
         #expect(result.age == 30)
@@ -55,11 +53,9 @@ struct MockGenerableProviderTests {
         let json = #"{"title": "Widget", "price": 19.99, "inStock": true}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 
-        let result: TestProduct = try await provider.generate(
-            TestProduct.self,
-            prompt: "Generate a product",
-            configuration: .default
-        )
+        let result: TestProduct = try await provider.generate(TestProduct.self,
+                                                              prompt: "Generate a product",
+                                                              configuration: .default)
 
         #expect(result.title == "Widget")
         #expect(result.price == 19.99)
@@ -71,11 +67,9 @@ struct MockGenerableProviderTests {
         let provider = MockGenerableProvider()
 
         await #expect(throws: IntelligenceError.self) {
-            let _: TestPerson = try await provider.generate(
-                TestPerson.self,
-                prompt: "Generate a person",
-                configuration: .default
-            )
+            let _: TestPerson = try await provider.generate(TestPerson.self,
+                                                            prompt: "Generate a person",
+                                                            configuration: .default)
         }
     }
 
@@ -85,28 +79,22 @@ struct MockGenerableProviderTests {
         let provider = MockGenerableProvider(jsonResponse: json)
 
         await #expect(throws: IntelligenceError.self) {
-            let _: TestPerson = try await provider.generate(
-                TestPerson.self,
-                prompt: "Generate a person",
-                configuration: .default
-            )
+            let _: TestPerson = try await provider.generate(TestPerson.self,
+                                                            prompt: "Generate a person",
+                                                            configuration: .default)
         }
     }
 
     @Test("Generate throws configured error when shouldFail is true")
     func generateThrowsConfiguredError() async {
         let expectedError = IntelligenceError.modelNotReady
-        let provider = MockGenerableProvider(
-            shouldFail: true,
-            errorToThrow: expectedError
-        )
+        let provider = MockGenerableProvider(shouldFail: true,
+                                             errorToThrow: expectedError)
 
         await #expect(throws: IntelligenceError.self) {
-            let _: TestPerson = try await provider.generate(
-                TestPerson.self,
-                prompt: "Generate",
-                configuration: CompletionConfiguration.default
-            )
+            let _: TestPerson = try await provider.generate(TestPerson.self,
+                                                            prompt: "Generate",
+                                                            configuration: CompletionConfiguration.default)
         }
     }
 
@@ -117,12 +105,10 @@ struct MockGenerableProviderTests {
         let json = #"{"name": "Bob", "age": 25}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 
-        let result: TestPerson = try await provider.generate(
-            TestPerson.self,
-            prompt: "Generate a person",
-            schemaDescription: "A person with name and age",
-            configuration: .default
-        )
+        let result: TestPerson = try await provider.generate(TestPerson.self,
+                                                             prompt: "Generate a person",
+                                                             schemaDescription: "A person with name and age",
+                                                             configuration: .default)
 
         #expect(result.name == "Bob")
         #expect(result.age == 25)
@@ -135,10 +121,8 @@ struct MockGenerableProviderTests {
         let json = #"{"key": "value"}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 
-        let response = try await provider.complete(
-            prompt: "Test",
-            configuration: .default
-        )
+        let response = try await provider.complete(prompt: "Test",
+                                                   configuration: .default)
 
         #expect(response.content == json)
     }
@@ -147,10 +131,8 @@ struct MockGenerableProviderTests {
     func completeReturnsEmptyObjectWhenNoJSON() async throws {
         let provider = MockGenerableProvider()
 
-        let response = try await provider.complete(
-            prompt: "Test",
-            configuration: .default
-        )
+        let response = try await provider.complete(prompt: "Test",
+                                                   configuration: .default)
 
         #expect(response.content == "{}")
     }

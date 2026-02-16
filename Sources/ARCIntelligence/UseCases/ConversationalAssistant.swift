@@ -17,10 +17,8 @@ public actor ConversationalAssistant {
 
     private let provider: ConversationProvider
     private var activeConversation: Conversation?
-    private let logger = ARCLogger(
-        subsystem: "com.arclabs.intelligence",
-        category: "ConversationalAssistant"
-    )
+    private let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
+                                   category: "ConversationalAssistant")
 
     // MARK: - Initialization
 
@@ -34,11 +32,9 @@ public actor ConversationalAssistant {
     /// - Parameter systemPrompt: Instructions for the AI assistant
     /// - Returns: The new conversation instance
     public func startConversation(systemPrompt: String? = nil) -> Conversation {
-        let conversation = Conversation(
-            id: UUID(),
-            systemPrompt: systemPrompt,
-            messages: []
-        )
+        let conversation = Conversation(id: UUID(),
+                                        systemPrompt: systemPrompt,
+                                        messages: [])
         activeConversation = conversation
 
         logger.info("Started new conversation", metadata: [

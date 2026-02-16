@@ -18,10 +18,8 @@ public protocol ConversationProvider: IntelligenceProvider {
     ///   - conversation: The conversation context
     /// - Returns: The assistant's response message
     /// - Throws: `IntelligenceError` if the request fails
-    func sendMessage(
-        _ message: Message,
-        in conversation: Conversation
-    ) async throws -> Message
+    func sendMessage(_ message: Message,
+                     in conversation: Conversation) async throws -> Message
 
     /// Continue a conversation with a new user message
     /// - Parameters:
@@ -29,10 +27,8 @@ public protocol ConversationProvider: IntelligenceProvider {
     ///   - text: The new message text
     /// - Returns: The assistant's response message
     /// - Throws: `IntelligenceError` if the request fails
-    func continueConversation(
-        _ conversation: Conversation,
-        with text: String
-    ) async throws -> Message
+    func continueConversation(_ conversation: Conversation,
+                              with text: String) async throws -> Message
 
     /// Estimate token count for a conversation
     /// - Parameter conversation: The conversation to analyze
