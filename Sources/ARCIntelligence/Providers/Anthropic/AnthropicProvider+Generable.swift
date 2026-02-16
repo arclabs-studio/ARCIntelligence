@@ -23,11 +23,9 @@ extension AnthropicProvider: GenerableProvider {
     ///   - configuration: Generation configuration.
     /// - Returns: An instance of the requested type.
     /// - Throws: `IntelligenceError` if generation or decoding fails.
-    public func generate<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) async throws -> T {
+    public func generate<T: Codable & Sendable>(_ type: T.Type,
+                                                prompt: String,
+                                                configuration: CompletionConfiguration) async throws -> T {
         try await performGeneration(type, prompt: prompt, schemaDescription: nil, configuration: configuration)
     }
 
@@ -40,47 +38,38 @@ extension AnthropicProvider: GenerableProvider {
     ///   - configuration: Generation configuration.
     /// - Returns: An instance of the requested type.
     /// - Throws: `IntelligenceError` if generation or decoding fails.
-    public func generate<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt: String,
-        schemaDescription: String,
-        configuration: CompletionConfiguration
-    ) async throws -> T {
-        try await performGeneration(
-            type,
-            prompt: prompt,
-            schemaDescription: schemaDescription,
-            configuration: configuration
-        )
+    public func generate<T: Codable & Sendable>(_ type: T.Type,
+                                                prompt: String,
+                                                schemaDescription: String,
+                                                configuration: CompletionConfiguration) async throws -> T {
+        try await performGeneration(type,
+                                    prompt: prompt,
+                                    schemaDescription: schemaDescription,
+                                    configuration: configuration)
     }
 
     // MARK: - Private Implementation
 
-    private func performGeneration<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt: String,
-        schemaDescription: String?,
-        configuration: CompletionConfiguration
-    ) async throws -> T {
+    private func performGeneration<T: Codable & Sendable>(_ type: T.Type,
+                                                          prompt: String,
+                                                          schemaDescription: String?,
+                                                          configuration: CompletionConfiguration) async throws -> T {
         logger.debug("Starting structured generation", metadata: [
             "type": .public(String(describing: type)),
             "promptLength": .public("\(prompt.count)")
         ])
 
-        let request = buildGenerationRequest(
-            type,
-            prompt: prompt,
-            schemaDescription: schemaDescription,
-            configuration: configuration
-        )
+        let request = buildGenerationRequest(type,
+                                             prompt: prompt,
+                                             schemaDescription: schemaDescription,
+                                             configuration: configuration)
 
         let response = try await apiClient.sendMessage(request)
         let toolUseBlocks = extractToolUseBlocks(from: response)
 
         guard let toolUse = toolUseBlocks.first else {
-            throw IntelligenceError.responseParseFailed(
-                "Model did not produce a tool_use block for structured generation"
-            )
+            throw IntelligenceError
+                .responseParseFailed("Model did not produce a tool_use block for structured generation")
         }
 
         guard case let .string(jsonString) = toolUse.input["json_output"] else {
@@ -90,31 +79,25 @@ extension AnthropicProvider: GenerableProvider {
         return try decodeJSON(jsonString, type: type)
     }
 
-    private func buildGenerationRequest(
-        _ type: (some Any).Type,
-        prompt: String,
-        schemaDescription: String?,
-        configuration: CompletionConfiguration
-    ) -> AnthropicMessageRequest {
+    private func buildGenerationRequest(_ type: (some Any).Type,
+                                        prompt: String,
+                                        schemaDescription: String?,
+                                        configuration: CompletionConfiguration) -> AnthropicMessageRequest {
         let toolName = "generate_\(String(describing: type).lowercased())"
         let description = schemaDescription
             ?? "Generate a structured \(String(describing: type)) response."
 
-        let jsonOutputProperty = AnthropicSchemaProperty(
-            type: "string",
-            description: "The complete JSON object as a string conforming to the requested type.",
-            enumValues: nil
-        )
+        let jsonOutputDescription = "The complete JSON object as a string conforming to the requested type."
+        let jsonOutputProperty = AnthropicSchemaProperty(type: "string",
+                                                         description: jsonOutputDescription,
+                                                         enumValues: nil)
 
-        let toolDefinition = AnthropicToolDefinition(
-            name: toolName,
-            description: description,
-            inputSchema: AnthropicInputSchema(
-                type: "object",
-                properties: ["json_output": jsonOutputProperty],
-                required: ["json_output"]
-            )
-        )
+        let inputSchema = AnthropicInputSchema(type: "object",
+                                               properties: ["json_output": jsonOutputProperty],
+                                               required: ["json_output"])
+        let toolDefinition = AnthropicToolDefinition(name: toolName,
+                                                     description: description,
+                                                     inputSchema: inputSchema)
 
         let systemPrompt = configuration.systemPrompt ?? self.configuration.defaultInstructions
         let maxTokens = configuration.maxTokens ?? self.configuration.defaultMaxTokens
@@ -124,57 +107,48 @@ extension AnthropicProvider: GenerableProvider {
         You MUST call the \(toolName) tool with the result as valid JSON in the json_output field.
         """
 
-        return AnthropicMessageRequest(
-            model: self.configuration.model.modelId,
-            messages: [AnthropicAPIMessage(role: "user", text: enhancedPrompt)],
-            maxTokens: maxTokens,
-            system: systemPrompt,
-            temperature: Double(configuration.temperature),
-            topP: configuration.topP.map { Double($0) },
-            stopSequences: nil,
-            stream: false,
-            tools: [toolDefinition],
-            toolChoice: .tool(name: toolName)
-        )
+        return AnthropicMessageRequest(model: self.configuration.model.modelId,
+                                       messages: [AnthropicAPIMessage(role: "user", text: enhancedPrompt)],
+                                       maxTokens: maxTokens,
+                                       system: systemPrompt,
+                                       temperature: Double(configuration.temperature),
+                                       topP: configuration.topP.map { Double($0) },
+                                       stopSequences: nil,
+                                       stream: false,
+                                       tools: [toolDefinition],
+                                       toolChoice: .tool(name: toolName))
     }
 
-    private func decodeJSON<T: Codable>(
-        _ jsonString: String,
-        type: T.Type
-    ) throws -> T {
+    private func decodeJSON<T: Codable>(_ jsonString: String,
+                                        type: T.Type) throws -> T {
         guard let jsonData = jsonString.data(using: .utf8) else {
             throw IntelligenceError.responseParseFailed("Unable to convert tool output to data")
         }
 
         do {
             let result = try JSONDecoder().decode(type, from: jsonData)
-            logger.info("Structured generation successful", metadata: [
-                "type": .public(String(describing: type))
-            ])
+            logger.info("Structured generation successful", metadata: ["type": .public(String(describing: type))])
             return result
         } catch {
             logger.error("Failed to decode structured response", metadata: [
                 "type": .public(String(describing: type)),
-                "error": .public(error.localizedDescription)
+                "error": .public(error
+                    .localizedDescription)
             ])
-            throw IntelligenceError.responseParseFailed(
-                "Failed to decode response as \(type): \(error.localizedDescription)"
-            )
+            throw IntelligenceError
+                .responseParseFailed("Failed to decode response as \(type): \(error.localizedDescription)")
         }
     }
 
     /// Fallback: try to decode `T` directly from the tool input dictionary.
-    private func decodeFromInput<T: Codable>(
-        _ input: [String: AnyCodableValue],
-        type: T.Type
-    ) throws -> T {
+    private func decodeFromInput<T: Codable>(_ input: [String: AnyCodableValue],
+                                             type: T.Type) throws -> T {
         let data = try JSONEncoder().encode(input)
         do {
             return try JSONDecoder().decode(type, from: data)
         } catch {
-            throw IntelligenceError.responseParseFailed(
-                "Failed to decode tool input as \(type): \(error.localizedDescription)"
-            )
+            throw IntelligenceError
+                .responseParseFailed("Failed to decode tool input as \(type): \(error.localizedDescription)")
         }
     }
 }

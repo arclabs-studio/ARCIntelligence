@@ -12,14 +12,10 @@ import Testing
 struct AnthropicProviderToolTests {
     // MARK: - Helpers
 
-    private func makeSUT(
-        apiClient: MockAnthropicAPIClient = MockAnthropicAPIClient()
-    ) -> AnthropicProvider {
-        let config = AnthropicConfiguration(
-            authentication: .apiKey("test-key"),
-            model: .sonnet,
-            maxToolRounds: 5
-        )
+    private func makeSUT(apiClient: MockAnthropicAPIClient = MockAnthropicAPIClient()) -> AnthropicProvider {
+        let config = AnthropicConfiguration(authentication: .apiKey("test-key"),
+                                            model: .sonnet,
+                                            maxToolRounds: 5)
         return AnthropicProvider(configuration: config, apiClient: apiClient)
     }
 
@@ -29,12 +25,10 @@ struct AnthropicProviderToolTests {
         let parametersSchema: ToolParametersSchema?
         let responseToReturn: String
 
-        init(
-            name: String = "test_tool",
-            description: String = "A test tool",
-            parametersSchema: ToolParametersSchema? = nil,
-            responseToReturn: String = "tool output"
-        ) {
+        init(name: String = "test_tool",
+             description: String = "A test tool",
+             parametersSchema: ToolParametersSchema? = nil,
+             responseToReturn: String = "tool output") {
             self.name = name
             self.description = description
             self.parametersSchema = parametersSchema
@@ -51,20 +45,18 @@ struct AnthropicProviderToolTests {
     @Test("Tool definition maps parameters schema correctly")
     func schemaMapping() {
         let sut = makeSUT()
-        let tool = TestTool(
-            parametersSchema: ToolParametersSchema(
-                parameters: [
-                    ToolParameter(name: "city", type: .string, description: "City name"),
-                    ToolParameter(
-                        name: "units",
-                        type: .string,
-                        description: "Temperature units",
-                        enumValues: ["celsius", "fahrenheit"]
-                    )
-                ],
-                required: ["city"]
-            )
-        )
+        let parameters = [
+            ToolParameter(name: "city",
+                          type: .string,
+                          description: "City name"),
+            ToolParameter(name: "units",
+                          type: .string,
+                          description: "Temperature units",
+                          enumValues: ["celsius", "fahrenheit"])
+        ]
+        let schema = ToolParametersSchema(parameters: parameters,
+                                          required: ["city"])
+        let tool = TestTool(parametersSchema: schema)
 
         let definition = sut.mapToolToDefinition(tool)
 
@@ -91,24 +83,18 @@ struct AnthropicProviderToolTests {
 
     @Test("Tool calling loop executes tool and returns final response")
     func toolCallingLoop() async throws {
-        let mock = MockAnthropicAPIClient.withToolUse(
-            toolName: "get_weather",
-            input: ["city": .string("Boston")],
-            followUpText: "The weather in Boston is 72°F."
-        )
+        let mock = MockAnthropicAPIClient.withToolUse(toolName: "get_weather",
+                                                      input: ["city": .string("Boston")],
+                                                      followUpText: "The weather in Boston is 72°F.")
         let sut = makeSUT(apiClient: mock)
 
-        let tool = TestTool(
-            name: "get_weather",
-            description: "Get weather",
-            responseToReturn: "72°F, Sunny"
-        )
+        let tool = TestTool(name: "get_weather",
+                            description: "Get weather",
+                            responseToReturn: "72°F, Sunny")
 
-        let (response, toolCalls) = try await sut.respondWithToolCalls(
-            to: "What's the weather in Boston?",
-            tools: [tool],
-            configuration: .default
-        )
+        let (response, toolCalls) = try await sut.respondWithToolCalls(to: "What's the weather in Boston?",
+                                                                       tools: [tool],
+                                                                       configuration: .default)
 
         #expect(response.content == "The weather in Boston is 72°F.")
         #expect(toolCalls.count == 1)
@@ -119,38 +105,30 @@ struct AnthropicProviderToolTests {
 
     @Test("Tool call records include string arguments")
     func toolCallRecordArguments() async throws {
-        let mock = MockAnthropicAPIClient.withToolUse(
-            toolName: "search",
-            input: ["query": .string("restaurants")],
-            followUpText: "Found results."
-        )
+        let mock = MockAnthropicAPIClient.withToolUse(toolName: "search",
+                                                      input: ["query": .string("restaurants")],
+                                                      followUpText: "Found results.")
         let sut = makeSUT(apiClient: mock)
 
         let tool = TestTool(name: "search", responseToReturn: "results")
 
-        let (_, toolCalls) = try await sut.respondWithToolCalls(
-            to: "Search for restaurants",
-            tools: [tool],
-            configuration: .default
-        )
+        let (_, toolCalls) = try await sut.respondWithToolCalls(to: "Search for restaurants",
+                                                                tools: [tool],
+                                                                configuration: .default)
 
         #expect(toolCalls[0].arguments["query"] == "restaurants")
     }
 
     @Test("Unknown tool produces error result")
     func unknownTool() async throws {
-        let mock = MockAnthropicAPIClient.withToolUse(
-            toolName: "unknown_tool",
-            input: [:],
-            followUpText: "I see the tool wasn't available."
-        )
+        let mock = MockAnthropicAPIClient.withToolUse(toolName: "unknown_tool",
+                                                      input: [:],
+                                                      followUpText: "I see the tool wasn't available.")
         let sut = makeSUT(apiClient: mock)
 
-        let (response, toolCalls) = try await sut.respondWithToolCalls(
-            to: "Test",
-            tools: [],
-            configuration: .default
-        )
+        let (response, toolCalls) = try await sut.respondWithToolCalls(to: "Test",
+                                                                       tools: [],
+                                                                       configuration: .default)
 
         #expect(response.content == "I see the tool wasn't available.")
         #expect(toolCalls[0].output.contains("Unknown tool"))
@@ -160,20 +138,16 @@ struct AnthropicProviderToolTests {
 
     @Test("Sends tool results back in message history")
     func toolResultsInHistory() async throws {
-        let mock = MockAnthropicAPIClient.withToolUse(
-            toolName: "calc",
-            input: ["expr": .string("2+2")],
-            followUpText: "The result is 4."
-        )
+        let mock = MockAnthropicAPIClient.withToolUse(toolName: "calc",
+                                                      input: ["expr": .string("2+2")],
+                                                      followUpText: "The result is 4.")
         let sut = makeSUT(apiClient: mock)
 
         let tool = TestTool(name: "calc", responseToReturn: "4")
 
-        _ = try await sut.respondWithToolCalls(
-            to: "Calculate 2+2",
-            tools: [tool],
-            configuration: .default
-        )
+        _ = try await sut.respondWithToolCalls(to: "Calculate 2+2",
+                                               tools: [tool],
+                                               configuration: .default)
 
         // Second request should contain the tool result
         #expect(mock.sendMessageCallCount == 2)
@@ -189,11 +163,9 @@ struct AnthropicProviderToolTests {
         let sut = makeSUT(apiClient: mock)
 
         await #expect(throws: IntelligenceError.self) {
-            _ = try await sut.respondWithToolCalls(
-                to: "Test",
-                tools: [],
-                configuration: .default
-            )
+            _ = try await sut.respondWithToolCalls(to: "Test",
+                                                   tools: [],
+                                                   configuration: .default)
         }
     }
 }

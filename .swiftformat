@@ -11,10 +11,13 @@
 
 # Brace style
 --allman false
---wraparguments before-first
---wrapparameters before-first
+--wraparguments after-first
+--wrapparameters after-first
 --wrapcollections before-first
 --closingparen balanced
+
+# Disable rules that conflict with SwiftLint
+--disable wrapMultilineStatementBraces
 
 # Imports
 --importgrouping testable-bottom

@@ -25,12 +25,10 @@ public struct IntelligenceResponse: Sendable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        content: String,
-        tokensUsed: Int,
-        finishReason: FinishReason = .completed,
-        metadata: [String: String] = [:]
-    ) {
+    public init(content: String,
+                tokensUsed: Int,
+                finishReason: FinishReason = .completed,
+                metadata: [String: String] = [:]) {
         self.content = content
         self.tokensUsed = tokensUsed
         self.finishReason = finishReason

@@ -41,11 +41,9 @@ public protocol GenerableProvider: IntelligenceProvider {
     ///   - configuration: Configuration for the generation.
     /// - Returns: An instance of the requested type populated by the model.
     /// - Throws: `IntelligenceError` if generation fails or the type cannot be produced.
-    func generate<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) async throws -> T
+    func generate<T: Codable & Sendable>(_ type: T.Type,
+                                         prompt: String,
+                                         configuration: CompletionConfiguration) async throws -> T
 
     /// Generate a structured response with a custom schema description.
     ///
@@ -59,24 +57,20 @@ public protocol GenerableProvider: IntelligenceProvider {
     ///   - configuration: Configuration for the generation.
     /// - Returns: An instance of the requested type.
     /// - Throws: `IntelligenceError` if generation fails.
-    func generate<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt: String,
-        schemaDescription: String,
-        configuration: CompletionConfiguration
-    ) async throws -> T
+    func generate<T: Codable & Sendable>(_ type: T.Type,
+                                         prompt: String,
+                                         schemaDescription: String,
+                                         configuration: CompletionConfiguration) async throws -> T
 }
 
 // MARK: - Default Implementation
 
 extension GenerableProvider {
     /// Default implementation that calls the schema-less variant.
-    public func generate<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt: String,
-        schemaDescription _: String,
-        configuration: CompletionConfiguration
-    ) async throws -> T {
+    public func generate<T: Codable & Sendable>(_ type: T.Type,
+                                                prompt: String,
+                                                schemaDescription _: String,
+                                                configuration: CompletionConfiguration) async throws -> T {
         // Default: ignore schema description and use basic generation
         try await generate(type, prompt: prompt, configuration: configuration)
     }

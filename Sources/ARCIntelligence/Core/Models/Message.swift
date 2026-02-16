@@ -28,13 +28,11 @@ public struct Message: Sendable, Identifiable, Codable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        id: UUID = UUID(),
-        role: Role,
-        content: String,
-        timestamp: Date = Date(),
-        metadata: [String: String] = [:]
-    ) {
+    public init(id: UUID = UUID(),
+                role: Role,
+                content: String,
+                timestamp: Date = Date(),
+                metadata: [String: String] = [:]) {
         self.id = id
         self.role = role
         self.content = content

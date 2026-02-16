@@ -31,13 +31,11 @@ public struct CompletionConfiguration: Sendable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        temperature: Float = 0.7,
-        maxTokens: Int? = nil,
-        systemPrompt: String? = nil,
-        stopSequences: [String] = [],
-        topP: Float? = nil
-    ) {
+    public init(temperature: Float = 0.7,
+                maxTokens: Int? = nil,
+                systemPrompt: String? = nil,
+                stopSequences: [String] = [],
+                topP: Float? = nil) {
         self.temperature = max(0.0, min(1.0, temperature))
         self.maxTokens = maxTokens
         self.systemPrompt = systemPrompt
@@ -51,14 +49,10 @@ public struct CompletionConfiguration: Sendable, Equatable {
     public static let `default` = CompletionConfiguration()
 
     /// Configuration optimized for creative writing
-    public static let creative = CompletionConfiguration(
-        temperature: 0.9,
-        topP: 0.95
-    )
+    public static let creative = CompletionConfiguration(temperature: 0.9,
+                                                         topP: 0.95)
 
     /// Configuration optimized for factual/analytical responses
-    public static let factual = CompletionConfiguration(
-        temperature: 0.3,
-        topP: 0.9
-    )
+    public static let factual = CompletionConfiguration(temperature: 0.3,
+                                                        topP: 0.9)
 }

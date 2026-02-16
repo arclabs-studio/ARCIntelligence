@@ -13,38 +13,34 @@ extension AnthropicProvider {
     // MARK: - Request Building
 
     /// Build an API request from a prompt and configuration.
-    func buildRequest(
-        prompt: String,
-        configuration: CompletionConfiguration,
-        stream: Bool = false,
-        tools: [AnthropicToolDefinition]? = nil,
-        toolChoice: AnthropicToolChoice? = nil
-    ) -> AnthropicMessageRequest {
+    func buildRequest(prompt: String,
+                      configuration: CompletionConfiguration,
+                      stream: Bool = false,
+                      tools: [AnthropicToolDefinition]? = nil,
+                      toolChoice: AnthropicToolChoice? = nil) -> AnthropicMessageRequest {
         let systemPrompt = configuration.systemPrompt ?? self.configuration.defaultInstructions
 
         let maxTokens = configuration.maxTokens ?? self.configuration.defaultMaxTokens
 
-        return AnthropicMessageRequest(
-            model: self.configuration.model.modelId,
-            messages: [AnthropicAPIMessage(role: "user", text: prompt)],
-            maxTokens: maxTokens,
-            system: systemPrompt,
-            temperature: Double(configuration.temperature),
-            topP: configuration.topP.map { Double($0) },
-            stopSequences: configuration.stopSequences.isEmpty ? nil : configuration.stopSequences,
-            stream: stream,
-            tools: tools,
-            toolChoice: toolChoice
-        )
+        return AnthropicMessageRequest(model: self.configuration.model.modelId,
+                                       messages: [AnthropicAPIMessage(role: "user", text: prompt)],
+                                       maxTokens: maxTokens,
+                                       system: systemPrompt,
+                                       temperature: Double(configuration.temperature),
+                                       topP: configuration.topP.map { Double($0) },
+                                       stopSequences: configuration.stopSequences.isEmpty
+                                           ? nil
+                                           : configuration.stopSequences,
+                                       stream: stream,
+                                       tools: tools,
+                                       toolChoice: toolChoice)
     }
 
     /// Build an API request from a conversation.
-    func buildConversationRequest(
-        conversation: Conversation,
-        newMessage: Message,
-        configuration: CompletionConfiguration,
-        stream: Bool = false
-    ) -> AnthropicMessageRequest {
+    func buildConversationRequest(conversation: Conversation,
+                                  newMessage: Message,
+                                  configuration: CompletionConfiguration,
+                                  stream: Bool = false) -> AnthropicMessageRequest {
         var apiMessages: [AnthropicAPIMessage] = []
 
         // Map conversation history (skip system messages, they go to the system field)
@@ -72,18 +68,18 @@ extension AnthropicProvider {
 
         let maxTokens = configuration.maxTokens ?? self.configuration.defaultMaxTokens
 
-        return AnthropicMessageRequest(
-            model: self.configuration.model.modelId,
-            messages: apiMessages,
-            maxTokens: maxTokens,
-            system: systemPrompt,
-            temperature: Double(configuration.temperature),
-            topP: configuration.topP.map { Double($0) },
-            stopSequences: configuration.stopSequences.isEmpty ? nil : configuration.stopSequences,
-            stream: stream,
-            tools: nil,
-            toolChoice: nil
-        )
+        return AnthropicMessageRequest(model: self.configuration.model.modelId,
+                                       messages: apiMessages,
+                                       maxTokens: maxTokens,
+                                       system: systemPrompt,
+                                       temperature: Double(configuration.temperature),
+                                       topP: configuration.topP.map { Double($0) },
+                                       stopSequences: configuration.stopSequences.isEmpty
+                                           ? nil
+                                           : configuration.stopSequences,
+                                       stream: stream,
+                                       tools: nil,
+                                       toolChoice: nil)
     }
 
     // MARK: - Response Mapping
@@ -102,16 +98,14 @@ extension AnthropicProvider {
         let tokensUsed = response.usage.inputTokens + response.usage.outputTokens
         let finishReason = mapStopReason(response.stopReason)
 
-        return IntelligenceResponse(
-            content: textContent,
-            tokensUsed: tokensUsed,
-            finishReason: finishReason,
-            metadata: [
-                "model": response.model,
-                "inputTokens": "\(response.usage.inputTokens)",
-                "outputTokens": "\(response.usage.outputTokens)"
-            ]
-        )
+        return IntelligenceResponse(content: textContent,
+                                    tokensUsed: tokensUsed,
+                                    finishReason: finishReason,
+                                    metadata: [
+                                        "model": response.model,
+                                        "inputTokens": "\(response.usage.inputTokens)",
+                                        "outputTokens": "\(response.usage.outputTokens)"
+                                    ])
     }
 
     /// Map an API stop reason to `FinishReason`.
@@ -139,27 +133,21 @@ extension AnthropicProvider {
         if let schema = tool.parametersSchema {
             var properties: [String: AnthropicSchemaProperty] = [:]
             for param in schema.parameters {
-                properties[param.name] = AnthropicSchemaProperty(
-                    type: param.type.rawValue,
-                    description: param.description,
-                    enumValues: param.enumValues
-                )
+                properties[param.name] = AnthropicSchemaProperty(type: param.type.rawValue,
+                                                                 description: param.description,
+                                                                 enumValues: param.enumValues)
             }
 
-            inputSchema = AnthropicInputSchema(
-                type: "object",
-                properties: properties,
-                required: schema.required.isEmpty ? nil : schema.required
-            )
+            inputSchema = AnthropicInputSchema(type: "object",
+                                               properties: properties,
+                                               required: schema.required.isEmpty ? nil : schema.required)
         } else {
             inputSchema = AnthropicInputSchema(type: "object")
         }
 
-        return AnthropicToolDefinition(
-            name: tool.name,
-            description: tool.description,
-            inputSchema: inputSchema
-        )
+        return AnthropicToolDefinition(name: tool.name,
+                                       description: tool.description,
+                                       inputSchema: inputSchema)
     }
 
     // MARK: - Tool Use Extraction

@@ -30,11 +30,9 @@ public final class MockEmbeddingProvider: EmbeddingProvider, Sendable {
     ///   - embeddingDimension: Dimension of generated embedding vectors (default: 128)
     ///   - shouldFail: Whether operations should throw errors (default: false)
     ///   - simulatedDelay: Delay before returning results (default: 0.05 seconds)
-    public init(
-        embeddingDimension: Int = 128,
-        shouldFail: Bool = false,
-        simulatedDelay: TimeInterval = 0.05
-    ) {
+    public init(embeddingDimension: Int = 128,
+                shouldFail: Bool = false,
+                simulatedDelay: TimeInterval = 0.05) {
         self.embeddingDimension = embeddingDimension
         self.shouldFail = shouldFail
         self.simulatedDelay = simulatedDelay
@@ -46,27 +44,21 @@ public final class MockEmbeddingProvider: EmbeddingProvider, Sendable {
         true
     }
 
-    public func complete(
-        prompt: String,
-        configuration _: CompletionConfiguration
-    ) async throws -> IntelligenceResponse {
+    public func complete(prompt: String,
+                         configuration _: CompletionConfiguration) async throws -> IntelligenceResponse {
         try await Task.sleep(for: .seconds(simulatedDelay))
 
         if shouldFail {
             throw IntelligenceError.requestFailed("Mock embedding provider failure")
         }
 
-        return IntelligenceResponse(
-            content: "Mock completion for embedding provider",
-            tokensUsed: prompt.count / 4,
-            finishReason: .completed
-        )
+        return IntelligenceResponse(content: "Mock completion for embedding provider",
+                                    tokensUsed: prompt.count / 4,
+                                    finishReason: .completed)
     }
 
-    public func streamComplete(
-        prompt _: String,
-        configuration _: CompletionConfiguration
-    ) -> AsyncThrowingStream<String, Error> {
+    public func streamComplete(prompt _: String,
+                               configuration _: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 if shouldFail {

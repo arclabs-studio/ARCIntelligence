@@ -28,13 +28,11 @@ public struct Conversation: Sendable, Identifiable, Codable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        id: UUID = UUID(),
-        systemPrompt: String? = nil,
-        messages: [Message] = [],
-        createdAt: Date = Date(),
-        updatedAt: Date = Date()
-    ) {
+    public init(id: UUID = UUID(),
+                systemPrompt: String? = nil,
+                messages: [Message] = [],
+                createdAt: Date = Date(),
+                updatedAt: Date = Date()) {
         self.id = id
         self.systemPrompt = systemPrompt
         self.messages = messages

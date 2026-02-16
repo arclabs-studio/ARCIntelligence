@@ -12,14 +12,10 @@ import Testing
 struct AnthropicProviderTests {
     // MARK: - Helpers
 
-    private func makeSUT(
-        apiClient: MockAnthropicAPIClient = MockAnthropicAPIClient(),
-        model: AnthropicModel = .sonnet
-    ) -> AnthropicProvider {
-        let config = AnthropicConfiguration(
-            authentication: .apiKey("test-key"),
-            model: model
-        )
+    private func makeSUT(apiClient: MockAnthropicAPIClient = MockAnthropicAPIClient(),
+                         model: AnthropicModel = .sonnet) -> AnthropicProvider {
+        let config = AnthropicConfiguration(authentication: .apiKey("test-key"),
+                                            model: model)
         return AnthropicProvider(configuration: config, apiClient: apiClient)
     }
 
@@ -55,10 +51,8 @@ struct AnthropicProviderTests {
     @Test("Provider is not available with empty API key")
     func isNotAvailableWithEmptyKey() async {
         let config = AnthropicConfiguration(authentication: .apiKey(""))
-        let sut = AnthropicProvider(
-            configuration: config,
-            apiClient: MockAnthropicAPIClient()
-        )
+        let sut = AnthropicProvider(configuration: config,
+                                    apiClient: MockAnthropicAPIClient())
         let available = await sut.isAvailable()
         #expect(!available)
     }
@@ -70,10 +64,8 @@ struct AnthropicProviderTests {
         let mock = MockAnthropicAPIClient.withResponse(content: "Hello from Claude")
         let sut = makeSUT(apiClient: mock)
 
-        let response = try await sut.complete(
-            prompt: "Say hello",
-            configuration: .default
-        )
+        let response = try await sut.complete(prompt: "Say hello",
+                                              configuration: .default)
 
         #expect(response.content == "Hello from Claude")
         #expect(response.tokensUsed == 30)
@@ -86,14 +78,10 @@ struct AnthropicProviderTests {
         let mock = MockAnthropicAPIClient.withResponse(content: "ok")
         let sut = makeSUT(apiClient: mock, model: .opus)
 
-        _ = try await sut.complete(
-            prompt: "Test",
-            configuration: CompletionConfiguration(
-                temperature: 0.5,
-                maxTokens: 1000,
-                systemPrompt: "Be helpful"
-            )
-        )
+        _ = try await sut.complete(prompt: "Test",
+                                   configuration: CompletionConfiguration(temperature: 0.5,
+                                                                          maxTokens: 1000,
+                                                                          systemPrompt: "Be helpful"))
 
         let request = mock.lastRequest
         #expect(request?.model == "claude-opus-4-6")
@@ -183,12 +171,8 @@ struct AnthropicProviderTests {
     func estimateTokens() {
         let sut = makeSUT()
 
-        let conversation = Conversation(
-            systemPrompt: "System prompt",
-            messages: [
-                Message(role: .user, content: "Hello there")
-            ]
-        )
+        let conversation = Conversation(systemPrompt: "System prompt",
+                                        messages: [Message(role: .user, content: "Hello there")])
 
         let estimate = sut.estimateTokens(for: conversation)
         #expect(estimate > 0)

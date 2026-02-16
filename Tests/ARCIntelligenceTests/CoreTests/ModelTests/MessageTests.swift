@@ -13,10 +13,8 @@ import Testing
 struct MessageTests {
     @Test("Message initializes with default values")
     func messageInitializesWithDefaults() {
-        let message = Message(
-            role: .user,
-            content: "Hello"
-        )
+        let message = Message(role: .user,
+                              content: "Hello")
 
         #expect(message.role == .user)
         #expect(message.content == "Hello")
@@ -29,13 +27,11 @@ struct MessageTests {
         let timestamp = Date()
         let metadata = ["key": "value"]
 
-        let message = Message(
-            id: id,
-            role: .assistant,
-            content: "Response",
-            timestamp: timestamp,
-            metadata: metadata
-        )
+        let message = Message(id: id,
+                              role: .assistant,
+                              content: "Response",
+                              timestamp: timestamp,
+                              metadata: metadata)
 
         #expect(message.id == id)
         #expect(message.role == .assistant)

@@ -105,60 +105,57 @@ final class MockAnthropicAPIClient: AnthropicAPIClient, Sendable {
         set { state.errorToThrow = newValue }
     }
 
-    var sendMessageCallCount: Int { state.sendMessageCallCount }
-    var streamMessageCallCount: Int { state.streamMessageCallCount }
-    var lastRequest: AnthropicMessageRequest? { state.lastRequest }
-    var allRequests: [AnthropicMessageRequest] { state.allRequests }
+    var sendMessageCallCount: Int {
+        state.sendMessageCallCount
+    }
+
+    var streamMessageCallCount: Int {
+        state.streamMessageCallCount
+    }
+
+    var lastRequest: AnthropicMessageRequest? {
+        state.lastRequest
+    }
+
+    var allRequests: [AnthropicMessageRequest] {
+        state.allRequests
+    }
 
     // MARK: - Convenience Factories
 
-    static func withResponse(
-        content: String,
-        stopReason: String = "end_turn",
-        inputTokens: Int = 10,
-        outputTokens: Int = 20
-    ) -> MockAnthropicAPIClient {
+    static func withResponse(content: String,
+                             stopReason: String = "end_turn",
+                             inputTokens: Int = 10,
+                             outputTokens: Int = 20) -> MockAnthropicAPIClient {
         let mock = MockAnthropicAPIClient()
-        mock.state.messageResponses = [
-            AnthropicMessageResponse(
-                id: "msg_test",
-                type: "message",
-                model: "claude-sonnet-4-5-20250929",
-                content: [.text(content)],
-                stopReason: stopReason,
-                usage: AnthropicUsage(inputTokens: inputTokens, outputTokens: outputTokens)
-            )
-        ]
+        mock.state.messageResponses = [AnthropicMessageResponse(id: "msg_test",
+                                                                type: "message",
+                                                                model: "claude-sonnet-4-5-20250929",
+                                                                content: [.text(content)],
+                                                                stopReason: stopReason,
+                                                                usage: AnthropicUsage(inputTokens: inputTokens,
+                                                                                      outputTokens: outputTokens))]
         return mock
     }
 
-    static func withToolUse(
-        toolId: String = "toolu_test",
-        toolName: String,
-        input: [String: AnyCodableValue],
-        followUpText: String = "Done"
-    ) -> MockAnthropicAPIClient {
+    static func withToolUse(toolId: String = "toolu_test",
+                            toolName: String,
+                            input: [String: AnyCodableValue],
+                            followUpText: String = "Done") -> MockAnthropicAPIClient {
         let mock = MockAnthropicAPIClient()
-        mock.state.messageResponses = [
-            // First response: tool_use
-            AnthropicMessageResponse(
-                id: "msg_test_1",
-                type: "message",
-                model: "claude-sonnet-4-5-20250929",
-                content: [.toolUse(id: toolId, name: toolName, input: input)],
-                stopReason: "tool_use",
-                usage: AnthropicUsage(inputTokens: 10, outputTokens: 20)
-            ),
-            // Second response: final text
-            AnthropicMessageResponse(
-                id: "msg_test_2",
-                type: "message",
-                model: "claude-sonnet-4-5-20250929",
-                content: [.text(followUpText)],
-                stopReason: "end_turn",
-                usage: AnthropicUsage(inputTokens: 30, outputTokens: 15)
-            )
-        ]
+        let toolUseResponse = AnthropicMessageResponse(id: "msg_test_1",
+                                                       type: "message",
+                                                       model: "claude-sonnet-4-5-20250929",
+                                                       content: [.toolUse(id: toolId, name: toolName, input: input)],
+                                                       stopReason: "tool_use",
+                                                       usage: AnthropicUsage(inputTokens: 10, outputTokens: 20))
+        let followUpResponse = AnthropicMessageResponse(id: "msg_test_2",
+                                                        type: "message",
+                                                        model: "claude-sonnet-4-5-20250929",
+                                                        content: [.text(followUpText)],
+                                                        stopReason: "end_turn",
+                                                        usage: AnthropicUsage(inputTokens: 30, outputTokens: 15))
+        mock.state.messageResponses = [toolUseResponse, followUpResponse]
         return mock
     }
 
@@ -184,9 +181,7 @@ final class MockAnthropicAPIClient: AnthropicAPIClient, Sendable {
         return response
     }
 
-    func streamMessage(
-        _ request: AnthropicMessageRequest
-    ) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
+    func streamMessage(_ request: AnthropicMessageRequest) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
         state.recordStreamMessage(request)
 
         if let error = state.errorToThrow {

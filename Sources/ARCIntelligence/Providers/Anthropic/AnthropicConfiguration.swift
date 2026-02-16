@@ -53,14 +53,12 @@ public struct AnthropicConfiguration: Sendable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        authentication: AnthropicAuthentication,
-        model: AnthropicModel = .sonnet,
-        defaultTemperature: Float = 0.7,
-        defaultMaxTokens: Int = 4096,
-        defaultInstructions: String? = nil,
-        maxToolRounds: Int = 10
-    ) {
+    public init(authentication: AnthropicAuthentication,
+                model: AnthropicModel = .sonnet,
+                defaultTemperature: Float = 0.7,
+                defaultMaxTokens: Int = 4096,
+                defaultInstructions: String? = nil,
+                maxToolRounds: Int = 10) {
         self.authentication = authentication
         self.model = model
         self.defaultTemperature = max(0.0, min(1.0, defaultTemperature))
@@ -75,36 +73,30 @@ public struct AnthropicConfiguration: Sendable, Equatable {
     /// - Parameter authentication: Authentication method.
     /// - Returns: Configuration using Claude Haiku with low temperature.
     public static func fast(authentication: AnthropicAuthentication) -> AnthropicConfiguration {
-        AnthropicConfiguration(
-            authentication: authentication,
-            model: .haiku,
-            defaultTemperature: 0.3,
-            defaultMaxTokens: 2048
-        )
+        AnthropicConfiguration(authentication: authentication,
+                               model: .haiku,
+                               defaultTemperature: 0.3,
+                               defaultMaxTokens: 2048)
     }
 
     /// Configuration optimized for balanced quality and cost.
     /// - Parameter authentication: Authentication method.
     /// - Returns: Configuration using Claude Sonnet with default settings.
     public static func balanced(authentication: AnthropicAuthentication) -> AnthropicConfiguration {
-        AnthropicConfiguration(
-            authentication: authentication,
-            model: .sonnet,
-            defaultTemperature: 0.7,
-            defaultMaxTokens: 4096
-        )
+        AnthropicConfiguration(authentication: authentication,
+                               model: .sonnet,
+                               defaultTemperature: 0.7,
+                               defaultMaxTokens: 4096)
     }
 
     /// Configuration optimized for maximum quality.
     /// - Parameter authentication: Authentication method.
     /// - Returns: Configuration using Claude Opus with high token limit.
     public static func quality(authentication: AnthropicAuthentication) -> AnthropicConfiguration {
-        AnthropicConfiguration(
-            authentication: authentication,
-            model: .opus,
-            defaultTemperature: 0.5,
-            defaultMaxTokens: 8192
-        )
+        AnthropicConfiguration(authentication: authentication,
+                               model: .opus,
+                               defaultTemperature: 0.5,
+                               defaultMaxTokens: 8192)
     }
 }
 

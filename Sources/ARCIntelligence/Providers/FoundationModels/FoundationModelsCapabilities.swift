@@ -28,13 +28,11 @@ public struct FoundationModelsCapabilities: Sendable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        supportsCompletion: Bool = true,
-        supportsStreaming: Bool = true,
-        supportsConversation: Bool = true,
-        supportsEmbeddings: Bool = false,
-        maxContextWindow: Int = 4096
-    ) {
+    public init(supportsCompletion: Bool = true,
+                supportsStreaming: Bool = true,
+                supportsConversation: Bool = true,
+                supportsEmbeddings: Bool = false,
+                maxContextWindow: Int = 4096) {
         self.supportsCompletion = supportsCompletion
         self.supportsStreaming = supportsStreaming
         self.supportsConversation = supportsConversation

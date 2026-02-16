@@ -58,13 +58,11 @@ public struct FoundationModelsConfiguration: Sendable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        defaultTemperature: Float = 0.7,
-        maxContextTokens: Int = 4096,
-        onDeviceOnly: Bool = true,
-        guardrailMode: GuardrailMode = .standard,
-        defaultInstructions: String? = nil
-    ) {
+    public init(defaultTemperature: Float = 0.7,
+                maxContextTokens: Int = 4096,
+                onDeviceOnly: Bool = true,
+                guardrailMode: GuardrailMode = .standard,
+                defaultInstructions: String? = nil) {
         // Apple's API supports temperature up to 2.0 for increased creativity
         self.defaultTemperature = max(0.0, min(2.0, defaultTemperature))
         // Apple's on-device model has a hard limit of 4096 tokens
@@ -80,29 +78,21 @@ public struct FoundationModelsConfiguration: Sendable, Equatable {
     public static let `default` = FoundationModelsConfiguration()
 
     /// Configuration optimized for privacy (on-device only, standard guardrails)
-    public static let privacy = FoundationModelsConfiguration(
-        onDeviceOnly: true,
-        guardrailMode: .standard
-    )
+    public static let privacy = FoundationModelsConfiguration(onDeviceOnly: true,
+                                                              guardrailMode: .standard)
 
     /// Configuration optimized for creative tasks (higher temperature)
-    public static let creative = FoundationModelsConfiguration(
-        defaultTemperature: 1.5,
-        guardrailMode: .standard
-    )
+    public static let creative = FoundationModelsConfiguration(defaultTemperature: 1.5,
+                                                               guardrailMode: .standard)
 
     /// Configuration for content analysis (permissive guardrails)
     ///
     /// Use this when your app needs to analyze or transform content that
     /// may contain sensitive material, such as chat moderation or study apps.
-    public static let contentAnalysis = FoundationModelsConfiguration(
-        defaultTemperature: 0.3,
-        guardrailMode: .permissiveContentTransformations
-    )
+    public static let contentAnalysis = FoundationModelsConfiguration(defaultTemperature: 0.3,
+                                                                      guardrailMode: .permissiveContentTransformations)
 
     /// Configuration for factual/deterministic responses
-    public static let factual = FoundationModelsConfiguration(
-        defaultTemperature: 0.0,
-        guardrailMode: .standard
-    )
+    public static let factual = FoundationModelsConfiguration(defaultTemperature: 0.0,
+                                                              guardrailMode: .standard)
 }

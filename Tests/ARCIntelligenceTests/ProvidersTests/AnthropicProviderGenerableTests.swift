@@ -20,34 +20,22 @@ struct AnthropicProviderGenerableTests {
 
     // MARK: - Helpers
 
-    private func makeSUT(
-        apiClient: MockAnthropicAPIClient = MockAnthropicAPIClient()
-    ) -> AnthropicProvider {
-        let config = AnthropicConfiguration(
-            authentication: .apiKey("test-key"),
-            model: .sonnet
-        )
+    private func makeSUT(apiClient: MockAnthropicAPIClient = MockAnthropicAPIClient()) -> AnthropicProvider {
+        let config = AnthropicConfiguration(authentication: .apiKey("test-key"),
+                                            model: .sonnet)
         return AnthropicProvider(configuration: config, apiClient: apiClient)
     }
 
     private func mockWithToolUseJsonOutput(_ json: String) -> MockAnthropicAPIClient {
         let mock = MockAnthropicAPIClient()
-        mock.messageResponses = [
-            AnthropicMessageResponse(
-                id: "msg_test",
-                type: "message",
-                model: "claude-sonnet-4-5-20250929",
-                content: [
-                    .toolUse(
-                        id: "toolu_gen",
-                        name: "generate_moviereview",
-                        input: ["json_output": .string(json)]
-                    )
-                ],
-                stopReason: "tool_use",
-                usage: AnthropicUsage(inputTokens: 50, outputTokens: 100)
-            )
-        ]
+        mock.messageResponses = [AnthropicMessageResponse(id: "msg_test",
+                                                          type: "message",
+                                                          model: "claude-sonnet-4-5-20250929",
+                                                          content: [.toolUse(id: "toolu_gen",
+                                                                             name: "generate_moviereview",
+                                                                             input: ["json_output": .string(json)])],
+                                                          stopReason: "tool_use",
+                                                          usage: AnthropicUsage(inputTokens: 50, outputTokens: 100))]
         return mock
     }
 
@@ -60,11 +48,9 @@ struct AnthropicProviderGenerableTests {
         """)
         let sut = makeSUT(apiClient: mock)
 
-        _ = try await sut.generate(
-            MovieReview.self,
-            prompt: "Review Inception",
-            configuration: .default
-        )
+        _ = try await sut.generate(MovieReview.self,
+                                   prompt: "Review Inception",
+                                   configuration: .default)
 
         let request = mock.lastRequest
         #expect(request?.toolChoice == .tool(name: "generate_moviereview"))
@@ -81,11 +67,9 @@ struct AnthropicProviderGenerableTests {
         """)
         let sut = makeSUT(apiClient: mock)
 
-        let result: MovieReview = try await sut.generate(
-            MovieReview.self,
-            prompt: "Review Inception",
-            configuration: .default
-        )
+        let result: MovieReview = try await sut.generate(MovieReview.self,
+                                                         prompt: "Review Inception",
+                                                         configuration: .default)
 
         #expect(result.title == "Inception")
         #expect(result.rating == 9)
@@ -101,12 +85,10 @@ struct AnthropicProviderGenerableTests {
         """)
         let sut = makeSUT(apiClient: mock)
 
-        _ = try await sut.generate(
-            MovieReview.self,
-            prompt: "Review a movie",
-            schemaDescription: "A structured movie review with title, rating, and summary",
-            configuration: .default
-        )
+        _ = try await sut.generate(MovieReview.self,
+                                   prompt: "Review a movie",
+                                   schemaDescription: "A structured movie review with title, rating, and summary",
+                                   configuration: .default)
 
         let toolDescription = mock.lastRequest?.tools?.first?.description
         #expect(toolDescription == "A structured movie review with title, rating, and summary")
@@ -116,31 +98,13 @@ struct AnthropicProviderGenerableTests {
 
     @Test("Generate throws parse error on invalid JSON")
     func invalidJson() async {
-        let mock = MockAnthropicAPIClient()
-        mock.messageResponses = [
-            AnthropicMessageResponse(
-                id: "msg_test",
-                type: "message",
-                model: "claude-sonnet-4-5-20250929",
-                content: [
-                    .toolUse(
-                        id: "toolu_gen",
-                        name: "generate_moviereview",
-                        input: ["json_output": .string("not valid json")]
-                    )
-                ],
-                stopReason: "tool_use",
-                usage: AnthropicUsage(inputTokens: 10, outputTokens: 20)
-            )
-        ]
+        let mock = mockWithToolUseJsonOutput("not valid json")
         let sut = makeSUT(apiClient: mock)
 
         await #expect(throws: IntelligenceError.self) {
-            _ = try await sut.generate(
-                MovieReview.self,
-                prompt: "Review a movie",
-                configuration: .default
-            )
+            _ = try await sut.generate(MovieReview.self,
+                                       prompt: "Review a movie",
+                                       configuration: .default)
         }
     }
 
@@ -150,11 +114,9 @@ struct AnthropicProviderGenerableTests {
         let sut = makeSUT(apiClient: mock)
 
         await #expect(throws: IntelligenceError.self) {
-            _ = try await sut.generate(
-                MovieReview.self,
-                prompt: "Review a movie",
-                configuration: .default
-            )
+            _ = try await sut.generate(MovieReview.self,
+                                       prompt: "Review a movie",
+                                       configuration: .default)
         }
     }
 }

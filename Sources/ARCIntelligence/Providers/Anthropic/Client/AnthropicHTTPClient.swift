@@ -17,10 +17,8 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
     private let authentication: AnthropicAuthentication
     private let httpClient: HTTPClientProtocol
     private let session: URLSession
-    private let logger = ARCLogger(
-        subsystem: "com.arclabs.intelligence",
-        category: "AnthropicHTTP"
-    )
+    private let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
+                                   category: "AnthropicHTTP")
 
     // MARK: - Constants
 
@@ -34,11 +32,9 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
 
     // MARK: - Initialization
 
-    init(
-        authentication: AnthropicAuthentication,
-        httpClient: HTTPClientProtocol = HTTPClient(),
-        session: URLSession = .shared
-    ) {
+    init(authentication: AnthropicAuthentication,
+         httpClient: HTTPClientProtocol = HTTPClient(),
+         session: URLSession = .shared) {
         self.authentication = authentication
         self.httpClient = httpClient
         self.session = session
@@ -49,11 +45,9 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
     func sendMessage(_ request: AnthropicMessageRequest) async throws -> AnthropicMessageResponse {
         try validateAuthentication()
 
-        let endpoint = AnthropicMessagesEndpoint(
-            resolvedBaseURL: baseURL(),
-            resolvedHeaders: authHeaders(),
-            request: request
-        )
+        let endpoint = AnthropicMessagesEndpoint(resolvedBaseURL: baseURL(),
+                                                 resolvedHeaders: authHeaders(),
+                                                 request: request)
 
         do {
             return try await httpClient.execute(endpoint)
@@ -62,9 +56,7 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
         }
     }
 
-    func streamMessage(
-        _ request: AnthropicMessageRequest
-    ) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
+    func streamMessage(_ request: AnthropicMessageRequest) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
         AsyncThrowingStream { continuation in
             Task { [self] in
                 do {
@@ -97,9 +89,7 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
 
                     continuation.finish()
                 } catch {
-                    logger.error("Streaming failed", metadata: [
-                        "error": .public(error.localizedDescription)
-                    ])
+                    logger.error("Streaming failed", metadata: ["error": .public(error.localizedDescription)])
                     continuation.finish(throwing: mapError(error))
                 }
             }
@@ -160,9 +150,7 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
         return urlRequest
     }
 
-    private func collectErrorData(
-        from bytes: URLSession.AsyncBytes
-    ) async throws -> Data {
+    private func collectErrorData(from bytes: URLSession.AsyncBytes) async throws -> Data {
         var data = Data()
         for try await byte in bytes {
             data.append(byte)
@@ -225,11 +213,25 @@ private struct AnthropicMessagesEndpoint: Endpoint {
     let resolvedHeaders: [String: String]
     let request: AnthropicMessageRequest
 
-    var baseURL: URL { resolvedBaseURL }
-    var path: String { "v1/messages" }
-    var method: HTTPMethod { .POST }
-    var headers: [String: String]? { resolvedHeaders }
-    var queryItems: [URLQueryItem]? { nil }
+    var baseURL: URL {
+        resolvedBaseURL
+    }
+
+    var path: String {
+        "v1/messages"
+    }
+
+    var method: HTTPMethod {
+        .POST
+    }
+
+    var headers: [String: String]? {
+        resolvedHeaders
+    }
+
+    var queryItems: [URLQueryItem]? {
+        nil
+    }
 
     var body: Data? {
         try? JSONEncoder().encode(request)

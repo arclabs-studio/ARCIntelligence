@@ -45,10 +45,8 @@ public final class AnthropicProvider: Sendable {
 
     let configuration: AnthropicConfiguration
     let apiClient: AnthropicAPIClient
-    let logger = ARCLogger(
-        subsystem: "com.arclabs.intelligence",
-        category: "Anthropic"
-    )
+    let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
+                           category: "Anthropic")
 
     // MARK: - Initialization
 
@@ -78,10 +76,8 @@ extension AnthropicProvider: IntelligenceProvider {
         }
     }
 
-    public func complete(
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) async throws -> IntelligenceResponse {
+    public func complete(prompt: String,
+                         configuration: CompletionConfiguration) async throws -> IntelligenceResponse {
         logger.debug("Starting completion request", metadata: [
             "promptLength": .public("\(prompt.count)"),
             "model": .public(self.configuration.model.modelId)
@@ -98,10 +94,8 @@ extension AnthropicProvider: IntelligenceProvider {
         return mapResponse(response)
     }
 
-    public func streamComplete(
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) -> AsyncThrowingStream<String, Error> {
+    public func streamComplete(prompt: String,
+                               configuration: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
         logger.debug("Starting streaming completion", metadata: [
             "promptLength": .public("\(prompt.count)"),
             "model": .public(self.configuration.model.modelId)
@@ -128,9 +122,7 @@ extension AnthropicProvider: IntelligenceProvider {
 
                     continuation.finish()
                 } catch {
-                    logger.error("Streaming failed", metadata: [
-                        "error": .public(error.localizedDescription)
-                    ])
+                    logger.error("Streaming failed", metadata: ["error": .public(error.localizedDescription)])
                     continuation.finish(throwing: error)
                 }
             }
@@ -141,48 +133,38 @@ extension AnthropicProvider: IntelligenceProvider {
 // MARK: - ConversationProvider
 
 extension AnthropicProvider: ConversationProvider {
-    public func sendMessage(
-        _ message: Message,
-        in conversation: Conversation
-    ) async throws -> Message {
-        logger.debug("Sending message in conversation", metadata: [
-            "conversationId": .public(conversation.id.uuidString),
-            "historyCount": .public("\(conversation.messages.count)")
-        ])
+    public func sendMessage(_ message: Message,
+                            in conversation: Conversation) async throws -> Message {
+        logger.debug("Sending message in conversation",
+                     metadata: [
+                         "conversationId": .public(conversation.id.uuidString),
+                         "historyCount": .public("\(conversation.messages.count)")
+                     ])
 
-        let completionConfig = CompletionConfiguration(
-            temperature: configuration.defaultTemperature,
-            maxTokens: configuration.defaultMaxTokens,
-            systemPrompt: conversation.systemPrompt ?? configuration.defaultInstructions
-        )
+        let completionConfig = CompletionConfiguration(temperature: configuration.defaultTemperature,
+                                                       maxTokens: configuration.defaultMaxTokens,
+                                                       systemPrompt: conversation.systemPrompt ?? configuration
+                                                           .defaultInstructions)
 
-        let request = buildConversationRequest(
-            conversation: conversation,
-            newMessage: message,
-            configuration: completionConfig
-        )
+        let request = buildConversationRequest(conversation: conversation,
+                                               newMessage: message,
+                                               configuration: completionConfig)
 
         let response = try await apiClient.sendMessage(request)
         let mapped = mapResponse(response)
 
-        logger.info("Message sent successfully", metadata: [
-            "tokensUsed": .public("\(mapped.tokensUsed)")
-        ])
+        logger.info("Message sent successfully", metadata: ["tokensUsed": .public("\(mapped.tokensUsed)")])
 
-        return Message(
-            role: .assistant,
-            content: mapped.content,
-            metadata: [
-                "tokens": "\(mapped.tokensUsed)",
-                "model": configuration.model.modelId
-            ]
-        )
+        return Message(role: .assistant,
+                       content: mapped.content,
+                       metadata: [
+                           "tokens": "\(mapped.tokensUsed)",
+                           "model": configuration.model.modelId
+                       ])
     }
 
-    public func continueConversation(
-        _ conversation: Conversation,
-        with text: String
-    ) async throws -> Message {
+    public func continueConversation(_ conversation: Conversation,
+                                     with text: String) async throws -> Message {
         let userMessage = Message(role: .user, content: text)
         return try await sendMessage(userMessage, in: conversation)
     }

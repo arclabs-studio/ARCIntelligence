@@ -16,10 +16,8 @@ public final class RecommendationEngine: Sendable {
     // MARK: - Properties
 
     private let provider: RecommendationProvider
-    private let logger = ARCLogger(
-        subsystem: "com.arclabs.intelligence",
-        category: "RecommendationEngine"
-    )
+    private let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
+                                   category: "RecommendationEngine")
 
     // MARK: - Initialization
 
@@ -36,11 +34,9 @@ public final class RecommendationEngine: Sendable {
     ///   - configuration: Recommendation configuration
     /// - Returns: Array of recommendations
     /// - Throws: `IntelligenceError` if generation fails
-    public func recommend(
-        basedOn context: some Codable & Sendable,
-        numberOfRecommendations: Int = 5,
-        configuration: RecommendationConfiguration = .default
-    ) async throws -> [Recommendation] {
+    public func recommend(basedOn context: some Codable & Sendable,
+                          numberOfRecommendations: Int = 5,
+                          configuration: RecommendationConfiguration = .default) async throws -> [Recommendation] {
         logger.debug("Generating recommendations", metadata: [
             "requestedCount": .public("\(numberOfRecommendations)"),
             "contextType": .public("\(type(of: context))")
@@ -51,15 +47,11 @@ public final class RecommendationEngine: Sendable {
             throw IntelligenceError.invalidRequest("Count must be greater than 0")
         }
 
-        let recommendations = try await provider.generateRecommendations(
-            for: context,
-            count: numberOfRecommendations,
-            configuration: configuration
-        )
+        let recommendations = try await provider.generateRecommendations(for: context,
+                                                                         count: numberOfRecommendations,
+                                                                         configuration: configuration)
 
-        logger.info("Generated recommendations", metadata: [
-            "resultCount": .public("\(recommendations.count)")
-        ])
+        logger.info("Generated recommendations", metadata: ["resultCount": .public("\(recommendations.count)")])
 
         return recommendations
     }

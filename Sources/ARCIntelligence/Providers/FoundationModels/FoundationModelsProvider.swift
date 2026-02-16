@@ -51,10 +51,8 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
     public let version = "1.0"
 
     let configuration: FoundationModelsConfiguration
-    let logger = ARCLogger(
-        subsystem: "com.arclabs.intelligence",
-        category: "FoundationModels"
-    )
+    let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
+                           category: "FoundationModels")
 
     // MARK: - Initialization
 
@@ -114,10 +112,8 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
         return availability.isAvailable
     }
 
-    public func complete(
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) async throws -> IntelligenceResponse {
+    public func complete(prompt: String,
+                         configuration: CompletionConfiguration) async throws -> IntelligenceResponse {
         logger.debug("Starting completion request", metadata: [
             "promptLength": .public("\(prompt.count)"),
             "temperature": .public("\(configuration.temperature)")
@@ -141,13 +137,9 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
         throw IntelligenceError.providerUnavailable
     }
 
-    public func streamComplete(
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) -> AsyncThrowingStream<String, Error> {
-        logger.debug("Starting streaming completion request", metadata: [
-            "promptLength": .public("\(prompt.count)")
-        ])
+    public func streamComplete(prompt: String,
+                               configuration: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
+        logger.debug("Starting streaming completion request", metadata: ["promptLength": .public("\(prompt.count)")])
 
         return AsyncThrowingStream { [self] continuation in
             Task {
@@ -163,20 +155,16 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
 
                     #if canImport(FoundationModels)
                     if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
-                        try await performStreamingCompletion(
-                            prompt: prompt,
-                            configuration: configuration,
-                            continuation: continuation
-                        )
+                        try await performStreamingCompletion(prompt: prompt,
+                                                             configuration: configuration,
+                                                             continuation: continuation)
                         return
                     }
                     #endif
 
                     throw IntelligenceError.providerUnavailable
                 } catch {
-                    logger.error("Streaming request failed", metadata: [
-                        "error": .public(error.localizedDescription)
-                    ])
+                    logger.error("Streaming request failed", metadata: ["error": .public(error.localizedDescription)])
                     continuation.finish(throwing: error)
                 }
             }
@@ -185,45 +173,35 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
 
     // MARK: - ConversationProvider
 
-    public func sendMessage(
-        _ message: Message,
-        in conversation: Conversation
-    ) async throws -> Message {
-        logger.debug("Sending message in conversation", metadata: [
-            "conversationId": .public(conversation.id.uuidString),
-            "messageRole": .public(message.role.rawValue),
-            "historyCount": .public("\(conversation.messages.count)")
-        ])
+    public func sendMessage(_ message: Message,
+                            in conversation: Conversation) async throws -> Message {
+        logger.debug("Sending message in conversation",
+                     metadata: [
+                         "conversationId": .public(conversation.id.uuidString),
+                         "messageRole": .public(message.role.rawValue),
+                         "historyCount": .public("\(conversation.messages.count)")
+                     ])
 
         // Build prompt from conversation history
         let prompt = buildPrompt(from: conversation, adding: message)
 
         // Get completion with conversation's system prompt as instructions
-        let completionConfig = CompletionConfiguration(
-            temperature: configuration.defaultTemperature,
-            systemPrompt: conversation.systemPrompt ?? configuration.defaultInstructions
-        )
+        let completionConfig = CompletionConfiguration(temperature: configuration.defaultTemperature,
+                                                       systemPrompt: conversation.systemPrompt ?? configuration
+                                                           .defaultInstructions)
 
-        let response = try await complete(
-            prompt: prompt,
-            configuration: completionConfig
-        )
+        let response = try await complete(prompt: prompt,
+                                          configuration: completionConfig)
 
-        logger.info("Message sent successfully", metadata: [
-            "tokensUsed": .public("\(response.tokensUsed)")
-        ])
+        logger.info("Message sent successfully", metadata: ["tokensUsed": .public("\(response.tokensUsed)")])
 
-        return Message(
-            role: .assistant,
-            content: response.content,
-            metadata: ["tokens": "\(response.tokensUsed)"]
-        )
+        return Message(role: .assistant,
+                       content: response.content,
+                       metadata: ["tokens": "\(response.tokensUsed)"])
     }
 
-    public func continueConversation(
-        _ conversation: Conversation,
-        with text: String
-    ) async throws -> Message {
+    public func continueConversation(_ conversation: Conversation,
+                                     with text: String) async throws -> Message {
         let userMessage = Message(role: .user, content: text)
         return try await sendMessage(userMessage, in: conversation)
     }
@@ -240,10 +218,8 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
 
     #if canImport(FoundationModels)
     @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performCompletion(
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) async throws -> IntelligenceResponse {
+    private func performCompletion(prompt: String,
+                                   configuration: CompletionConfiguration) async throws -> IntelligenceResponse {
         do {
             // Create session with instructions if provided
             let session = if let systemPrompt = configuration.systemPrompt ?? self.configuration.defaultInstructions {
@@ -258,27 +234,22 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
             // Perform the request
             let response = try await session.respond(to: prompt, options: options)
 
-            logger.info("Completion successful", metadata: [
-                "responseLength": .public("\(response.content.count)")
-            ])
+            logger.info("Completion successful", metadata: ["responseLength": .public("\(response.content.count)")])
 
-            return IntelligenceResponse(
-                content: response.content,
-                tokensUsed: estimateTokenCount(response.content),
-                finishReason: .completed,
-                metadata: [:]
-            )
+            return IntelligenceResponse(content: response.content,
+                                        tokensUsed: estimateTokenCount(response.content),
+                                        finishReason: .completed,
+                                        metadata: [:])
         } catch {
             throw mapFoundationModelsError(error)
         }
     }
 
     @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performStreamingCompletion(
-        prompt: String,
-        configuration: CompletionConfiguration,
-        continuation: AsyncThrowingStream<String, Error>.Continuation
-    ) async throws {
+    private func performStreamingCompletion(prompt: String,
+                                            configuration: CompletionConfiguration,
+                                            continuation: AsyncThrowingStream<String, Error>
+                                                .Continuation) async throws {
         do {
             // Create session with instructions if provided
             let session = if let systemPrompt = configuration.systemPrompt ?? self.configuration.defaultInstructions {
@@ -314,10 +285,8 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
     }
 
     @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func mapGenerationError(
-        _ error: LanguageModelSession.GenerationError,
-        originalError: Error
-    ) -> IntelligenceError {
+    private func mapGenerationError(_ error: LanguageModelSession.GenerationError,
+                                    originalError: Error) -> IntelligenceError {
         switch error {
         case let .guardrailViolation(details):
             logger.warning("Guardrail violation", metadata: ["details": .public(String(describing: details))])

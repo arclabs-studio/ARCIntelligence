@@ -25,32 +25,32 @@ extension AnthropicProvider: ToolProvider {
     ///   - configuration: Generation configuration.
     /// - Returns: Response and tool call records.
     /// - Throws: `IntelligenceError` if generation fails.
-    public func respondWithToolCalls(
-        to prompt: String,
-        tools: [any IntelligenceTool],
-        configuration: CompletionConfiguration
-    ) async throws -> (response: IntelligenceResponse, toolCalls: [ToolCallRecord]) {
+    public func respondWithToolCalls(to prompt: String,
+                                     tools: [any IntelligenceTool],
+                                     configuration: CompletionConfiguration) async throws
+        -> (response: IntelligenceResponse,
+            toolCalls: [ToolCallRecord]) {
         logger.debug("Starting tool-assisted generation", metadata: [
             "promptLength": .public("\(prompt.count)"),
             "toolCount": .public("\(tools.count)")
         ])
 
-        let context = ToolCallingContext(
-            toolDefinitions: tools.map { mapToolToDefinition($0) },
-            toolsByName: Dictionary(uniqueKeysWithValues: tools.map { ($0.name, $0) }),
-            systemPrompt: configuration.systemPrompt ?? self.configuration.defaultInstructions,
-            maxTokens: configuration.maxTokens ?? self.configuration.defaultMaxTokens,
-            configuration: configuration
-        )
+        let context = ToolCallingContext(toolDefinitions: tools.map { mapToolToDefinition($0) },
+                                         toolsByName: Dictionary(uniqueKeysWithValues: tools.map { ($0.name, $0) }),
+                                         systemPrompt: configuration.systemPrompt ?? self.configuration
+                                             .defaultInstructions,
+                                         maxTokens: configuration.maxTokens ?? self.configuration.defaultMaxTokens,
+                                         configuration: configuration)
 
         let (response, allToolCalls) = try await executeToolLoop(context: context, prompt: prompt)
 
         let intelligenceResponse = mapResponse(response)
 
-        logger.info("Tool-assisted generation successful", metadata: [
-            "totalToolCalls": .public("\(allToolCalls.count)"),
-            "tokensUsed": .public("\(intelligenceResponse.tokensUsed)")
-        ])
+        logger.info("Tool-assisted generation successful",
+                    metadata: [
+                        "totalToolCalls": .public("\(allToolCalls.count)"),
+                        "tokensUsed": .public("\(intelligenceResponse.tokensUsed)")
+                    ])
 
         return (intelligenceResponse, allToolCalls)
     }
@@ -67,13 +67,9 @@ private struct ToolCallingContext {
 }
 
 extension AnthropicProvider {
-    private func executeToolLoop(
-        context: ToolCallingContext,
-        prompt: String
-    ) async throws -> (AnthropicMessageResponse, [ToolCallRecord]) {
-        var messages: [AnthropicAPIMessage] = [
-            AnthropicAPIMessage(role: "user", text: prompt)
-        ]
+    private func executeToolLoop(context: ToolCallingContext,
+                                 prompt: String) async throws -> (AnthropicMessageResponse, [ToolCallRecord]) {
+        var messages: [AnthropicAPIMessage] = [AnthropicAPIMessage(role: "user", text: prompt)]
         var allToolCalls: [ToolCallRecord] = []
 
         for round in 0 ..< configuration.maxToolRounds {
@@ -86,10 +82,8 @@ extension AnthropicProvider {
             }
 
             appendAssistantBlocks(from: response, to: &messages)
-            let (resultBlocks, calls) = try await executePendingTools(
-                toolUseBlocks,
-                context: context
-            )
+            let (resultBlocks, calls) = try await executePendingTools(toolUseBlocks,
+                                                                      context: context)
             allToolCalls.append(contentsOf: calls)
             messages.append(AnthropicAPIMessage(role: "user", blocks: resultBlocks))
 
@@ -100,35 +94,27 @@ extension AnthropicProvider {
         }
 
         logger.warning("Max tool rounds exceeded")
-        throw IntelligenceError.requestFailed(
-            "Exceeded maximum tool calling rounds (\(configuration.maxToolRounds))"
-        )
+        throw IntelligenceError.requestFailed("Exceeded maximum tool calling rounds (\(configuration.maxToolRounds))")
     }
 
-    private func buildToolRequest(
-        context: ToolCallingContext,
-        messages: [AnthropicAPIMessage]
-    ) -> AnthropicMessageRequest {
-        AnthropicMessageRequest(
-            model: configuration.model.modelId,
-            messages: messages,
-            maxTokens: context.maxTokens,
-            system: context.systemPrompt,
-            temperature: Double(context.configuration.temperature),
-            topP: context.configuration.topP.map { Double($0) },
-            stopSequences: context.configuration.stopSequences.isEmpty
-                ? nil
-                : context.configuration.stopSequences,
-            stream: false,
-            tools: context.toolDefinitions,
-            toolChoice: .auto
-        )
+    private func buildToolRequest(context: ToolCallingContext,
+                                  messages: [AnthropicAPIMessage]) -> AnthropicMessageRequest {
+        AnthropicMessageRequest(model: configuration.model.modelId,
+                                messages: messages,
+                                maxTokens: context.maxTokens,
+                                system: context.systemPrompt,
+                                temperature: Double(context.configuration.temperature),
+                                topP: context.configuration.topP.map { Double($0) },
+                                stopSequences: context.configuration.stopSequences.isEmpty
+                                    ? nil
+                                    : context.configuration.stopSequences,
+                                stream: false,
+                                tools: context.toolDefinitions,
+                                toolChoice: .auto)
     }
 
-    private func appendAssistantBlocks(
-        from response: AnthropicMessageResponse,
-        to messages: inout [AnthropicAPIMessage]
-    ) {
+    private func appendAssistantBlocks(from response: AnthropicMessageResponse,
+                                       to messages: inout [AnthropicAPIMessage]) {
         let blocks = response.content.map { block -> AnthropicContentBlock in
             switch block {
             case let .text(text):
@@ -140,10 +126,9 @@ extension AnthropicProvider {
         messages.append(AnthropicAPIMessage(role: "assistant", blocks: blocks))
     }
 
-    private func executePendingTools(
-        _ toolUseBlocks: [ExtractedToolUse],
-        context: ToolCallingContext
-    ) async throws -> ([AnthropicContentBlock], [ToolCallRecord]) {
+    private func executePendingTools(_ toolUseBlocks: [ExtractedToolUse],
+                                     context: ToolCallingContext) async throws -> ([AnthropicContentBlock],
+                                                                                   [ToolCallRecord]) {
         var resultBlocks: [AnthropicContentBlock] = []
         var records: [ToolCallRecord] = []
 
@@ -156,10 +141,8 @@ extension AnthropicProvider {
         return (resultBlocks, records)
     }
 
-    private func executeSingleTool(
-        _ toolUse: ExtractedToolUse,
-        context: ToolCallingContext
-    ) async -> (AnthropicContentBlock, ToolCallRecord) {
+    private func executeSingleTool(_ toolUse: ExtractedToolUse,
+                                   context: ToolCallingContext) async -> (AnthropicContentBlock, ToolCallRecord) {
         let startTime = CFAbsoluteTimeGetCurrent()
         let arguments = toolUse.input.mapValues(\.toAny)
         let stringArguments = toolUse.input.compactMapValues { value -> String? in
@@ -184,23 +167,17 @@ extension AnthropicProvider {
         } else {
             output = "Error: Unknown tool '\(toolUse.name)'"
             isError = true
-            logger.warning("Unknown tool requested", metadata: [
-                "tool": .public(toolUse.name)
-            ])
+            logger.warning("Unknown tool requested", metadata: ["tool": .public(toolUse.name)])
         }
 
         let duration = CFAbsoluteTimeGetCurrent() - startTime
-        let record = ToolCallRecord(
-            toolName: toolUse.name,
-            arguments: stringArguments,
-            output: output,
-            duration: duration
-        )
-        let block = AnthropicContentBlock.toolResult(
-            toolUseId: toolUse.id,
-            content: output,
-            isError: isError ? true : nil
-        )
+        let record = ToolCallRecord(toolName: toolUse.name,
+                                    arguments: stringArguments,
+                                    output: output,
+                                    duration: duration)
+        let block = AnthropicContentBlock.toolResult(toolUseId: toolUse.id,
+                                                     content: output,
+                                                     isError: isError ? true : nil)
 
         return (block, record)
     }

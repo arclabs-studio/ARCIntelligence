@@ -32,11 +32,9 @@ public protocol ContentTaggingProvider: IntelligenceProvider {
     ///   - maxTags: Maximum number of tags to return per category.
     /// - Returns: Array of generated tags.
     /// - Throws: `IntelligenceError` if tagging fails.
-    func generateTags(
-        for text: String,
-        categories: [TagCategory],
-        maxTags: Int
-    ) async throws -> [ContentTag]
+    func generateTags(for text: String,
+                      categories: [TagCategory],
+                      maxTags: Int) async throws -> [ContentTag]
 
     /// Generate tags for multiple texts in batch.
     ///
@@ -46,11 +44,9 @@ public protocol ContentTaggingProvider: IntelligenceProvider {
     ///   - maxTagsPerText: Maximum tags per text.
     /// - Returns: Array of tag arrays, one per input text.
     /// - Throws: `IntelligenceError` if tagging fails.
-    func generateTagsBatch(
-        for texts: [String],
-        categories: [TagCategory],
-        maxTagsPerText: Int
-    ) async throws -> [[ContentTag]]
+    func generateTagsBatch(for texts: [String],
+                           categories: [TagCategory],
+                           maxTagsPerText: Int) async throws -> [[ContentTag]]
 }
 
 // MARK: - Tag Category
@@ -86,12 +82,10 @@ public struct ContentTag: Sendable, Equatable, Identifiable, Codable {
     /// Confidence score (0.0-1.0).
     public let confidence: Float
 
-    public init(
-        id: UUID = UUID(),
-        value: String,
-        category: TagCategory,
-        confidence: Float = 1.0
-    ) {
+    public init(id: UUID = UUID(),
+                value: String,
+                category: TagCategory,
+                confidence: Float = 1.0) {
         self.id = id
         self.value = value.lowercased()
         self.category = category
@@ -107,30 +101,22 @@ extension TagCategory: Codable {}
 
 extension ContentTaggingProvider {
     /// Default implementation using all categories.
-    public func generateTags(
-        for text: String,
-        maxTags: Int = 5
-    ) async throws -> [ContentTag] {
-        try await generateTags(
-            for: text,
-            categories: TagCategory.allCases,
-            maxTags: maxTags
-        )
+    public func generateTags(for text: String,
+                             maxTags: Int = 5) async throws -> [ContentTag] {
+        try await generateTags(for: text,
+                               categories: TagCategory.allCases,
+                               maxTags: maxTags)
     }
 
     /// Default batch implementation that processes texts sequentially.
-    public func generateTagsBatch(
-        for texts: [String],
-        categories: [TagCategory],
-        maxTagsPerText: Int
-    ) async throws -> [[ContentTag]] {
+    public func generateTagsBatch(for texts: [String],
+                                  categories: [TagCategory],
+                                  maxTagsPerText: Int) async throws -> [[ContentTag]] {
         var results: [[ContentTag]] = []
         for text in texts {
-            let tags = try await generateTags(
-                for: text,
-                categories: categories,
-                maxTags: maxTagsPerText
-            )
+            let tags = try await generateTags(for: text,
+                                              categories: categories,
+                                              maxTags: maxTagsPerText)
             results.append(tags)
         }
         return results

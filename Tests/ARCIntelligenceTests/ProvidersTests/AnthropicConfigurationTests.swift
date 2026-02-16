@@ -12,20 +12,16 @@ import Testing
 struct AnthropicConfigurationTests {
     // MARK: - Helpers
 
-    private func makeSUT(
-        authentication: AnthropicAuthentication = .apiKey("test-key"),
-        model: AnthropicModel = .sonnet,
-        defaultTemperature: Float = 0.7,
-        defaultMaxTokens: Int = 4096,
-        maxToolRounds: Int = 10
-    ) -> AnthropicConfiguration {
-        AnthropicConfiguration(
-            authentication: authentication,
-            model: model,
-            defaultTemperature: defaultTemperature,
-            defaultMaxTokens: defaultMaxTokens,
-            maxToolRounds: maxToolRounds
-        )
+    private func makeSUT(authentication: AnthropicAuthentication = .apiKey("test-key"),
+                         model: AnthropicModel = .sonnet,
+                         defaultTemperature: Float = 0.7,
+                         defaultMaxTokens: Int = 4096,
+                         maxToolRounds: Int = 10) -> AnthropicConfiguration {
+        AnthropicConfiguration(authentication: authentication,
+                               model: model,
+                               defaultTemperature: defaultTemperature,
+                               defaultMaxTokens: defaultMaxTokens,
+                               maxToolRounds: maxToolRounds)
     }
 
     // MARK: - Defaults

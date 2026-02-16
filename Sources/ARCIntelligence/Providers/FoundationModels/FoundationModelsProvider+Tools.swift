@@ -26,11 +26,11 @@ extension FoundationModelsProvider: ToolProvider {
     ///   - configuration: Generation configuration.
     /// - Returns: Response and tool call records.
     /// - Throws: `IntelligenceError` if generation fails.
-    public func respondWithToolCalls(
-        to prompt: String,
-        tools: [any IntelligenceTool],
-        configuration: CompletionConfiguration
-    ) async throws -> (response: IntelligenceResponse, toolCalls: [ToolCallRecord]) {
+    public func respondWithToolCalls(to prompt: String,
+                                     tools: [any IntelligenceTool],
+                                     configuration: CompletionConfiguration) async throws
+        -> (response: IntelligenceResponse,
+            toolCalls: [ToolCallRecord]) {
         logger.debug("Starting tool-assisted generation", metadata: [
             "promptLength": .public("\(prompt.count)"),
             "toolCount": .public("\(tools.count)")
@@ -47,11 +47,9 @@ extension FoundationModelsProvider: ToolProvider {
 
         #if canImport(FoundationModels)
         if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
-            return try await performToolAssistedGeneration(
-                prompt: prompt,
-                tools: tools,
-                configuration: configuration
-            )
+            return try await performToolAssistedGeneration(prompt: prompt,
+                                                           tools: tools,
+                                                           configuration: configuration)
         }
         #endif
 
@@ -62,11 +60,11 @@ extension FoundationModelsProvider: ToolProvider {
 
     #if canImport(FoundationModels)
     @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performToolAssistedGeneration(
-        prompt: String,
-        tools: [any IntelligenceTool],
-        configuration: CompletionConfiguration
-    ) async throws -> (response: IntelligenceResponse, toolCalls: [ToolCallRecord]) {
+    private func performToolAssistedGeneration(prompt: String,
+                                               tools: [any IntelligenceTool],
+                                               configuration: CompletionConfiguration) async throws
+        -> (response: IntelligenceResponse,
+            toolCalls: [ToolCallRecord]) {
         do {
             // Wrap our tools in Apple's Tool protocol
             let appleTools = tools.map { FoundationModelToolWrapper(tool: $0) }
@@ -87,16 +85,13 @@ extension FoundationModelsProvider: ToolProvider {
             // We return an empty array as the calls are already processed
             let toolCalls: [ToolCallRecord] = []
 
-            logger.info("Tool-assisted generation successful", metadata: [
-                "responseLength": .public("\(response.content.count)")
-            ])
+            logger.info("Tool-assisted generation successful",
+                        metadata: ["responseLength": .public("\(response.content.count)")])
 
-            let intelligenceResponse = IntelligenceResponse(
-                content: response.content,
-                tokensUsed: response.content.count / 4,
-                finishReason: .completed,
-                metadata: [:]
-            )
+            let intelligenceResponse = IntelligenceResponse(content: response.content,
+                                                            tokensUsed: response.content.count / 4,
+                                                            finishReason: .completed,
+                                                            metadata: [:])
 
             return (intelligenceResponse, toolCalls)
         } catch let error as IntelligenceError {
@@ -115,8 +110,13 @@ extension FoundationModelsProvider: ToolProvider {
 private struct FoundationModelToolWrapper: Tool {
     let wrappedTool: any IntelligenceTool
 
-    var name: String { wrappedTool.name }
-    var description: String { wrappedTool.description }
+    var name: String {
+        wrappedTool.name
+    }
+
+    var description: String {
+        wrappedTool.description
+    }
 
     @Generable
     struct Arguments {

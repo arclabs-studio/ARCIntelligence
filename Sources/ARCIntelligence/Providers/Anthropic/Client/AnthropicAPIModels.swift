@@ -104,11 +104,9 @@ enum AnthropicContentBlock: Codable, Sendable {
             let isError = try container.decodeIfPresent(Bool.self, forKey: .isError)
             self = .toolResult(toolUseId: toolUseId, content: content, isError: isError)
         default:
-            throw DecodingError.dataCorruptedError(
-                forKey: .type,
-                in: container,
-                debugDescription: "Unknown content block type: \(type)"
-            )
+            throw DecodingError.dataCorruptedError(forKey: .type,
+                                                   in: container,
+                                                   debugDescription: "Unknown content block type: \(type)")
         }
     }
 
@@ -175,11 +173,9 @@ enum AnthropicResponseContentBlock: Codable, Sendable {
             let input = try container.decode([String: AnyCodableValue].self, forKey: .input)
             self = .toolUse(id: id, name: name, input: input)
         default:
-            throw DecodingError.dataCorruptedError(
-                forKey: .type,
-                in: container,
-                debugDescription: "Unknown response block type: \(type)"
-            )
+            throw DecodingError.dataCorruptedError(forKey: .type,
+                                                   in: container,
+                                                   debugDescription: "Unknown response block type: \(type)")
         }
     }
 
@@ -230,11 +226,9 @@ struct AnthropicInputSchema: Codable, Sendable {
     let properties: [String: AnthropicSchemaProperty]?
     let required: [String]?
 
-    init(
-        type: String = "object",
-        properties: [String: AnthropicSchemaProperty]? = nil,
-        required: [String]? = nil
-    ) {
+    init(type: String = "object",
+         properties: [String: AnthropicSchemaProperty]? = nil,
+         required: [String]? = nil) {
         self.type = type
         self.properties = properties
         self.required = required
@@ -276,11 +270,9 @@ enum AnthropicToolChoice: Codable, Sendable, Equatable {
             let name = try container.decode(String.self, forKey: .name)
             self = .tool(name: name)
         default:
-            throw DecodingError.dataCorruptedError(
-                forKey: .type,
-                in: container,
-                debugDescription: "Unknown tool choice type: \(type)"
-            )
+            throw DecodingError.dataCorruptedError(forKey: .type,
+                                                   in: container,
+                                                   debugDescription: "Unknown tool choice type: \(type)")
         }
     }
 
@@ -359,10 +351,8 @@ extension AnyCodableValue: Codable {
         } else if let object = try? container.decode([String: AnyCodableValue].self) {
             self = .object(object)
         } else {
-            throw DecodingError.dataCorruptedError(
-                in: container,
-                debugDescription: "Cannot decode AnyCodableValue"
-            )
+            throw DecodingError.dataCorruptedError(in: container,
+                                                   debugDescription: "Cannot decode AnyCodableValue")
         }
     }
 

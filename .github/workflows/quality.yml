@@ -37,7 +37,7 @@ jobs:
         run: brew install swiftformat
 
       - name: Check formatting
-        run: swiftformat --config ARCDevTools/configs/swiftformat --lint Sources/ Tests/
+        run: swiftformat --lint Sources/ Tests/
 
   markdown-links:
     name: Validate Markdown Links

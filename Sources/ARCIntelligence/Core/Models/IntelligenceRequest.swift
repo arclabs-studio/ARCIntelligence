@@ -25,12 +25,10 @@ public struct IntelligenceRequest: Sendable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        prompt: String,
-        configuration: CompletionConfiguration = .default,
-        conversation: Conversation? = nil,
-        timestamp: Date = Date()
-    ) {
+    public init(prompt: String,
+                configuration: CompletionConfiguration = .default,
+                conversation: Conversation? = nil,
+                timestamp: Date = Date()) {
         self.prompt = prompt
         self.configuration = configuration
         self.conversation = conversation

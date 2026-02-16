@@ -26,11 +26,9 @@ extension FoundationModelsProvider: GenerableProvider {
     ///   - configuration: Generation configuration.
     /// - Returns: An instance of the requested type.
     /// - Throws: `IntelligenceError` if generation fails.
-    public func generate<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) async throws -> T {
+    public func generate<T: Codable & Sendable>(_ type: T.Type,
+                                                prompt: String,
+                                                configuration: CompletionConfiguration) async throws -> T {
         logger.debug("Starting guided generation", metadata: [
             "type": .public(String(describing: type)),
             "promptLength": .public("\(prompt.count)")
@@ -47,11 +45,9 @@ extension FoundationModelsProvider: GenerableProvider {
 
         #if canImport(FoundationModels)
         if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
-            return try await performGuidedGeneration(
-                type,
-                prompt: prompt,
-                configuration: configuration
-            )
+            return try await performGuidedGeneration(type,
+                                                     prompt: prompt,
+                                                     configuration: configuration)
         }
         #endif
 
@@ -62,11 +58,10 @@ extension FoundationModelsProvider: GenerableProvider {
 
     #if canImport(FoundationModels)
     @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performGuidedGeneration<T: Codable & Sendable>(
-        _ type: T.Type,
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) async throws -> T {
+    private func performGuidedGeneration<T: Codable & Sendable>(_ type: T.Type,
+                                                                prompt: String,
+                                                                configuration: CompletionConfiguration) async throws
+    -> T {
         do {
             // Create session with instructions if provided
             let session = if let systemPrompt = configuration.systemPrompt ?? self.configuration.defaultInstructions {
@@ -89,20 +84,14 @@ extension FoundationModelsProvider: GenerableProvider {
             let decoder = JSONDecoder()
             let result = try decoder.decode(type, from: jsonData)
 
-            logger.info("Guided generation successful", metadata: [
-                "type": .public(String(describing: type))
-            ])
+            logger.info("Guided generation successful", metadata: ["type": .public(String(describing: type))])
 
             return result
         } catch let error as IntelligenceError {
             throw error
         } catch is DecodingError {
-            logger.error("Failed to decode response", metadata: [
-                "type": .public(String(describing: type))
-            ])
-            throw IntelligenceError.responseParseFailed(
-                "Failed to decode response as \(type)"
-            )
+            logger.error("Failed to decode response", metadata: ["type": .public(String(describing: type))])
+            throw IntelligenceError.responseParseFailed("Failed to decode response as \(type)")
         } catch {
             throw mapFoundationModelsError(error)
         }
