@@ -24,9 +24,7 @@ struct AnthropicStreamParser: Sendable {
     ///
     /// - Parameter bytes: The async byte sequence from URLSession.
     /// - Returns: An async stream of parsed events.
-    func parse(
-        _ bytes: URLSession.AsyncBytes
-    ) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
+    func parse(_ bytes: URLSession.AsyncBytes) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 do {
@@ -58,11 +56,11 @@ struct AnthropicStreamParser: Sendable {
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity
     /// Parse a single SSE line.
     ///
     /// - Parameter line: The raw SSE line.
     /// - Returns: A parsed event, or nil if the line is not a data line.
-    // swiftlint:disable:next cyclomatic_complexity
     func parseLine(_ line: String) throws -> AnthropicStreamEvent? {
         guard line.hasPrefix("data: ") else {
             return nil
@@ -110,6 +108,7 @@ struct AnthropicStreamParser: Sendable {
             return nil
         }
     }
+    // swiftlint:enable cyclomatic_complexity
 }
 
 // MARK: - Decodable Wrappers
