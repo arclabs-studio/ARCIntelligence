@@ -17,41 +17,33 @@ struct ContentView: View {
                     NavigationLink {
                         CompletionsView()
                     } label: {
-                        ExampleRow(
-                            icon: "doc.text.fill",
-                            title: "Text Completions",
-                            description: "Generate AI completions"
-                        )
+                        ExampleRow(icon: "doc.text.fill",
+                                   title: "Text Completions",
+                                   description: "Generate AI completions")
                     }
 
                     NavigationLink {
                         StreamingView()
                     } label: {
-                        ExampleRow(
-                            icon: "wave.3.right",
-                            title: "Streaming Responses",
-                            description: "Real-time token streaming"
-                        )
+                        ExampleRow(icon: "wave.3.right",
+                                   title: "Streaming Responses",
+                                   description: "Real-time token streaming")
                     }
 
                     NavigationLink {
                         ConversationView()
                     } label: {
-                        ExampleRow(
-                            icon: "bubble.left.and.bubble.right.fill",
-                            title: "Conversations",
-                            description: "Multi-turn dialogues"
-                        )
+                        ExampleRow(icon: "bubble.left.and.bubble.right.fill",
+                                   title: "Conversations",
+                                   description: "Multi-turn dialogues")
                     }
 
                     NavigationLink {
                         UtilitiesView()
                     } label: {
-                        ExampleRow(
-                            icon: "wrench.and.screwdriver.fill",
-                            title: "Utilities",
-                            description: "Prompt builder & token counter"
-                        )
+                        ExampleRow(icon: "wrench.and.screwdriver.fill",
+                                   title: "Utilities",
+                                   description: "Prompt builder & token counter")
                     }
                 }
 
@@ -59,11 +51,9 @@ struct ContentView: View {
                     NavigationLink {
                         SettingsView()
                     } label: {
-                        ExampleRow(
-                            icon: "gearshape.fill",
-                            title: "Settings",
-                            description: "Configure AI provider"
-                        )
+                        ExampleRow(icon: "gearshape.fill",
+                                   title: "Settings",
+                                   description: "Configure AI provider")
                     }
                 }
 
@@ -71,11 +61,9 @@ struct ContentView: View {
                     NavigationLink {
                         AboutView()
                     } label: {
-                        ExampleRow(
-                            icon: "info.circle.fill",
-                            title: "About ARCIntelligence",
-                            description: "Learn more about the package"
-                        )
+                        ExampleRow(icon: "info.circle.fill",
+                                   title: "About ARCIntelligence",
+                                   description: "Learn more about the package")
                     }
                 }
             }

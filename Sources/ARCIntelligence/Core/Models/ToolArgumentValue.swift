@@ -95,11 +95,9 @@ public enum ToolArgumentValue: Sendable, Codable, Equatable, CustomStringConvert
         } else if let value = try? container.decode([String: ToolArgumentValue].self) {
             self = .object(value)
         } else {
-            throw DecodingError.typeMismatch(
-                ToolArgumentValue.self,
-                DecodingError.Context(codingPath: decoder.codingPath,
-                                      debugDescription: "Unable to decode ToolArgumentValue")
-            )
+            throw DecodingError.typeMismatch(ToolArgumentValue.self,
+                                             DecodingError.Context(codingPath: decoder.codingPath,
+                                                                   debugDescription: "Unable to decode ToolArgumentValue"))
         }
     }
 

@@ -42,9 +42,9 @@ final class AppState {
     var grokModel: GrokModel = .grok3Fast
 
     init() {
-        currentProvider = MockIntelligenceProvider(
-            responses: ["This is a mock response. Switch to Foundation Models in Settings for real AI."]
-        )
+        currentProvider = MockIntelligenceProvider(responses: [
+            "This is a mock response. Switch to Foundation Models in Settings for real AI."
+        ])
     }
 
     func updateProvider(to type: ProviderType) {
@@ -52,39 +52,31 @@ final class AppState {
 
         switch type {
         case .mock:
-            currentProvider = MockIntelligenceProvider(
-                responses: [
-                    "This is a mock response from ARCIntelligence.",
-                    "Mock providers are great for testing and development!",
-                    "Switch to a cloud provider for real AI capabilities."
-                ]
-            )
+            currentProvider = MockIntelligenceProvider(responses: [
+                "This is a mock response from ARCIntelligence.",
+                "Mock providers are great for testing and development!",
+                "Switch to a cloud provider for real AI capabilities."
+            ])
 
         case .foundationModels:
             currentProvider = ARCIntelligence.foundationModels()
 
         case .anthropic:
             UserDefaults.standard.set(anthropicAPIKey, forKey: "anthropic_api_key")
-            let config = AnthropicConfiguration(
-                authentication: .apiKey(anthropicAPIKey),
-                model: anthropicModel
-            )
+            let config = AnthropicConfiguration(authentication: .apiKey(anthropicAPIKey),
+                                                model: anthropicModel)
             currentProvider = ARCIntelligence.anthropic(configuration: config)
 
         case .openAI:
             UserDefaults.standard.set(openAIAPIKey, forKey: "openai_api_key")
-            let config = OpenAIConfiguration(
-                authentication: .apiKey(openAIAPIKey),
-                model: openAIModel
-            )
+            let config = OpenAIConfiguration(authentication: .apiKey(openAIAPIKey),
+                                             model: openAIModel)
             currentProvider = ARCIntelligence.openAI(configuration: config)
 
         case .grok:
             UserDefaults.standard.set(grokAPIKey, forKey: "grok_api_key")
-            let config = GrokConfiguration(
-                authentication: .apiKey(grokAPIKey),
-                model: grokModel
-            )
+            let config = GrokConfiguration(authentication: .apiKey(grokAPIKey),
+                                           model: grokModel)
             currentProvider = ARCIntelligence.grok(configuration: config)
         }
     }

@@ -128,9 +128,7 @@ final class ConversationViewModel {
 
     func startConversation(provider: ConversationProvider) async {
         assistant = ConversationalAssistant(provider: provider)
-        _ = await assistant?.startConversation(
-            systemPrompt: "You are a helpful AI assistant. Be concise and friendly."
-        )
+        _ = await assistant?.startConversation(systemPrompt: "You are a helpful AI assistant. Be concise and friendly.")
     }
 
     func sendMessage(provider _: ConversationProvider) async {
@@ -140,10 +138,8 @@ final class ConversationViewModel {
         inputText = ""
 
         // Add user message
-        let userMessage = Message(
-            role: .user,
-            content: userMessageContent
-        )
+        let userMessage = Message(role: .user,
+                                  content: userMessageContent)
         messages.append(userMessage)
 
         // Get AI response
@@ -152,17 +148,13 @@ final class ConversationViewModel {
         do {
             let responseText = try await assistant?.sendMessage(userMessageContent) ?? "Error: No assistant"
 
-            let assistantMessage = Message(
-                role: .assistant,
-                content: responseText
-            )
+            let assistantMessage = Message(role: .assistant,
+                                           content: responseText)
             messages.append(assistantMessage)
 
         } catch {
-            let errorMessage = Message(
-                role: .assistant,
-                content: "Error: \(error.localizedDescription)"
-            )
+            let errorMessage = Message(role: .assistant,
+                                       content: "Error: \(error.localizedDescription)")
             messages.append(errorMessage)
         }
 

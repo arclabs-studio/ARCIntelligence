@@ -5,8 +5,8 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct StreamingView: View {
     @Environment(AppState.self) private var appState
@@ -25,10 +25,8 @@ struct StreamingView: View {
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color(.systemGray4), lineWidth: 1)
-                        )
+                        .overlay(RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(.systemGray4), lineWidth: 1))
                 }
                 .padding()
 
@@ -146,10 +144,8 @@ final class StreamingViewModel {
         streamTask = Task { [weak self] in
             guard let self else { return }
             do {
-                let stream = provider.streamComplete(
-                    prompt: prompt,
-                    configuration: .creative
-                )
+                let stream = provider.streamComplete(prompt: prompt,
+                                                     configuration: .creative)
 
                 for try await chunk in stream {
                     if Task.isCancelled { break }

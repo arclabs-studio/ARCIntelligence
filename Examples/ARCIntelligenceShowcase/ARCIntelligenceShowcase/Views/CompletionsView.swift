@@ -5,8 +5,8 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct CompletionsView: View {
     @Environment(AppState.self) private var appState
@@ -25,10 +25,8 @@ struct CompletionsView: View {
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color(.systemGray4), lineWidth: 1)
-                        )
+                        .overlay(RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(.systemGray4), lineWidth: 1))
                 }
                 .padding()
 
@@ -51,7 +49,7 @@ struct CompletionsView: View {
                             .foregroundColor(.secondary)
                     }
 
-                    Slider(value: $viewModel.temperature, in: 0...1, step: 0.1)
+                    Slider(value: $viewModel.temperature, in: 0 ... 1, step: 0.1)
                 }
                 .padding()
                 .background(Color(.systemGray6))
@@ -154,15 +152,11 @@ final class CompletionsViewModel {
         tokensUsed = nil
 
         do {
-            let config = CompletionConfiguration(
-                temperature: Float(temperature),
-                maxTokens: 1024
-            )
+            let config = CompletionConfiguration(temperature: Float(temperature),
+                                                 maxTokens: 1024)
 
-            let result = try await provider.complete(
-                prompt: prompt,
-                configuration: config
-            )
+            let result = try await provider.complete(prompt: prompt,
+                                                     configuration: config)
 
             response = result.content
             tokensUsed = result.tokensUsed
@@ -180,9 +174,9 @@ enum ConfigPreset {
 
     var temperature: Double {
         switch self {
-        case .default: return 0.7
-        case .factual: return 0.3
-        case .creative: return 0.9
+        case .default: 0.7
+        case .factual: 0.3
+        case .creative: 0.9
         }
     }
 }
