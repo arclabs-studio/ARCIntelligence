@@ -42,6 +42,7 @@ extension AnthropicProvider {
                                   configuration: CompletionConfiguration,
                                   stream: Bool = false) -> AnthropicMessageRequest {
         var apiMessages: [AnthropicAPIMessage] = []
+        apiMessages.reserveCapacity(conversation.messages.count + 1)
 
         // Map conversation history (skip system messages, they go to the system field)
         for message in conversation.messages {
