@@ -36,7 +36,10 @@ let package = Package(
         .target(
             name: "ARCIntelligenceMocks",
             dependencies: ["ARCIntelligence"],
-            path: "Sources/ARCIntelligenceMocks"
+            path: "Sources/ARCIntelligenceMocks",
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
         ),
         .testTarget(
             name: "ARCIntelligenceTests",
