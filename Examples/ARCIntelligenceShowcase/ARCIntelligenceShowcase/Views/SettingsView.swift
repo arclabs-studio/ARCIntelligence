@@ -73,6 +73,53 @@ struct SettingsView: View {
                 }
             }
 
+            if appState.selectedProvider == .openAI {
+                Section {
+                    SecureField("API Key (sk-...)", text: $appState.openAIAPIKey)
+                        .textContentType(.password)
+                        .autocorrectionDisabled()
+                        .onChange(of: appState.openAIAPIKey) {
+                            appState.updateProvider(to: .openAI)
+                        }
+
+                    Picker("Model", selection: $appState.openAIModel) {
+                        Text("GPT-4o Mini (Fast)").tag(OpenAIModel.gpt4oMini)
+                        Text("GPT-4o (Balanced)").tag(OpenAIModel.gpt4o)
+                        Text("o3-mini (Reasoning)").tag(OpenAIModel.o3Mini)
+                    }
+                    .onChange(of: appState.openAIModel) {
+                        appState.updateProvider(to: .openAI)
+                    }
+                } header: {
+                    Text("OpenAI Settings")
+                } footer: {
+                    Text("Enter your OpenAI API key. Do not use in production apps — use AIProxy instead.")
+                }
+            }
+
+            if appState.selectedProvider == .grok {
+                Section {
+                    SecureField("API Key (xai-...)", text: $appState.grokAPIKey)
+                        .textContentType(.password)
+                        .autocorrectionDisabled()
+                        .onChange(of: appState.grokAPIKey) {
+                            appState.updateProvider(to: .grok)
+                        }
+
+                    Picker("Model", selection: $appState.grokModel) {
+                        Text("Grok 3 Fast").tag(GrokModel.grok3Fast)
+                        Text("Grok 3").tag(GrokModel.grok3)
+                    }
+                    .onChange(of: appState.grokModel) {
+                        appState.updateProvider(to: .grok)
+                    }
+                } header: {
+                    Text("Grok (xAI) Settings")
+                } footer: {
+                    Text("Enter your xAI API key. Do not use in production apps — use AIProxy instead.")
+                }
+            }
+
             Section {
                 Button {
                     Task {

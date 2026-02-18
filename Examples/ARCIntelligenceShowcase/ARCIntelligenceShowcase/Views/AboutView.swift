@@ -62,6 +62,12 @@ struct AboutView: View {
                     )
 
                     FeatureRow(
+                        icon: "cloud.fill",
+                        title: "Multi-Provider",
+                        description: "OpenAI, Anthropic, Grok (xAI), and on-device Foundation Models"
+                    )
+
+                    FeatureRow(
                         icon: "lock.shield",
                         title: "Privacy First",
                         description: "On-device processing with Foundation Models"
