@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("PromptBuilder Tests")
+@Suite("PromptBuilder Tests", .tags(.unit))
 struct PromptBuilderTests {
     @Test("Build simple prompt")
     func buildSimplePrompt() {
@@ -48,7 +48,7 @@ struct PromptBuilderTests {
     }
 }
 
-@Suite("TokenCounter Tests")
+@Suite("TokenCounter Tests", .tags(.unit))
 struct TokenCounterTests {
     @Test("Estimate tokens for text")
     func estimateTokensForText() {

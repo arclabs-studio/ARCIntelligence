@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Grok Configuration Tests")
+@Suite("Grok Configuration Tests", .tags(.unit))
 struct GrokConfigurationTests {
     // MARK: - Helpers
 

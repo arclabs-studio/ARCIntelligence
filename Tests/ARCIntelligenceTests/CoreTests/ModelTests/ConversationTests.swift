@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Conversation Tests")
+@Suite("Conversation Tests", .tags(.unit))
 struct ConversationTests {
     @Test("Conversation initializes empty")
     func conversationInitializesEmpty() {

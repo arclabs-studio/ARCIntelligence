@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Anthropic Provider Generable Tests")
+@Suite("Anthropic Provider Generable Tests", .tags(.unit))
 struct AnthropicProviderGenerableTests {
     // MARK: - Test Types
 

@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Embedding Tests")
+@Suite("Embedding Tests", .tags(.unit))
 struct EmbeddingTests {
     @Test("Embedding initializes with correct values")
     func init_setsValuesCorrectly() {

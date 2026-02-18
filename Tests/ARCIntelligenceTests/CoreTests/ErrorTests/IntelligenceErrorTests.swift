@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("IntelligenceError Tests")
+@Suite("IntelligenceError Tests", .tags(.unit))
 struct IntelligenceErrorTests {
     @Test("Provider unavailable error has correct description")
     func providerUnavailableErrorDescription() {
