@@ -50,8 +50,7 @@ public final class GrokProvider: Sendable {
 
     // MARK: - Constants
 
-    // swiftlint:disable:next force_unwrapping
-    private static let defaultBaseURL = URL(string: "https://api.x.ai")!
+    private static let defaultBaseURL = URL(literal: "https://api.x.ai")
 
     // MARK: - Initialization
 
@@ -190,5 +189,19 @@ extension GrokProvider: ConversationProvider {
         let totalChars = conversation.messages.reduce(0) { $0 + $1.content.count }
         let systemChars = conversation.systemPrompt?.count ?? 0
         return (totalChars + systemChars) / 4
+    }
+}
+
+// MARK: - OpenAICompatibleProvider
+
+extension GrokProvider: OpenAICompatibleProvider {
+    var providerDefaults: OpenAICompatibleMapping.ProviderDefaults {
+        OpenAICompatibleMapping.ProviderDefaults(modelId: configuration.model.modelId,
+                                                 defaultInstructions: configuration.defaultInstructions,
+                                                 defaultMaxTokens: configuration.defaultMaxTokens)
+    }
+
+    var maxToolRounds: Int {
+        configuration.maxToolRounds
     }
 }

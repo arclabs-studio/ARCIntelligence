@@ -11,7 +11,7 @@ import Foundation
 
 /// Concrete implementation of `AnthropicAPIClient` using ARCNetworking for
 /// standard requests and URLSession for streaming SSE.
-final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
+final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport, Sendable {
     // MARK: - Properties
 
     private let authentication: AnthropicAuthentication
@@ -23,8 +23,7 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
     // MARK: - Constants
 
     private static let apiVersion = "2023-06-01"
-    // swiftlint:disable:next force_unwrapping
-    private static let defaultBaseURL = URL(string: "https://api.anthropic.com")!
+    private static let defaultBaseURL = URL(literal: "https://api.anthropic.com")
 
     // MARK: - Initialization
 
@@ -152,15 +151,6 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
         return urlRequest
     }
 
-    private func collectErrorData(from bytes: URLSession.AsyncBytes) async throws -> Data {
-        var data = Data()
-        for try await byte in bytes {
-            data.append(byte)
-            if data.count > 10000 { break }
-        }
-        return data
-    }
-
     private func mapHTTPError(_ error: HTTPError) -> IntelligenceError {
         switch error {
         case .invalidURL:
@@ -195,13 +185,6 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
         guard let data else { return nil }
         let errorResponse = try? JSONDecoder().decode(AnthropicErrorResponse.self, from: data)
         return errorResponse?.error.message
-    }
-
-    private func mapError(_ error: Error) -> Error {
-        if error is IntelligenceError {
-            return error
-        }
-        return IntelligenceError.requestFailed(error.localizedDescription)
     }
 }
 

@@ -13,7 +13,7 @@ import Foundation
 /// standard requests and URLSession for streaming SSE.
 ///
 /// Used by both OpenAI and Grok providers with different base URLs and auth headers.
-final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, Sendable {
+final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, StreamingHTTPClientSupport, Sendable {
     // MARK: - Properties
 
     private let baseURL: URL
@@ -124,15 +124,6 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, Sendable {
         return urlRequest
     }
 
-    private func collectErrorData(from bytes: URLSession.AsyncBytes) async throws -> Data {
-        var data = Data()
-        for try await byte in bytes {
-            data.append(byte)
-            if data.count > 10000 { break }
-        }
-        return data
-    }
-
     private func mapHTTPError(_ error: HTTPError) -> IntelligenceError {
         switch error {
         case .invalidURL:
@@ -167,13 +158,6 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, Sendable {
         guard let data else { return nil }
         let errorResponse = try? JSONDecoder().decode(OpenAIErrorResponse.self, from: data)
         return errorResponse?.error.message
-    }
-
-    private func mapError(_ error: Error) -> Error {
-        if error is IntelligenceError {
-            return error
-        }
-        return IntelligenceError.requestFailed(error.localizedDescription)
     }
 }
 
