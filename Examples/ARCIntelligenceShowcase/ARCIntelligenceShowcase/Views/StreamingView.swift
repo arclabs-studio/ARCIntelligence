@@ -9,8 +9,8 @@ import SwiftUI
 import ARCIntelligence
 
 struct StreamingView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel = StreamingViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var viewModel = StreamingViewModel()
 
     var body: some View {
         ScrollView {
@@ -129,11 +129,12 @@ struct StreamingView: View {
 // MARK: - View Model
 
 @MainActor
-class StreamingViewModel: ObservableObject {
-    @Published var prompt = "Write a short story about AI and humans working together"
-    @Published var streamedResponse = ""
-    @Published var isStreaming = false
-    @Published var error: String?
+@Observable
+final class StreamingViewModel {
+    var prompt = "Write a short story about AI and humans working together"
+    var streamedResponse = ""
+    var isStreaming = false
+    var error: String?
 
     private var streamTask: Task<Void, Never>?
 
@@ -142,7 +143,8 @@ class StreamingViewModel: ObservableObject {
         error = nil
         streamedResponse = ""
 
-        streamTask = Task {
+        streamTask = Task { [weak self] in
+            guard let self else { return }
             do {
                 let stream = provider.streamComplete(
                     prompt: prompt,
@@ -173,6 +175,6 @@ class StreamingViewModel: ObservableObject {
 #Preview {
     NavigationView {
         StreamingView()
-            .environmentObject(AppState())
+            .environment(AppState())
     }
 }

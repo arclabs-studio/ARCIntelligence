@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var appState: AppState
+    @Environment(AppState.self) private var appState
 
     var body: some View {
         NavigationView {
@@ -113,5 +113,5 @@ struct ExampleRow: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AppState())
+        .environment(AppState())
 }

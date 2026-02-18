@@ -11,12 +11,12 @@ import SwiftUI
 
 @main
 struct ARCIntelligenceShowcaseApp: App {
-    @StateObject private var appState = AppState()
+    @State private var appState = AppState()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(appState)
+                .environment(appState)
         }
     }
 }
@@ -24,21 +24,22 @@ struct ARCIntelligenceShowcaseApp: App {
 // MARK: - App State
 
 @MainActor
-class AppState: ObservableObject {
-    @Published var selectedProvider: ProviderType = .mock
-    @Published var currentProvider: IntelligenceProvider
+@Observable
+final class AppState {
+    var selectedProvider: ProviderType = .mock
+    var currentProvider: IntelligenceProvider
 
     // Anthropic settings
-    @Published var anthropicAPIKey: String = UserDefaults.standard.string(forKey: "anthropic_api_key") ?? ""
-    @Published var anthropicModel: AnthropicModel = .sonnet
+    var anthropicAPIKey: String = UserDefaults.standard.string(forKey: "anthropic_api_key") ?? ""
+    var anthropicModel: AnthropicModel = .sonnet
 
     // OpenAI settings
-    @Published var openAIAPIKey: String = UserDefaults.standard.string(forKey: "openai_api_key") ?? ""
-    @Published var openAIModel: OpenAIModel = .gpt4oMini
+    var openAIAPIKey: String = UserDefaults.standard.string(forKey: "openai_api_key") ?? ""
+    var openAIModel: OpenAIModel = .gpt4oMini
 
     // Grok settings
-    @Published var grokAPIKey: String = UserDefaults.standard.string(forKey: "grok_api_key") ?? ""
-    @Published var grokModel: GrokModel = .grok3Fast
+    var grokAPIKey: String = UserDefaults.standard.string(forKey: "grok_api_key") ?? ""
+    var grokModel: GrokModel = .grok3Fast
 
     init() {
         currentProvider = MockIntelligenceProvider(

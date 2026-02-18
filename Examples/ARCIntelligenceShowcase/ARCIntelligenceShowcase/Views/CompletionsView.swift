@@ -9,8 +9,8 @@ import SwiftUI
 import ARCIntelligence
 
 struct CompletionsView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel = CompletionsViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var viewModel = CompletionsViewModel()
 
     var body: some View {
         ScrollView {
@@ -137,14 +137,15 @@ struct CompletionsView: View {
 // MARK: - View Model
 
 @MainActor
-class CompletionsViewModel: ObservableObject {
-    @Published var prompt = "Explain quantum computing in simple terms"
-    @Published var selectedPreset: ConfigPreset = .default
-    @Published var temperature: Double = 0.7
-    @Published var response = ""
-    @Published var tokensUsed: Int?
-    @Published var isGenerating = false
-    @Published var error: String?
+@Observable
+final class CompletionsViewModel {
+    var prompt = "Explain quantum computing in simple terms"
+    var selectedPreset: ConfigPreset = .default
+    var temperature: Double = 0.7
+    var response = ""
+    var tokensUsed: Int?
+    var isGenerating = false
+    var error: String?
 
     func generate(provider: IntelligenceProvider) async {
         isGenerating = true
@@ -189,6 +190,6 @@ enum ConfigPreset {
 #Preview {
     NavigationView {
         CompletionsView()
-            .environmentObject(AppState())
+            .environment(AppState())
     }
 }

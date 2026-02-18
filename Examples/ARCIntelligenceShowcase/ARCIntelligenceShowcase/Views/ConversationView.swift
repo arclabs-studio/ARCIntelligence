@@ -9,8 +9,8 @@ import ARCIntelligence
 import SwiftUI
 
 struct ConversationView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel = ConversationViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var viewModel = ConversationViewModel()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -118,10 +118,11 @@ struct MessageBubble: View {
 // MARK: - View Model
 
 @MainActor
-class ConversationViewModel: ObservableObject {
-    @Published var messages: [Message] = []
-    @Published var inputText = ""
-    @Published var isThinking = false
+@Observable
+final class ConversationViewModel {
+    var messages: [Message] = []
+    var inputText = ""
+    var isThinking = false
 
     private var assistant: ConversationalAssistant?
 
@@ -170,8 +171,8 @@ class ConversationViewModel: ObservableObject {
 
     func clearConversation() {
         messages.removeAll()
-        Task {
-            await assistant?.endConversation()
+        Task { [weak self] in
+            await self?.assistant?.endConversation()
         }
     }
 }
@@ -179,6 +180,6 @@ class ConversationViewModel: ObservableObject {
 #Preview {
     NavigationView {
         ConversationView()
-            .environmentObject(AppState())
+            .environment(AppState())
     }
 }
