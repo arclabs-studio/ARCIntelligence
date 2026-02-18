@@ -118,9 +118,10 @@ public final class MockToolProvider: IntelligenceProvider, ToolProvider, Sendabl
         // Optionally call the actual tools
         if shouldCallTools {
             actualToolCalls = []
+            actualToolCalls.reserveCapacity(tools.count)
             for tool in tools {
                 let startTime = Date()
-                let output = try await tool.execute(arguments: ["prompt": prompt])
+                let output = try await tool.execute(arguments: ["prompt": .string(prompt)])
                 let duration = Date().timeIntervalSince(startTime)
 
                 actualToolCalls.append(ToolCallRecord(toolName: tool.name,
@@ -158,7 +159,7 @@ public struct MockTool: IntelligenceTool {
         self.shouldFail = shouldFail
     }
 
-    public func execute(arguments _: [String: Any]) async throws -> String {
+    public func execute(arguments _: [String: ToolArgumentValue]) async throws -> String {
         if shouldFail {
             throw IntelligenceError.requestFailed("Mock tool execution failed")
         }

@@ -22,8 +22,8 @@ import Foundation
 ///     let name = "getWeather"
 ///     let description = "Get current weather for a city"
 ///
-///     func execute(arguments: [String: Any]) async throws -> String {
-///         let city = arguments["city"] as? String ?? "Unknown"
+///     func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+///         let city = arguments["city"]?.stringValue ?? "Unknown"
 ///         return "Weather in \(city): 72°F, Sunny"
 ///     }
 /// }
@@ -92,7 +92,7 @@ public protocol IntelligenceTool: Sendable {
     /// - Parameter arguments: Arguments provided by the model.
     /// - Returns: The tool's output as a string.
     /// - Throws: Any error that occurs during execution.
-    func execute(arguments: [String: Any]) async throws -> String
+    func execute(arguments: [String: ToolArgumentValue]) async throws -> String
 }
 
 // MARK: - Tool Parameters Schema

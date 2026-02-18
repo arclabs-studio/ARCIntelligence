@@ -133,7 +133,9 @@ extension GrokProvider {
     private func executePendingTools(_ toolCalls: [OpenAICompatibleMapping.ExtractedToolCall],
                                      context: GrokToolCallingContext) async -> ([OpenAIChatMessage], [ToolCallRecord]) {
         var toolMessages: [OpenAIChatMessage] = []
+        toolMessages.reserveCapacity(toolCalls.count)
         var records: [ToolCallRecord] = []
+        records.reserveCapacity(toolCalls.count)
 
         for toolCall in toolCalls {
             let (message, record) = await executeSingleTool(toolCall, context: context)
@@ -148,16 +150,13 @@ extension GrokProvider {
                                    context: GrokToolCallingContext) async -> (OpenAIChatMessage, ToolCallRecord) {
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        let arguments: [String: Any]
+        let arguments: [String: ToolArgumentValue]
         let stringArguments: [String: String]
 
         if let data = toolCall.arguments.data(using: .utf8),
-           let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+           let dict = try? JSONDecoder().decode([String: ToolArgumentValue].self, from: data) {
             arguments = dict
-            stringArguments = dict.compactMapValues { value -> String? in
-                if let str = value as? String { return str }
-                return "\(value)"
-            }
+            stringArguments = ToolArgumentValue.toStringDictionary(dict)
         } else {
             arguments = [:]
             stringArguments = [:]

@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Grok Provider Tool Tests")
+@Suite("Grok Provider Tool Tests", .tags(.unit))
 struct GrokProviderToolTests {
     // MARK: - Helpers
 
@@ -35,7 +35,7 @@ struct GrokProviderToolTests {
             self.responseToReturn = responseToReturn
         }
 
-        func execute(arguments _: [String: Any]) async throws -> String {
+        func execute(arguments _: [String: ToolArgumentValue]) async throws -> String {
             responseToReturn
         }
     }

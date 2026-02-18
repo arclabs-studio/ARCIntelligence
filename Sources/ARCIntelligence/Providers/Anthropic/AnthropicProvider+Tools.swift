@@ -130,7 +130,9 @@ extension AnthropicProvider {
                                      context: ToolCallingContext) async throws -> ([AnthropicContentBlock],
                                                                                    [ToolCallRecord]) {
         var resultBlocks: [AnthropicContentBlock] = []
+        resultBlocks.reserveCapacity(toolUseBlocks.count)
         var records: [ToolCallRecord] = []
+        records.reserveCapacity(toolUseBlocks.count)
 
         for toolUse in toolUseBlocks {
             let (block, record) = await executeSingleTool(toolUse, context: context)
@@ -144,11 +146,8 @@ extension AnthropicProvider {
     private func executeSingleTool(_ toolUse: ExtractedToolUse,
                                    context: ToolCallingContext) async -> (AnthropicContentBlock, ToolCallRecord) {
         let startTime = CFAbsoluteTimeGetCurrent()
-        let arguments = toolUse.input.mapValues(\.toAny)
-        let stringArguments = toolUse.input.compactMapValues { value -> String? in
-            if case let .string(str) = value { return str }
-            return "\(value)"
-        }
+        let arguments = toolUse.input.mapValues { $0.toToolArgumentValue }
+        let stringArguments = ToolArgumentValue.toStringDictionary(arguments)
 
         var output: String
         var isError = false

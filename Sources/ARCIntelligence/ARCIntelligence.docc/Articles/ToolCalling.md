@@ -32,8 +32,8 @@ struct WeatherTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: Any]) async throws -> String {
-        guard let city = arguments["city"] as? String else {
+    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+        guard let city = arguments["city"]?.stringValue else {
             throw IntelligenceError.invalidRequest("Missing city parameter")
         }
 
@@ -115,10 +115,10 @@ struct CalculatorTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: Any]) async throws -> String {
-        guard let operation = arguments["operation"] as? String,
-              let a = arguments["a"] as? Double,
-              let b = arguments["b"] as? Double else {
+    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+        guard let operation = arguments["operation"]?.stringValue,
+              let a = arguments["a"]?.doubleValue,
+              let b = arguments["b"]?.doubleValue else {
             throw IntelligenceError.invalidRequest("Invalid parameters")
         }
 
@@ -163,8 +163,8 @@ struct SearchTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: Any]) async throws -> String {
-        let query = arguments["query"] as? String ?? ""
+    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+        let query = arguments["query"]?.stringValue ?? ""
         // Perform search
         return "Search results for: \(query)"
     }
@@ -189,7 +189,7 @@ struct CurrentTimeTool: IntelligenceTool {
 
     // parametersSchema defaults to nil
 
-    func execute(arguments: [String: Any]) async throws -> String {
+    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .full
         formatter.timeStyle = .medium
@@ -220,8 +220,8 @@ struct DatabaseTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: Any]) async throws -> String {
-        guard let userId = arguments["userId"] as? String else {
+    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+        guard let userId = arguments["userId"]?.stringValue else {
             return "Error: Missing user ID"
         }
 

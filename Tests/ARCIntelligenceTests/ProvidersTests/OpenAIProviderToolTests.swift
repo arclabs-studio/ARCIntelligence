@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("OpenAI Provider Tool Tests")
+@Suite("OpenAI Provider Tool Tests", .tags(.unit))
 struct OpenAIProviderToolTests {
     // MARK: - Helpers
 
@@ -35,7 +35,7 @@ struct OpenAIProviderToolTests {
             self.responseToReturn = responseToReturn
         }
 
-        func execute(arguments _: [String: Any]) async throws -> String {
+        func execute(arguments _: [String: ToolArgumentValue]) async throws -> String {
             responseToReturn
         }
     }

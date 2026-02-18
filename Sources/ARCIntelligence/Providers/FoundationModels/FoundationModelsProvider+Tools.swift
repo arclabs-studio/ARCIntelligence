@@ -133,9 +133,9 @@ private struct FoundationModelToolWrapper: Tool {
         return try await wrappedTool.execute(arguments: parsedArgs)
     }
 
-    private func parseJSONArguments(_ json: String) -> [String: Any] {
+    private func parseJSONArguments(_ json: String) -> [String: ToolArgumentValue] {
         guard let data = json.data(using: .utf8),
-              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+              let dict = try? JSONDecoder().decode([String: ToolArgumentValue].self, from: data)
         else {
             return [:]
         }
