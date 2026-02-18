@@ -84,11 +84,9 @@ struct OpenAIProviderToolTests {
 
     @Test("Tool calling loop executes tool and returns final response")
     func toolCallingLoop() async throws {
-        let mock = MockOpenAICompatibleAPIClient.withToolCall(
-            functionName: "get_weather",
-            arguments: "{\"city\":\"Boston\"}",
-            followUpText: "The weather in Boston is 72°F."
-        )
+        let mock = MockOpenAICompatibleAPIClient.withToolCall(functionName: "get_weather",
+                                                              arguments: "{\"city\":\"Boston\"}",
+                                                              followUpText: "The weather in Boston is 72°F.")
         let sut = makeSUT(apiClient: mock)
 
         let tool = TestTool(name: "get_weather",
@@ -108,11 +106,9 @@ struct OpenAIProviderToolTests {
 
     @Test("Tool call records include string arguments")
     func toolCallRecordArguments() async throws {
-        let mock = MockOpenAICompatibleAPIClient.withToolCall(
-            functionName: "search",
-            arguments: "{\"query\":\"restaurants\"}",
-            followUpText: "Found results."
-        )
+        let mock = MockOpenAICompatibleAPIClient.withToolCall(functionName: "search",
+                                                              arguments: "{\"query\":\"restaurants\"}",
+                                                              followUpText: "Found results.")
         let sut = makeSUT(apiClient: mock)
 
         let tool = TestTool(name: "search", responseToReturn: "results")
@@ -126,11 +122,9 @@ struct OpenAIProviderToolTests {
 
     @Test("Unknown tool produces error result")
     func unknownTool() async throws {
-        let mock = MockOpenAICompatibleAPIClient.withToolCall(
-            functionName: "unknown_tool",
-            arguments: "{}",
-            followUpText: "I see the tool wasn't available."
-        )
+        let mock = MockOpenAICompatibleAPIClient.withToolCall(functionName: "unknown_tool",
+                                                              arguments: "{}",
+                                                              followUpText: "I see the tool wasn't available.")
         let sut = makeSUT(apiClient: mock)
 
         let (response, toolCalls) = try await sut.respondWithToolCalls(to: "Test",
@@ -145,11 +139,9 @@ struct OpenAIProviderToolTests {
 
     @Test("Sends tool results as role:tool messages in history")
     func toolResultsInHistory() async throws {
-        let mock = MockOpenAICompatibleAPIClient.withToolCall(
-            functionName: "calc",
-            arguments: "{\"expr\":\"2+2\"}",
-            followUpText: "The result is 4."
-        )
+        let mock = MockOpenAICompatibleAPIClient.withToolCall(functionName: "calc",
+                                                              arguments: "{\"expr\":\"2+2\"}",
+                                                              followUpText: "The result is 4.")
         let sut = makeSUT(apiClient: mock)
 
         let tool = TestTool(name: "calc", responseToReturn: "4")

@@ -59,9 +59,7 @@ extension GrokProvider: GenerableProvider {
             .buildGenerationRequest(type,
                                     prompt: prompt,
                                     schemaDescription: schemaDescription,
-                                    modelId: self.configuration.model.modelId,
-                                    defaultInstructions: self.configuration.defaultInstructions,
-                                    defaultMaxTokens: self.configuration.defaultMaxTokens,
+                                    defaults: providerDefaults,
                                     configuration: configuration)
 
         let response = try await apiClient.sendChatCompletion(request)

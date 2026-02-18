@@ -30,30 +30,22 @@ struct GrokProviderGenerableTests {
         let mock = MockOpenAICompatibleAPIClient()
         let argumentsJson = "{\"json_output\":\(json.debugDescription)}"
         mock.chatResponses = [
-            OpenAIChatResponse(
-                id: "chatcmpl-gen",
-                object: "chat.completion",
-                model: "grok-3-fast",
-                choices: [
-                    OpenAIChatChoice(
-                        index: 0,
-                        message: OpenAIChatChoiceMessage(
-                            role: "assistant",
-                            content: nil,
-                            toolCalls: [
-                                OpenAIToolCall(id: "call_gen",
-                                               type: "function",
-                                               function: OpenAIFunctionCall(
-                                                   name: "generate_moviereview",
-                                                   arguments: argumentsJson
-                                               ))
-                            ]
-                        ),
-                        finishReason: "tool_calls"
-                    )
-                ],
-                usage: OpenAIUsage(promptTokens: 50, completionTokens: 100, totalTokens: 150)
-            )
+            OpenAIChatResponse(id: "chatcmpl-gen",
+                               object: "chat.completion",
+                               model: "grok-3-fast",
+                               choices: [
+                                   OpenAIChatChoice(index: 0,
+                                                    message: OpenAIChatChoiceMessage(role: "assistant",
+                                                                                     content: nil,
+                                                                                     toolCalls: [
+                                                                                         OpenAIToolCall(id: "call_gen",
+                                                                                                        type: "function",
+                                                                                                        function: OpenAIFunctionCall(name: "generate_moviereview",
+                                                                                                                                     arguments: argumentsJson))
+                                                                                     ]),
+                                                    finishReason: "tool_calls")
+                               ],
+                               usage: OpenAIUsage(promptTokens: 50, completionTokens: 100, totalTokens: 150))
         ]
         return mock
     }
@@ -87,8 +79,8 @@ struct GrokProviderGenerableTests {
         let sut = makeSUT(apiClient: mock)
 
         let result: MovieReview = try await sut.generate(MovieReview.self,
-                                                          prompt: "Review Inception",
-                                                          configuration: .default)
+                                                         prompt: "Review Inception",
+                                                         configuration: .default)
 
         #expect(result.title == "Inception")
         #expect(result.rating == 9)

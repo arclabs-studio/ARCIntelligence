@@ -35,13 +35,12 @@ extension GrokProvider: ToolProvider {
             "toolCount": .public("\(tools.count)")
         ])
 
-        let context = GrokToolCallingContext(
-            toolDefinitions: tools.map { mapToolToDefinition($0) },
-            toolsByName: Dictionary(uniqueKeysWithValues: tools.map { ($0.name, $0) }),
-            systemPrompt: configuration.systemPrompt ?? self.configuration.defaultInstructions,
-            maxTokens: configuration.maxTokens ?? self.configuration.defaultMaxTokens,
-            configuration: configuration
-        )
+        let context = GrokToolCallingContext(toolDefinitions: tools.map { mapToolToDefinition($0) },
+                                             toolsByName: Dictionary(uniqueKeysWithValues: tools.map { ($0.name, $0) }),
+                                             systemPrompt: configuration.systemPrompt ?? self.configuration
+                                                 .defaultInstructions,
+                                             maxTokens: configuration.maxTokens ?? self.configuration.defaultMaxTokens,
+                                             configuration: configuration)
 
         let (response, allToolCalls) = try await executeToolLoop(context: context, prompt: prompt)
 
@@ -131,10 +130,8 @@ extension GrokProvider {
         messages.append(assistantMessage)
     }
 
-    private func executePendingTools(
-        _ toolCalls: [OpenAICompatibleMapping.ExtractedToolCall],
-        context: GrokToolCallingContext
-    ) async -> ([OpenAIChatMessage], [ToolCallRecord]) {
+    private func executePendingTools(_ toolCalls: [OpenAICompatibleMapping.ExtractedToolCall],
+                                     context: GrokToolCallingContext) async -> ([OpenAIChatMessage], [ToolCallRecord]) {
         var toolMessages: [OpenAIChatMessage] = []
         var records: [ToolCallRecord] = []
 
@@ -147,10 +144,8 @@ extension GrokProvider {
         return (toolMessages, records)
     }
 
-    private func executeSingleTool(
-        _ toolCall: OpenAICompatibleMapping.ExtractedToolCall,
-        context: GrokToolCallingContext
-    ) async -> (OpenAIChatMessage, ToolCallRecord) {
+    private func executeSingleTool(_ toolCall: OpenAICompatibleMapping.ExtractedToolCall,
+                                   context: GrokToolCallingContext) async -> (OpenAIChatMessage, ToolCallRecord) {
         let startTime = CFAbsoluteTimeGetCurrent()
 
         let arguments: [String: Any]

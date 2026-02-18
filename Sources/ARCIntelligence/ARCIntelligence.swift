@@ -193,10 +193,10 @@ public enum ARCIntelligence {
     ///   - serviceURL: The AIProxy service URL.
     /// - Returns: Configured OpenAI provider.
     public static func openAI(aiProxyPartialKey: String,
-                               serviceURL: String) -> OpenAIProvider {
+                              serviceURL: String) -> OpenAIProvider {
         logger.debug("Creating OpenAIProvider with AIProxy")
         let authentication = OpenAIAuthentication.aiProxy(partialKey: aiProxyPartialKey,
-                                                           serviceURL: serviceURL)
+                                                          serviceURL: serviceURL)
         return OpenAIProvider(configuration: OpenAIConfiguration(authentication: authentication))
     }
 
@@ -254,10 +254,10 @@ public enum ARCIntelligence {
     ///   - serviceURL: The AIProxy service URL.
     /// - Returns: Configured Grok provider.
     public static func grok(aiProxyPartialKey: String,
-                             serviceURL: String) -> GrokProvider {
+                            serviceURL: String) -> GrokProvider {
         logger.debug("Creating GrokProvider with AIProxy")
         let authentication = GrokAuthentication.aiProxy(partialKey: aiProxyPartialKey,
-                                                         serviceURL: serviceURL)
+                                                        serviceURL: serviceURL)
         return GrokProvider(configuration: GrokConfiguration(authentication: authentication))
     }
 

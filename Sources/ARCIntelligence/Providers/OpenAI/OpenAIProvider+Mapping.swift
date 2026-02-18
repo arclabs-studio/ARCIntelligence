@@ -10,6 +10,15 @@ import Foundation
 // MARK: - Mapping Helpers
 
 extension OpenAIProvider {
+    // MARK: - Provider Defaults
+
+    /// Provider-specific defaults for shared mapping helpers.
+    var providerDefaults: OpenAICompatibleMapping.ProviderDefaults {
+        OpenAICompatibleMapping.ProviderDefaults(modelId: configuration.model.modelId,
+                                                 defaultInstructions: configuration.defaultInstructions,
+                                                 defaultMaxTokens: configuration.defaultMaxTokens)
+    }
+
     // MARK: - Request Building
 
     /// Build an API request from a prompt and configuration.
@@ -19,9 +28,7 @@ extension OpenAIProvider {
                       tools: [OpenAIToolDefinition]? = nil,
                       toolChoice: OpenAIToolChoice? = nil) -> OpenAIChatRequest {
         OpenAICompatibleMapping.buildRequest(prompt: prompt,
-                                             modelId: self.configuration.model.modelId,
-                                             defaultInstructions: self.configuration.defaultInstructions,
-                                             defaultMaxTokens: self.configuration.defaultMaxTokens,
+                                             defaults: providerDefaults,
                                              configuration: configuration,
                                              stream: stream,
                                              tools: tools,
@@ -35,9 +42,7 @@ extension OpenAIProvider {
                                   stream: Bool = false) -> OpenAIChatRequest {
         OpenAICompatibleMapping.buildConversationRequest(conversation: conversation,
                                                          newMessage: newMessage,
-                                                         modelId: self.configuration.model.modelId,
-                                                         defaultInstructions: self.configuration.defaultInstructions,
-                                                         defaultMaxTokens: self.configuration.defaultMaxTokens,
+                                                         defaults: providerDefaults,
                                                          configuration: configuration,
                                                          stream: stream)
     }

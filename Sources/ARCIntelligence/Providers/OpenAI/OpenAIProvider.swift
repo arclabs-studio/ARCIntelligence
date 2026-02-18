@@ -65,7 +65,7 @@ public final class OpenAIProvider: Sendable {
         self.configuration = configuration
 
         let baseURL: URL
-        var headers: [String: String] = ["Content-Type": "application/json"]
+        var headers = ["Content-Type": "application/json"]
 
         switch configuration.authentication {
         case let .apiKey(key):

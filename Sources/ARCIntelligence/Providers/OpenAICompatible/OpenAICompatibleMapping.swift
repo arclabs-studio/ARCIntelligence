@@ -12,18 +12,25 @@ import Foundation
 /// Contains static methods to reduce duplication between providers that share
 /// the same Chat Completions API format.
 enum OpenAICompatibleMapping {
+    // MARK: - Provider Defaults
+
+    /// Groups provider-specific defaults to reduce parameter counts.
+    struct ProviderDefaults {
+        let modelId: String
+        let defaultInstructions: String?
+        let defaultMaxTokens: Int
+    }
+
     // MARK: - Request Building
 
     /// Build a chat completion request from a prompt and configuration.
     static func buildRequest(prompt: String,
-                             modelId: String,
-                             defaultInstructions: String?,
-                             defaultMaxTokens: Int,
+                             defaults: ProviderDefaults,
                              configuration: CompletionConfiguration,
                              stream: Bool = false,
                              tools: [OpenAIToolDefinition]? = nil,
                              toolChoice: OpenAIToolChoice? = nil) -> OpenAIChatRequest {
-        let systemPrompt = configuration.systemPrompt ?? defaultInstructions
+        let systemPrompt = configuration.systemPrompt ?? defaults.defaultInstructions
 
         var messages: [OpenAIChatMessage] = []
         if let systemPrompt {
@@ -31,9 +38,9 @@ enum OpenAICompatibleMapping {
         }
         messages.append(OpenAIChatMessage(role: "user", text: prompt))
 
-        let maxTokens = configuration.maxTokens ?? defaultMaxTokens
+        let maxTokens = configuration.maxTokens ?? defaults.defaultMaxTokens
 
-        return OpenAIChatRequest(model: modelId,
+        return OpenAIChatRequest(model: defaults.modelId,
                                  messages: messages,
                                  temperature: Double(configuration.temperature),
                                  topP: configuration.topP.map { Double($0) },
@@ -50,16 +57,14 @@ enum OpenAICompatibleMapping {
     /// Build a chat completion request from a conversation.
     static func buildConversationRequest(conversation: Conversation,
                                          newMessage: Message,
-                                         modelId: String,
-                                         defaultInstructions: String?,
-                                         defaultMaxTokens: Int,
+                                         defaults: ProviderDefaults,
                                          configuration: CompletionConfiguration,
                                          stream: Bool = false) -> OpenAIChatRequest {
         var apiMessages: [OpenAIChatMessage] = []
 
         let systemPrompt = conversation.systemPrompt
             ?? configuration.systemPrompt
-            ?? defaultInstructions
+            ?? defaults.defaultInstructions
 
         if let systemPrompt {
             apiMessages.append(OpenAIChatMessage(role: "system", text: systemPrompt))
@@ -81,9 +86,9 @@ enum OpenAICompatibleMapping {
             apiMessages.append(OpenAIChatMessage(role: "user", text: newMessage.content))
         }
 
-        let maxTokens = configuration.maxTokens ?? defaultMaxTokens
+        let maxTokens = configuration.maxTokens ?? defaults.defaultMaxTokens
 
-        return OpenAIChatRequest(model: modelId,
+        return OpenAIChatRequest(model: defaults.modelId,
                                  messages: apiMessages,
                                  temperature: Double(configuration.temperature),
                                  topP: configuration.topP.map { Double($0) },
@@ -141,20 +146,20 @@ enum OpenAICompatibleMapping {
             var properties: [String: OpenAISchemaProperty] = [:]
             for param in schema.parameters {
                 properties[param.name] = OpenAISchemaProperty(type: param.type.rawValue,
-                                                               description: param.description,
-                                                               enumValues: param.enumValues)
+                                                              description: param.description,
+                                                              enumValues: param.enumValues)
             }
 
             parameters = OpenAIFunctionParameters(type: "object",
-                                                   properties: properties,
-                                                   required: schema.required.isEmpty ? nil : schema.required)
+                                                  properties: properties,
+                                                  required: schema.required.isEmpty ? nil : schema.required)
         } else {
             parameters = OpenAIFunctionParameters(type: "object")
         }
 
         let function = OpenAIFunctionDefinition(name: tool.name,
-                                                 description: tool.description,
-                                                 parameters: parameters)
+                                                description: tool.description,
+                                                parameters: parameters)
 
         return OpenAIToolDefinition(function: function)
     }
@@ -187,9 +192,7 @@ enum OpenAICompatibleMapping {
     static func buildGenerationRequest(_ type: (some Any).Type,
                                        prompt: String,
                                        schemaDescription: String?,
-                                       modelId: String,
-                                       defaultInstructions: String?,
-                                       defaultMaxTokens: Int,
+                                       defaults: ProviderDefaults,
                                        configuration: CompletionConfiguration) -> OpenAIChatRequest {
         let toolName = "generate_\(String(describing: type).lowercased())"
         let description = schemaDescription
@@ -197,19 +200,19 @@ enum OpenAICompatibleMapping {
 
         let jsonOutputDescription = "The complete JSON object as a string conforming to the requested type."
         let jsonOutputProperty = OpenAISchemaProperty(type: "string",
-                                                       description: jsonOutputDescription,
-                                                       enumValues: nil)
+                                                      description: jsonOutputDescription,
+                                                      enumValues: nil)
 
         let parameters = OpenAIFunctionParameters(type: "object",
-                                                   properties: ["json_output": jsonOutputProperty],
-                                                   required: ["json_output"])
+                                                  properties: ["json_output": jsonOutputProperty],
+                                                  required: ["json_output"])
         let function = OpenAIFunctionDefinition(name: toolName,
-                                                 description: description,
-                                                 parameters: parameters)
+                                                description: description,
+                                                parameters: parameters)
         let toolDefinition = OpenAIToolDefinition(function: function)
 
-        let systemPrompt = configuration.systemPrompt ?? defaultInstructions
-        let maxTokens = configuration.maxTokens ?? defaultMaxTokens
+        let systemPrompt = configuration.systemPrompt ?? defaults.defaultInstructions
+        let maxTokens = configuration.maxTokens ?? defaults.defaultMaxTokens
         let enhancedPrompt = """
         \(prompt)
 
@@ -222,7 +225,7 @@ enum OpenAICompatibleMapping {
         }
         messages.append(OpenAIChatMessage(role: "user", text: enhancedPrompt))
 
-        return OpenAIChatRequest(model: modelId,
+        return OpenAIChatRequest(model: defaults.modelId,
                                  messages: messages,
                                  temperature: Double(configuration.temperature),
                                  topP: configuration.topP.map { Double($0) },

@@ -129,23 +129,19 @@ final class MockOpenAICompatibleAPIClient: OpenAICompatibleAPIClient, Sendable {
                              completionTokens: Int = 20) -> MockOpenAICompatibleAPIClient {
         let mock = MockOpenAICompatibleAPIClient()
         mock.state.chatResponses = [
-            OpenAIChatResponse(
-                id: "chatcmpl-test",
-                object: "chat.completion",
-                model: "gpt-4o-mini",
-                choices: [
-                    OpenAIChatChoice(
-                        index: 0,
-                        message: OpenAIChatChoiceMessage(role: "assistant",
-                                                         content: content,
-                                                         toolCalls: nil),
-                        finishReason: finishReason
-                    )
-                ],
-                usage: OpenAIUsage(promptTokens: promptTokens,
-                                   completionTokens: completionTokens,
-                                   totalTokens: promptTokens + completionTokens)
-            )
+            OpenAIChatResponse(id: "chatcmpl-test",
+                               object: "chat.completion",
+                               model: "gpt-4o-mini",
+                               choices: [
+                                   OpenAIChatChoice(index: 0,
+                                                    message: OpenAIChatChoiceMessage(role: "assistant",
+                                                                                     content: content,
+                                                                                     toolCalls: nil),
+                                                    finishReason: finishReason)
+                               ],
+                               usage: OpenAIUsage(promptTokens: promptTokens,
+                                                  completionTokens: completionTokens,
+                                                  totalTokens: promptTokens + completionTokens))
         ]
         return mock
     }
@@ -155,43 +151,37 @@ final class MockOpenAICompatibleAPIClient: OpenAICompatibleAPIClient, Sendable {
                              arguments: String,
                              followUpText: String = "Done") -> MockOpenAICompatibleAPIClient {
         let mock = MockOpenAICompatibleAPIClient()
-        let toolCallResponse = OpenAIChatResponse(
-            id: "chatcmpl-test-1",
-            object: "chat.completion",
-            model: "gpt-4o-mini",
-            choices: [
-                OpenAIChatChoice(
-                    index: 0,
-                    message: OpenAIChatChoiceMessage(
-                        role: "assistant",
-                        content: nil,
-                        toolCalls: [
-                            OpenAIToolCall(id: callId,
-                                           type: "function",
-                                           function: OpenAIFunctionCall(name: functionName,
-                                                                        arguments: arguments))
-                        ]
-                    ),
-                    finishReason: "tool_calls"
-                )
-            ],
-            usage: OpenAIUsage(promptTokens: 10, completionTokens: 20, totalTokens: 30)
-        )
-        let followUpResponse = OpenAIChatResponse(
-            id: "chatcmpl-test-2",
-            object: "chat.completion",
-            model: "gpt-4o-mini",
-            choices: [
-                OpenAIChatChoice(
-                    index: 0,
-                    message: OpenAIChatChoiceMessage(role: "assistant",
-                                                     content: followUpText,
-                                                     toolCalls: nil),
-                    finishReason: "stop"
-                )
-            ],
-            usage: OpenAIUsage(promptTokens: 30, completionTokens: 15, totalTokens: 45)
-        )
+        let toolCallResponse = OpenAIChatResponse(id: "chatcmpl-test-1",
+                                                  object: "chat.completion",
+                                                  model: "gpt-4o-mini",
+                                                  choices: [
+                                                      OpenAIChatChoice(index: 0,
+                                                                       message: OpenAIChatChoiceMessage(role: "assistant",
+                                                                                                        content: nil,
+                                                                                                        toolCalls: [
+                                                                                                            OpenAIToolCall(id: callId,
+                                                                                                                           type: "function",
+                                                                                                                           function: OpenAIFunctionCall(name: functionName,
+                                                                                                                                                        arguments: arguments))
+                                                                                                        ]),
+                                                                       finishReason: "tool_calls")
+                                                  ],
+                                                  usage: OpenAIUsage(promptTokens: 10,
+                                                                     completionTokens: 20,
+                                                                     totalTokens: 30))
+        let followUpResponse = OpenAIChatResponse(id: "chatcmpl-test-2",
+                                                  object: "chat.completion",
+                                                  model: "gpt-4o-mini",
+                                                  choices: [
+                                                      OpenAIChatChoice(index: 0,
+                                                                       message: OpenAIChatChoiceMessage(role: "assistant",
+                                                                                                        content: followUpText,
+                                                                                                        toolCalls: nil),
+                                                                       finishReason: "stop")
+                                                  ],
+                                                  usage: OpenAIUsage(promptTokens: 30,
+                                                                     completionTokens: 15,
+                                                                     totalTokens: 45))
         mock.state.chatResponses = [toolCallResponse, followUpResponse]
         return mock
     }
