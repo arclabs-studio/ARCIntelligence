@@ -29,23 +29,25 @@ struct GrokProviderGenerableTests {
     private func mockWithToolCallJsonOutput(_ json: String) -> MockOpenAICompatibleAPIClient {
         let mock = MockOpenAICompatibleAPIClient()
         let argumentsJson = "{\"json_output\":\(json.debugDescription)}"
+        let toolCall = OpenAIToolCall(id: "call_gen",
+                                      type: "function",
+                                      function: OpenAIFunctionCall(name: "generate_moviereview",
+                                                                   arguments: argumentsJson))
+        let message = OpenAIChatChoiceMessage(role: "assistant",
+                                              content: nil,
+                                              toolCalls: [toolCall])
         mock.chatResponses = [
             OpenAIChatResponse(id: "chatcmpl-gen",
                                object: "chat.completion",
                                model: "grok-3-fast",
                                choices: [
                                    OpenAIChatChoice(index: 0,
-                                                    message: OpenAIChatChoiceMessage(role: "assistant",
-                                                                                     content: nil,
-                                                                                     toolCalls: [
-                                                                                         OpenAIToolCall(id: "call_gen",
-                                                                                                        type: "function",
-                                                                                                        function: OpenAIFunctionCall(name: "generate_moviereview",
-                                                                                                                                     arguments: argumentsJson))
-                                                                                     ]),
+                                                    message: message,
                                                     finishReason: "tool_calls")
                                ],
-                               usage: OpenAIUsage(promptTokens: 50, completionTokens: 100, totalTokens: 150))
+                               usage: OpenAIUsage(promptTokens: 50,
+                                                  completionTokens: 100,
+                                                  totalTokens: 150))
         ]
         return mock
     }
