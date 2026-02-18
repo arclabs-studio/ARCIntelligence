@@ -9,7 +9,7 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Conversational Assistant Tests")
+@Suite("Conversational Assistant Tests", .tags(.unit))
 struct ConversationalAssistantTests {
     @Test("Start conversation creates new conversation")
     func startConversationCreatesNew() async {

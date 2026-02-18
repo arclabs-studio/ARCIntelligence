@@ -23,12 +23,8 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
     // MARK: - Constants
 
     private static let apiVersion = "2023-06-01"
-    private static let defaultBaseURL: URL = {
-        guard let url = URL(string: "https://api.anthropic.com") else {
-            fatalError("Invalid hardcoded Anthropic API URL")
-        }
-        return url
-    }()
+    // swiftlint:disable:next force_unwrapping
+    private static let defaultBaseURL = URL(string: "https://api.anthropic.com")!
 
     // MARK: - Initialization
 
@@ -57,19 +53,20 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
     }
 
     func streamMessage(_ request: AnthropicMessageRequest) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
-        AsyncThrowingStream { continuation in
-            Task { [self] in
+        let client = self
+        return AsyncThrowingStream { continuation in
+            let task = Task.detached {
                 do {
-                    try validateAuthentication()
+                    try client.validateAuthentication()
 
-                    let urlRequest = try buildStreamingURLRequest(for: request)
-                    let (bytes, response) = try await session.bytes(for: urlRequest)
+                    let urlRequest = try client.buildStreamingURLRequest(for: request)
+                    let (bytes, response) = try await client.session.bytes(for: urlRequest)
 
                     if let httpResponse = response as? HTTPURLResponse {
                         let isError = !(200 ... 299).contains(httpResponse.statusCode)
                         if isError {
-                            let errorData = try await collectErrorData(from: bytes)
-                            let error = mapHTTPStatusCode(httpResponse.statusCode, data: errorData)
+                            let errorData = try await client.collectErrorData(from: bytes)
+                            let error = client.mapHTTPStatusCode(httpResponse.statusCode, data: errorData)
                             continuation.finish(throwing: error)
                             return
                         }
@@ -89,9 +86,14 @@ final class AnthropicHTTPClient: AnthropicAPIClient, Sendable {
 
                     continuation.finish()
                 } catch {
-                    logger.error("Streaming failed", metadata: ["error": .public(error.localizedDescription)])
-                    continuation.finish(throwing: mapError(error))
+                    client.logger.error("Streaming failed",
+                                        metadata: ["error": .public(error.localizedDescription)])
+                    continuation.finish(throwing: client.mapError(error))
                 }
+            }
+
+            continuation.onTermination = { _ in
+                task.cancel()
             }
         }
     }

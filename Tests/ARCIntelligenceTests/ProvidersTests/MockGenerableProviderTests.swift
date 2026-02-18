@@ -9,7 +9,7 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Mock Generable Provider Tests")
+@Suite("Mock Generable Provider Tests", .tags(.unit))
 struct MockGenerableProviderTests {
     // MARK: - Test Types
 

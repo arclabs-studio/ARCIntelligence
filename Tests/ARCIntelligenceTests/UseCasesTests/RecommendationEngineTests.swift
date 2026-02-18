@@ -15,7 +15,7 @@ struct TestUserContext: Codable, Sendable {
     let history: [String]
 }
 
-@Suite("Recommendation Engine Tests")
+@Suite("Recommendation Engine Tests", .tags(.unit))
 struct RecommendationEngineTests {
     @Test("Recommend returns requested number of recommendations")
     func recommend_returnsRequestedCount() async throws {

@@ -61,6 +61,7 @@ enum OpenAICompatibleMapping {
                                          configuration: CompletionConfiguration,
                                          stream: Bool = false) -> OpenAIChatRequest {
         var apiMessages: [OpenAIChatMessage] = []
+        apiMessages.reserveCapacity(conversation.messages.count + 2)
 
         let systemPrompt = conversation.systemPrompt
             ?? configuration.systemPrompt
@@ -254,8 +255,8 @@ enum OpenAICompatibleMapping {
     /// Parse tool call arguments and extract `json_output` value.
     static func extractJsonOutput(from arguments: String) throws -> String? {
         guard let data = arguments.data(using: .utf8),
-              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let jsonOutput = dict["json_output"] as? String
+              let dict = try? JSONDecoder().decode([String: ToolArgumentValue].self, from: data),
+              let jsonOutput = dict["json_output"]?.stringValue
         else {
             return nil
         }

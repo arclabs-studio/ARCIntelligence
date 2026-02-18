@@ -9,11 +9,12 @@ import ARCIntelligence
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject var appState: AppState
+    @Environment(AppState.self) private var appState
     @State private var isCheckingAvailability = false
     @State private var availabilityStatus = ""
 
     var body: some View {
+        @Bindable var appState = appState
         List {
             Section {
                 ForEach(ProviderType.allCases, id: \.self) { providerType in
@@ -217,6 +218,6 @@ struct SettingsView: View {
 #Preview {
     NavigationView {
         SettingsView()
-            .environmentObject(AppState())
+            .environment(AppState())
     }
 }

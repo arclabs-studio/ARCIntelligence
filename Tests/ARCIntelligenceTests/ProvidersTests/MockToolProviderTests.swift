@@ -9,7 +9,7 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Mock Tool Provider Tests")
+@Suite("Mock Tool Provider Tests", .tags(.unit))
 struct MockToolProviderTests {
     // MARK: - Availability Tests
 

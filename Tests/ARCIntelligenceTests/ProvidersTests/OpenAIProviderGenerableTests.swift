@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("OpenAI Provider Generable Tests")
+@Suite("OpenAI Provider Generable Tests", .tags(.unit))
 struct OpenAIProviderGenerableTests {
     // MARK: - Test Types
 

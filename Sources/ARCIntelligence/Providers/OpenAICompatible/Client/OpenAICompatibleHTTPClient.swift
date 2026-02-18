@@ -52,19 +52,20 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, Sendable {
     }
 
     func streamChatCompletion(_ request: OpenAIChatRequest) -> AsyncThrowingStream<OpenAIStreamChunk, Error> {
-        AsyncThrowingStream { continuation in
-            Task { [self] in
+        let client = self
+        return AsyncThrowingStream { continuation in
+            let task = Task.detached {
                 do {
-                    try validateAuthHeaders()
+                    try client.validateAuthHeaders()
 
-                    let urlRequest = try buildStreamingURLRequest(for: request)
-                    let (bytes, response) = try await session.bytes(for: urlRequest)
+                    let urlRequest = try client.buildStreamingURLRequest(for: request)
+                    let (bytes, response) = try await client.session.bytes(for: urlRequest)
 
                     if let httpResponse = response as? HTTPURLResponse {
                         let isError = !(200 ... 299).contains(httpResponse.statusCode)
                         if isError {
-                            let errorData = try await collectErrorData(from: bytes)
-                            let error = mapHTTPStatusCode(httpResponse.statusCode, data: errorData)
+                            let errorData = try await client.collectErrorData(from: bytes)
+                            let error = client.mapHTTPStatusCode(httpResponse.statusCode, data: errorData)
                             continuation.finish(throwing: error)
                             return
                         }
@@ -84,9 +85,14 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, Sendable {
 
                     continuation.finish()
                 } catch {
-                    logger.error("Streaming failed", metadata: ["error": .public(error.localizedDescription)])
-                    continuation.finish(throwing: mapError(error))
+                    client.logger.error("Streaming failed",
+                                        metadata: ["error": .public(error.localizedDescription)])
+                    continuation.finish(throwing: client.mapError(error))
                 }
+            }
+
+            continuation.onTermination = { _ in
+                task.cancel()
             }
         }
     }

@@ -348,7 +348,7 @@ public enum ARCIntelligence {
     ///     let name = "getWeather"
     ///     let description = "Get weather for a city"
     ///
-    ///     func execute(arguments: [String: Any]) async throws -> String {
+    ///     func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
     ///         return "72°F, Sunny"
     ///     }
     /// }

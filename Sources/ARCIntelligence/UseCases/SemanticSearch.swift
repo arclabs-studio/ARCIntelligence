@@ -64,6 +64,7 @@ public final class SemanticSearch: Sendable {
 
         // Calculate similarities
         var results: [(text: String, similarity: Float)] = []
+        results.reserveCapacity(candidateEmbeddings.count)
         for (index, candidateEmbedding) in candidateEmbeddings.enumerated() {
             let similarity = queryEmbedding.cosineSimilarity(to: candidateEmbedding)
             results.append((text: candidates[index], similarity: similarity))

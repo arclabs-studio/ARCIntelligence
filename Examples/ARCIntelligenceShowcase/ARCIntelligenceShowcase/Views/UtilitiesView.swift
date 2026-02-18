@@ -170,20 +170,14 @@ struct TokenCounterDemo: View {
                 .padding(.horizontal)
 
                 VStack(spacing: 12) {
-                    InfoRow(
-                        label: "Estimated Tokens",
-                        value: "\(estimatedTokens)"
-                    )
+                    InfoRow(label: "Estimated Tokens",
+                            value: "\(estimatedTokens)")
 
-                    InfoRow(
-                        label: "Character Count",
-                        value: "\(text.count)"
-                    )
+                    InfoRow(label: "Character Count",
+                            value: "\(text.count)")
 
-                    InfoRow(
-                        label: "Word Count",
-                        value: "\(text.split(separator: " ").count)"
-                    )
+                    InfoRow(label: "Word Count",
+                            value: "\(text.split(separator: " ").count)")
                 }
                 .padding(.horizontal)
 
@@ -201,10 +195,8 @@ struct TokenCounterDemo: View {
                             .foregroundColor(.secondary)
                     }
 
-                    Slider(value: Binding(
-                        get: { Double(tokenLimit) },
-                        set: { tokenLimit = Int($0) }
-                    ), in: 10 ... 500, step: 10)
+                    Slider(value: Binding(get: { Double(tokenLimit) },
+                                          set: { tokenLimit = Int($0) }), in: 10 ... 500, step: 10)
 
                     HStack {
                         Text("Fits within limit:")

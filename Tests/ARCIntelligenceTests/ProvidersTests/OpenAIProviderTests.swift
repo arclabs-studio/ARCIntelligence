@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("OpenAI Provider Tests")
+@Suite("OpenAI Provider Tests", .tags(.unit))
 struct OpenAIProviderTests {
     // MARK: - Helpers
 

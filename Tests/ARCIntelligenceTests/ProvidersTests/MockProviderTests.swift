@@ -9,7 +9,7 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Mock Provider Tests")
+@Suite("Mock Provider Tests", .tags(.unit))
 struct MockProviderTests {
     @Test("Mock provider is always available")
     func mockProviderIsAvailable() async {

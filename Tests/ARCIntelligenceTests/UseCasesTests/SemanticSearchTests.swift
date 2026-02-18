@@ -9,7 +9,7 @@ import ARCIntelligenceMocks
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Semantic Search Tests")
+@Suite("Semantic Search Tests", .tags(.unit))
 struct SemanticSearchTests {
     @Test("Search returns results sorted by similarity")
     func search_returnsSortedResults() async throws {

@@ -68,7 +68,7 @@ public final class MockEmbeddingProvider: EmbeddingProvider, Sendable {
 
                 let response = "Mock streaming response"
                 for char in response {
-                    try? await Task.sleep(for: .milliseconds(10))
+                    try await Task.sleep(for: .milliseconds(10))
                     continuation.yield(String(char))
                 }
                 continuation.finish()
@@ -97,6 +97,7 @@ public final class MockEmbeddingProvider: EmbeddingProvider, Sendable {
 
     public func generateEmbeddings(for texts: [String]) async throws -> [Embedding] {
         var embeddings: [Embedding] = []
+        embeddings.reserveCapacity(texts.count)
         for text in texts {
             let embedding = try await generateEmbedding(for: text)
             embeddings.append(embedding)

@@ -50,12 +50,8 @@ public final class OpenAIProvider: Sendable {
 
     // MARK: - Constants
 
-    private static let defaultBaseURL: URL = {
-        guard let url = URL(string: "https://api.openai.com") else {
-            fatalError("Invalid hardcoded OpenAI API URL")
-        }
-        return url
-    }()
+    // swiftlint:disable:next force_unwrapping
+    private static let defaultBaseURL = URL(string: "https://api.openai.com")!
 
     // MARK: - Initialization
 

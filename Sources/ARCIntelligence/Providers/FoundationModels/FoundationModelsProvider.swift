@@ -141,12 +141,13 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
                                configuration: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
         logger.debug("Starting streaming completion request", metadata: ["promptLength": .public("\(prompt.count)")])
 
-        return AsyncThrowingStream { [self] continuation in
+        let provider = self
+        return AsyncThrowingStream { continuation in
             Task {
                 do {
-                    let availability = await checkAvailability()
+                    let availability = await provider.checkAvailability()
                     guard availability.isAvailable else {
-                        logger.warning("Provider unavailable for streaming request")
+                        provider.logger.warning("Provider unavailable for streaming request")
                         if let error = availability.toError() {
                             throw error
                         }
@@ -155,16 +156,17 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
 
                     #if canImport(FoundationModels)
                     if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
-                        try await performStreamingCompletion(prompt: prompt,
-                                                             configuration: configuration,
-                                                             continuation: continuation)
+                        try await provider.performStreamingCompletion(prompt: prompt,
+                                                                      configuration: configuration,
+                                                                      continuation: continuation)
                         return
                     }
                     #endif
 
                     throw IntelligenceError.providerUnavailable
                 } catch {
-                    logger.error("Streaming request failed", metadata: ["error": .public(error.localizedDescription)])
+                    provider.logger.error("Streaming request failed",
+                                          metadata: ["error": .public(error.localizedDescription)])
                     continuation.finish(throwing: error)
                 }
             }

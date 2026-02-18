@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Grok Provider Generable Tests")
+@Suite("Grok Provider Generable Tests", .tags(.unit))
 struct GrokProviderGenerableTests {
     // MARK: - Test Types
 

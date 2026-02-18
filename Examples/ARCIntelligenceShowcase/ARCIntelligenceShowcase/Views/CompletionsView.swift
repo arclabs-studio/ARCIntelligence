@@ -5,12 +5,12 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct CompletionsView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel = CompletionsViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var viewModel = CompletionsViewModel()
 
     var body: some View {
         ScrollView {
@@ -25,10 +25,8 @@ struct CompletionsView: View {
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color(.systemGray4), lineWidth: 1)
-                        )
+                        .overlay(RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(.systemGray4), lineWidth: 1))
                 }
                 .padding()
 
@@ -51,7 +49,7 @@ struct CompletionsView: View {
                             .foregroundColor(.secondary)
                     }
 
-                    Slider(value: $viewModel.temperature, in: 0...1, step: 0.1)
+                    Slider(value: $viewModel.temperature, in: 0 ... 1, step: 0.1)
                 }
                 .padding()
                 .background(Color(.systemGray6))
@@ -137,14 +135,15 @@ struct CompletionsView: View {
 // MARK: - View Model
 
 @MainActor
-class CompletionsViewModel: ObservableObject {
-    @Published var prompt = "Explain quantum computing in simple terms"
-    @Published var selectedPreset: ConfigPreset = .default
-    @Published var temperature: Double = 0.7
-    @Published var response = ""
-    @Published var tokensUsed: Int?
-    @Published var isGenerating = false
-    @Published var error: String?
+@Observable
+final class CompletionsViewModel {
+    var prompt = "Explain quantum computing in simple terms"
+    var selectedPreset: ConfigPreset = .default
+    var temperature: Double = 0.7
+    var response = ""
+    var tokensUsed: Int?
+    var isGenerating = false
+    var error: String?
 
     func generate(provider: IntelligenceProvider) async {
         isGenerating = true
@@ -153,15 +152,11 @@ class CompletionsViewModel: ObservableObject {
         tokensUsed = nil
 
         do {
-            let config = CompletionConfiguration(
-                temperature: Float(temperature),
-                maxTokens: 1024
-            )
+            let config = CompletionConfiguration(temperature: Float(temperature),
+                                                 maxTokens: 1024)
 
-            let result = try await provider.complete(
-                prompt: prompt,
-                configuration: config
-            )
+            let result = try await provider.complete(prompt: prompt,
+                                                     configuration: config)
 
             response = result.content
             tokensUsed = result.tokensUsed
@@ -179,9 +174,9 @@ enum ConfigPreset {
 
     var temperature: Double {
         switch self {
-        case .default: return 0.7
-        case .factual: return 0.3
-        case .creative: return 0.9
+        case .default: 0.7
+        case .factual: 0.3
+        case .creative: 0.9
         }
     }
 }
@@ -189,6 +184,6 @@ enum ConfigPreset {
 #Preview {
     NavigationView {
         CompletionsView()
-            .environmentObject(AppState())
+            .environment(AppState())
     }
 }

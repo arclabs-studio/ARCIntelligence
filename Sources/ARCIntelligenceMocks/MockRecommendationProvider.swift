@@ -68,7 +68,7 @@ public final class MockRecommendationProvider: RecommendationProvider, Sendable 
 
                 let response = "Mock streaming response"
                 for char in response {
-                    try? await Task.sleep(for: .milliseconds(10))
+                    try await Task.sleep(for: .milliseconds(10))
                     continuation.yield(String(char))
                 }
                 continuation.finish()

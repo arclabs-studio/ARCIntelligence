@@ -50,12 +50,8 @@ public final class GrokProvider: Sendable {
 
     // MARK: - Constants
 
-    private static let defaultBaseURL: URL = {
-        guard let url = URL(string: "https://api.x.ai") else {
-            fatalError("Invalid hardcoded xAI API URL")
-        }
-        return url
-    }()
+    // swiftlint:disable:next force_unwrapping
+    private static let defaultBaseURL = URL(string: "https://api.x.ai")!
 
     // MARK: - Initialization
 

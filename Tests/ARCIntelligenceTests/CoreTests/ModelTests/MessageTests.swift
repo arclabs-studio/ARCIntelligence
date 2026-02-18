@@ -9,7 +9,7 @@ import Foundation
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Message Tests")
+@Suite("Message Tests", .tags(.unit))
 struct MessageTests {
     @Test("Message initializes with default values")
     func messageInitializesWithDefaults() {

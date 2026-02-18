@@ -8,7 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Anthropic Provider Tests")
+@Suite("Anthropic Provider Tests", .tags(.unit))
 struct AnthropicProviderTests {
     // MARK: - Helpers
 
