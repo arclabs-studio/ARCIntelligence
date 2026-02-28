@@ -13,11 +13,8 @@
 --allman false
 --wraparguments after-first
 --wrapparameters after-first
---wrapcollections before-first
---closingparen balanced
-
-# Disable rules that conflict with SwiftLint
---disable wrapMultilineStatementBraces
+--wrapcollections after-first
+--closingparen same-line
 
 # Imports
 --importgrouping testable-bottom
@@ -36,19 +33,12 @@
 # Wrapping
 --wrapternary before-operators
 
-# Attributes - Declaration attributes on previous line (ARC Labs style)
---type-attributes prev-line
---func-attributes prev-line
+# Attributes - Always on same line (ARC Labs style)
+--type-attributes same-line
+--func-attributes same-line
 --stored-var-attributes same-line
 --computed-var-attributes same-line
---complex-attributes prev-line
-
-# Attributes - Legacy options (ARC Labs style)
---varattributes same-line
---typeattributes prev-line
---funcattributes prev-line
---storedvarattrs same-line
---computedvarattrs same-line
+--complex-attributes same-line
 
 # Organization
 --organizetypes actor,class,enum,struct

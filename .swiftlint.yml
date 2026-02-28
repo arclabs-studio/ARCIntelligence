@@ -51,7 +51,7 @@ opt_in_rules:
   - literal_expression_end_indentation
   - multiline_arguments
   - multiline_function_chains
-  # multiline_literal_brackets: disabled — conflicts with SwiftFormat --wraparguments after-first
+  - multiline_literal_brackets
   - multiline_parameters
   - operator_usage_whitespace
   - overridden_super_call
@@ -113,6 +113,10 @@ custom_rules:
   observable_viewmodel:
     name: "ViewModels should use @Observable"
     regex: "final\\s+class\\s+\\w+ViewModel(?!.*@Observable)"
+    excluded_match_kinds:
+      - comment
+      - doccomment
+      - string
     message: "ViewModels must use @Observable in Swift 6"
     severity: warning
 
@@ -136,6 +140,13 @@ custom_rules:
     regex: 'try!'
     message: "Avoid force try. Use proper error handling"
     severity: error
+
+# Multiline declarations - first param on same line as opening paren (ARC Labs style)
+multiline_arguments:
+  first_argument_location: same_line
+
+multiline_parameters:
+  first_argument_location: same_line
 
 # Reporter (output format)
 reporter: "xcode"
