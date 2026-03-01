@@ -15,6 +15,7 @@
 --wrapparameters after-first
 --wrapcollections after-first
 --closingparen same-line
+--disable wrapMultilineStatementBraces
 
 # Imports
 --importgrouping testable-bottom
