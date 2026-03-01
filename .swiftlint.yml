@@ -49,10 +49,11 @@ opt_in_rules:
   - joined_default_parameter
   - last_where
   - literal_expression_end_indentation
-  - multiline_arguments
+  # multiline_arguments removed: conflicts with --wraparguments after-first (SwiftFormat aligns args
+  # after the first, SwiftLint requires all-or-nothing multiline — unresolvable without changing wrap style)
   - multiline_function_chains
   # multiline_literal_brackets removed: conflicts with --wrapcollections after-first
-  - multiline_parameters
+  # multiline_parameters removed: conflicts with --wrapparameters after-first (same issue as multiline_arguments)
   - operator_usage_whitespace
   - overridden_super_call
   - prefer_self_type_over_type_of_self
@@ -141,12 +142,6 @@ custom_rules:
     message: "Avoid force try. Use proper error handling"
     severity: error
 
-# Multiline declarations - first param on same line as opening paren (ARC Labs style)
-multiline_arguments:
-  first_argument_location: same_line
-
-multiline_parameters:
-  first_argument_location: same_line
 
 # Reporter (output format)
 reporter: "xcode"
