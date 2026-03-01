@@ -51,7 +51,7 @@ opt_in_rules:
   - literal_expression_end_indentation
   - multiline_arguments
   - multiline_function_chains
-  - multiline_literal_brackets
+  # multiline_literal_brackets removed: conflicts with --wrapcollections after-first
   - multiline_parameters
   - operator_usage_whitespace
   - overridden_super_call
