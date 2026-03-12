@@ -61,14 +61,12 @@ final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport,
                     let urlRequest = try client.buildStreamingURLRequest(for: request)
                     let (bytes, response) = try await client.session.bytes(for: urlRequest)
 
-                    if let httpResponse = response as? HTTPURLResponse {
-                        let isError = !(200 ... 299).contains(httpResponse.statusCode)
-                        if isError {
-                            let errorData = try await client.collectErrorData(from: bytes)
-                            let error = client.mapHTTPStatusCode(httpResponse.statusCode, data: errorData)
-                            continuation.finish(throwing: error)
-                            return
-                        }
+                    if let httpResponse = response as? HTTPURLResponse,
+                       !HTTPStatusCode.successRange.contains(httpResponse.statusCode) {
+                        let errorData = try await client.collectErrorData(from: bytes)
+                        let error = client.mapHTTPStatusCode(httpResponse.statusCode, data: errorData)
+                        continuation.finish(throwing: error)
+                        return
                     }
 
                     let parser = AnthropicStreamParser()
@@ -122,10 +120,8 @@ final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport,
     }
 
     private func authHeaders() -> [String: String] {
-        var headers: [String: String] = [
-            "Content-Type": "application/json",
-            "anthropic-version": Self.apiVersion
-        ]
+        var headers: [String: String] = ["Content-Type": "application/json",
+                                         "anthropic-version": Self.apiVersion]
 
         switch authentication {
         case let .apiKey(key):
@@ -150,41 +146,27 @@ final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport,
 
         return urlRequest
     }
+}
 
-    private func mapHTTPError(_ error: HTTPError) -> IntelligenceError {
-        switch error {
-        case .invalidURL:
-            .invalidRequest("Invalid API URL")
-        case let .requestFailed(statusCode):
-            mapHTTPStatusCode(statusCode, data: nil)
-        case let .decodingFailed(underlyingError):
-            .responseParseFailed(underlyingError.localizedDescription)
-        case let .unknown(underlyingError):
-            .requestFailed(underlyingError.localizedDescription)
+// MARK: - StreamingHTTPClientSupport (Anthropic-specific overrides)
+
+extension AnthropicHTTPClient {
+    /// Anthropic adds a provider-specific 529 "overloaded" status code.
+    func mapHTTPStatusCode(_ statusCode: Int, data: Data?) -> IntelligenceError {
+        if statusCode == 529 {
+            return .requestFailed("API overloaded. Please retry later.")
         }
-    }
-
-    private func mapHTTPStatusCode(_ statusCode: Int, data: Data?) -> IntelligenceError {
         let errorMessage = extractErrorMessage(from: data)
-
         switch statusCode {
-        case 401:
+        case HTTPStatusCode.unauthorized:
             return .authenticationFailed
+        case HTTPStatusCode.badRequest:
+            return .invalidRequest(errorMessage ?? "Bad request")
         case 429:
             return .rateLimitExceeded
-        case 400:
-            return .invalidRequest(errorMessage ?? "Bad request")
-        case 529:
-            return .requestFailed("API overloaded. Please retry later.")
         default:
             return .requestFailed(errorMessage ?? "HTTP \(statusCode)")
         }
-    }
-
-    private func extractErrorMessage(from data: Data?) -> String? {
-        guard let data else { return nil }
-        let errorResponse = try? JSONDecoder().decode(AnthropicErrorResponse.self, from: data)
-        return errorResponse?.error.message
     }
 }
 
