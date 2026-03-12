@@ -24,9 +24,19 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, StreamingHTTP
 
     // MARK: - Initialization
 
+    /// Creates an OpenAI-compatible HTTP client.
+    ///
+    /// - Parameters:
+    ///   - baseURL: The base URL of the provider's API (e.g. `https://api.openai.com`).
+    ///   - authHeaders: HTTP headers that authenticate the request (must include `Authorization`).
+    ///   - httpClient: The underlying HTTP client. Defaults to an `HTTPClient` with
+    ///     `RetryInterceptor(maxRetries: 2)` followed by `LoggingInterceptor`, providing
+    ///     exponential-backoff retry on transient 5xx errors out of the box.
+    ///     Inject a `MockHTTPClient` in tests to avoid network access.
     init(baseURL: URL,
          authHeaders: [String: String],
-         httpClient: HTTPClientProtocol = HTTPClient()) {
+         httpClient: HTTPClientProtocol = HTTPClient(interceptors: [RetryInterceptor(maxRetries: 2),
+                                                                    LoggingInterceptor()])) {
         self.baseURL = baseURL
         self.authHeaders = authHeaders
         self.httpClient = httpClient

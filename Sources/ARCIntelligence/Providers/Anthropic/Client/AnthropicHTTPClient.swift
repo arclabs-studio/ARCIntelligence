@@ -26,8 +26,17 @@ final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport,
 
     // MARK: - Initialization
 
+    /// Creates an Anthropic HTTP client.
+    ///
+    /// - Parameters:
+    ///   - authentication: The authentication strategy (API key or AIProxy).
+    ///   - httpClient: The underlying HTTP client. Defaults to an `HTTPClient` with
+    ///     `RetryInterceptor(maxRetries: 2)` followed by `LoggingInterceptor`, providing
+    ///     exponential-backoff retry on transient 5xx errors out of the box.
+    ///     Inject a `MockHTTPClient` in tests to avoid network access.
     init(authentication: AnthropicAuthentication,
-         httpClient: HTTPClientProtocol = HTTPClient()) {
+         httpClient: HTTPClientProtocol = HTTPClient(interceptors: [RetryInterceptor(maxRetries: 2),
+                                                                    LoggingInterceptor()])) {
         self.authentication = authentication
         self.httpClient = httpClient
     }
