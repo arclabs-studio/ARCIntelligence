@@ -286,6 +286,7 @@ import Testing
     func streamMessage_yieldsMessageStopEvent() async throws {
         // Given
         let (sut, mock) = makeSUT()
+        // swiftlint:disable:next line_length
         let messageStartLine = #"data: {"type":"message_start","message":{"id":"msg_test","type":"message","model":"claude-sonnet-4-5-20250929","content":[],"stop_reason":null,"usage":{"input_tokens":10,"output_tokens":0}}}"#
         let messageStopLine = #"data: {"type":"message_stop"}"#
         mock.streamLinesToReturn = try [#require(messageStartLine.data(using: .utf8)),

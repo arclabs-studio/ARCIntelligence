@@ -101,8 +101,10 @@ extension GrokProvider: IntelligenceProvider {
         let request = buildRequest(prompt: prompt, configuration: configuration)
         let response = try await apiClient.sendChatCompletion(request)
 
+        // swiftlint:disable line_length
         logger.info("Completion successful", metadata: ["promptTokens": .public("\(response.usage?.promptTokens ?? 0)"),
                                                         "completionTokens": .public("\(response.usage?.completionTokens ?? 0)")])
+        // swiftlint:enable line_length
 
         return mapResponse(response)
     }

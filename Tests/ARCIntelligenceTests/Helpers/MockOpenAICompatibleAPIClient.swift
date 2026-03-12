@@ -128,6 +128,7 @@ final class MockOpenAICompatibleAPIClient: OpenAICompatibleAPIClient, Sendable {
                              promptTokens: Int = 10,
                              completionTokens: Int = 20) -> MockOpenAICompatibleAPIClient {
         let mock = MockOpenAICompatibleAPIClient()
+        // swiftlint:disable line_length
         mock.state.chatResponses = [OpenAIChatResponse(id: "chatcmpl-test",
                                                        object: "chat.completion",
                                                        model: "gpt-4o-mini",
@@ -140,6 +141,7 @@ final class MockOpenAICompatibleAPIClient: OpenAICompatibleAPIClient, Sendable {
                                                                           completionTokens: completionTokens,
                                                                           totalTokens: promptTokens +
                                                                               completionTokens))]
+        // swiftlint:enable line_length
         return mock
     }
 

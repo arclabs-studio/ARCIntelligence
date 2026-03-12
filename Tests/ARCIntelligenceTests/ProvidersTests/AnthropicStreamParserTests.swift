@@ -132,6 +132,7 @@ import Testing
     func parsesContentBlockDeltaInputJsonDelta() throws {
         // Given
         let sut = makeSUT()
+        // swiftlint:disable:next line_length
         let line = #"data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"key\":"}}"#
 
         // When
@@ -149,6 +150,7 @@ import Testing
     @Test("Should parse message_delta event with stop reason") func parsesMessageDeltaWithStopReason() throws {
         // Given
         let sut = makeSUT()
+        // swiftlint:disable:next line_length
         let line = #"data: {"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"input_tokens":10,"output_tokens":20}}"#
 
         // When
@@ -167,9 +169,11 @@ import Testing
     @Test("Should parse message_start event") func parsesMessageStart() throws {
         // Given
         let sut = makeSUT()
+        // swiftlint:disable line_length
         let line = """
         data: {"type":"message_start","message":{"id":"msg_test","type":"message","model":"claude-sonnet-4-5","content":[],"stop_reason":null,"usage":{"input_tokens":10,"output_tokens":0}}}
         """
+        // swiftlint:enable line_length
 
         // When
         let result = try sut.parseLine(line)

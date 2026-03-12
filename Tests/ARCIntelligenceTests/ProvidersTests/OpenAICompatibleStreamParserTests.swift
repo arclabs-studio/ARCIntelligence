@@ -55,6 +55,7 @@ import Testing
     @Test("Should parse a valid stream chunk with content delta") func parsesValidChunkWithContentDelta() throws {
         // Given
         let sut = makeSUT()
+        // swiftlint:disable:next line_length
         let line = #"data: {"id":"chatcmpl-test","object":"chat.completion.chunk","model":"gpt-4o","choices":[{"index":0,"delta":{"role":"assistant","content":"Hello"},"finish_reason":null}]}"#
 
         // When
@@ -69,6 +70,7 @@ import Testing
     @Test("Should parse a valid stream chunk with finish reason") func parsesChunkWithFinishReason() throws {
         // Given
         let sut = makeSUT()
+        // swiftlint:disable:next line_length
         let line = #"data: {"id":"chatcmpl-test","object":"chat.completion.chunk","model":"gpt-4o","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}"#
 
         // When
@@ -81,6 +83,7 @@ import Testing
     @Test("Should parse a chunk with empty delta") func parsesChunkWithEmptyDelta() throws {
         // Given
         let sut = makeSUT()
+        // swiftlint:disable:next line_length
         let line = #"data: {"id":"chatcmpl-test","object":"chat.completion.chunk","model":"gpt-4o","choices":[{"index":0,"delta":{},"finish_reason":null}]}"#
 
         // When

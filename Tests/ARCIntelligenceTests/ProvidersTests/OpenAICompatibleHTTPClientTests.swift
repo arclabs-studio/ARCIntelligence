@@ -255,6 +255,7 @@ import Testing
     func streamChatCompletion_yieldsChunkWithFinishReason() async throws {
         // Given
         let (sut, mock) = makeSUT()
+        // swiftlint:disable:next line_length
         let contentChunkLine = #"data: {"id":"chatcmpl-test","choices":[{"index":0,"delta":{"role":"assistant","content":"Hi"},"finish_reason":null}]}"#
         let finalChunkLine = #"data: {"id":"chatcmpl-test","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}"#
         mock.streamLinesToReturn = try [#require(contentChunkLine.data(using: .utf8)),

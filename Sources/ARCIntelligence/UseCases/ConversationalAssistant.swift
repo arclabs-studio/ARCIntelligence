@@ -64,9 +64,11 @@ public actor ConversationalAssistant {
         conversation.messages.append(response)
         activeConversation = conversation
 
+        // swiftlint:disable line_length
         logger.info("Received assistant response", metadata: ["conversationId": .public(conversation.id.uuidString),
                                                               "responseLength": .public("\(response.content.count)"),
                                                               "totalMessages": .public("\(conversation.messages.count)")])
+        // swiftlint:enable line_length
 
         return response.content
     }
