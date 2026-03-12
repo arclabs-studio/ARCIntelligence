@@ -10,13 +10,12 @@ import ARCNetworking
 import Foundation
 
 /// Concrete implementation of `AnthropicAPIClient` using ARCNetworking for
-/// standard requests and URLSession for streaming SSE.
+/// all requests including SSE streaming.
 final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport, Sendable {
     // MARK: - Properties
 
     private let authentication: AnthropicAuthentication
     private let httpClient: HTTPClientProtocol
-    private let session: URLSession
     private let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
                                    category: "AnthropicHTTP")
 
@@ -28,11 +27,9 @@ final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport,
     // MARK: - Initialization
 
     init(authentication: AnthropicAuthentication,
-         httpClient: HTTPClientProtocol = HTTPClient(),
-         session: URLSession = .shared) {
+         httpClient: HTTPClientProtocol = HTTPClient()) {
         self.authentication = authentication
         self.httpClient = httpClient
-        self.session = session
     }
 
     // MARK: - AnthropicAPIClient
@@ -58,19 +55,11 @@ final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport,
                 do {
                     try client.validateAuthentication()
 
-                    let urlRequest = try client.buildStreamingURLRequest(for: request)
-                    let (bytes, response) = try await client.session.bytes(for: urlRequest)
-
-                    if let httpResponse = response as? HTTPURLResponse,
-                       !HTTPStatusCode.successRange.contains(httpResponse.statusCode) {
-                        let errorData = try await client.collectErrorData(from: bytes)
-                        let error = client.mapHTTPStatusCode(httpResponse.statusCode, data: errorData)
-                        continuation.finish(throwing: error)
-                        return
-                    }
-
+                    let endpoint = AnthropicMessagesEndpoint(resolvedBaseURL: client.baseURL(),
+                                                             resolvedHeaders: client.authHeaders(),
+                                                             request: request)
                     let parser = AnthropicStreamParser()
-                    let eventStream = parser.parse(bytes)
+                    let eventStream = parser.parse(client.httpClient.stream(endpoint))
 
                     for try await event in eventStream {
                         continuation.yield(event)
@@ -82,6 +71,8 @@ final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport,
                     }
 
                     continuation.finish()
+                } catch let httpError as HTTPError {
+                    continuation.finish(throwing: client.mapHTTPError(httpError))
                 } catch {
                     client.logger.error("Streaming failed",
                                         metadata: ["error": .public(error.localizedDescription)])
@@ -131,20 +122,6 @@ final class AnthropicHTTPClient: AnthropicAPIClient, StreamingHTTPClientSupport,
         }
 
         return headers
-    }
-
-    private func buildStreamingURLRequest(for request: AnthropicMessageRequest) throws -> URLRequest {
-        let url = baseURL().appendingPathComponent("v1/messages")
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "POST"
-
-        for (key, value) in authHeaders() {
-            urlRequest.setValue(value, forHTTPHeaderField: key)
-        }
-
-        urlRequest.httpBody = try JSONEncoder().encode(request)
-
-        return urlRequest
     }
 }
 

@@ -10,7 +10,7 @@ import ARCNetworking
 import Foundation
 
 /// Concrete implementation of `OpenAICompatibleAPIClient` using ARCNetworking for
-/// standard requests and URLSession for streaming SSE.
+/// all requests including SSE streaming.
 ///
 /// Used by both OpenAI and Grok providers with different base URLs and auth headers.
 final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, StreamingHTTPClientSupport, Sendable {
@@ -19,7 +19,6 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, StreamingHTTP
     private let baseURL: URL
     private let authHeaders: [String: String]
     private let httpClient: HTTPClientProtocol
-    private let session: URLSession
     private let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
                                    category: "OpenAICompatibleHTTP")
 
@@ -27,12 +26,10 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, StreamingHTTP
 
     init(baseURL: URL,
          authHeaders: [String: String],
-         httpClient: HTTPClientProtocol = HTTPClient(),
-         session: URLSession = .shared) {
+         httpClient: HTTPClientProtocol = HTTPClient()) {
         self.baseURL = baseURL
         self.authHeaders = authHeaders
         self.httpClient = httpClient
-        self.session = session
     }
 
     // MARK: - OpenAICompatibleAPIClient
@@ -58,19 +55,11 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, StreamingHTTP
                 do {
                     try client.validateAuthHeaders()
 
-                    let urlRequest = try client.buildStreamingURLRequest(for: request)
-                    let (bytes, response) = try await client.session.bytes(for: urlRequest)
-
-                    if let httpResponse = response as? HTTPURLResponse,
-                       !HTTPStatusCode.successRange.contains(httpResponse.statusCode) {
-                        let errorData = try await client.collectErrorData(from: bytes)
-                        let error = client.mapHTTPStatusCode(httpResponse.statusCode, data: errorData)
-                        continuation.finish(throwing: error)
-                        return
-                    }
-
+                    let endpoint = ChatCompletionsEndpoint(resolvedBaseURL: client.baseURL,
+                                                           resolvedHeaders: client.authHeaders,
+                                                           request: request)
                     let parser = OpenAICompatibleStreamParser()
-                    let chunkStream = parser.parse(bytes)
+                    let chunkStream = parser.parse(client.httpClient.stream(endpoint))
 
                     for try await chunk in chunkStream {
                         continuation.yield(chunk)
@@ -82,6 +71,8 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, StreamingHTTP
                     }
 
                     continuation.finish()
+                } catch let httpError as HTTPError {
+                    continuation.finish(throwing: client.mapHTTPError(httpError))
                 } catch {
                     client.logger.error("Streaming failed",
                                         metadata: ["error": .public(error.localizedDescription)])
@@ -106,20 +97,6 @@ final class OpenAICompatibleHTTPClient: OpenAICompatibleAPIClient, StreamingHTTP
         guard hasAuth else {
             throw IntelligenceError.providerNotConfigured("Missing Authorization header")
         }
-    }
-
-    private func buildStreamingURLRequest(for request: OpenAIChatRequest) throws -> URLRequest {
-        let url = baseURL.appendingPathComponent("v1/chat/completions")
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = "POST"
-
-        for (key, value) in authHeaders {
-            urlRequest.setValue(value, forHTTPHeaderField: key)
-        }
-
-        urlRequest.httpBody = try JSONEncoder().encode(request)
-
-        return urlRequest
     }
 }
 

@@ -12,26 +12,18 @@ import Foundation
 /// Processes raw `data: {...}` lines from the SSE stream and emits
 /// typed `OpenAIStreamChunk` values.
 struct OpenAICompatibleStreamParser: Sendable {
-    /// Parse a sequence of raw bytes into stream chunks.
+    /// Parse a stream of line-delimited data chunks into stream chunks.
     ///
-    /// - Parameter bytes: The async byte sequence from URLSession.
+    /// - Parameter dataStream: An `AsyncThrowingStream` where each element is one SSE line.
     /// - Returns: An async stream of parsed chunks.
-    func parse(_ bytes: URLSession.AsyncBytes) -> AsyncThrowingStream<OpenAIStreamChunk, Error> {
+    func parse(_ dataStream: AsyncThrowingStream<Data, Error>) -> AsyncThrowingStream<OpenAIStreamChunk, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    var buffer = ""
-                    for try await byte in bytes {
-                        let char = Character(UnicodeScalar(byte))
-                        buffer.append(char)
-
-                        if char == "\n" {
-                            let line = buffer.trimmingCharacters(in: .newlines)
-                            buffer = ""
-
-                            if let chunk = try parseLine(line) {
-                                continuation.yield(chunk)
-                            }
+                    for try await lineData in dataStream {
+                        let line = String(data: lineData, encoding: .utf8)?.trimmingCharacters(in: .newlines) ?? ""
+                        if let chunk = try parseLine(line) {
+                            continuation.yield(chunk)
                         }
                     }
                     continuation.finish()
