@@ -94,31 +94,15 @@ public final class MockRecommendationProvider: RecommendationProvider, Sendable 
 
     // MARK: - Default Recommendations
 
+    // swiftformat:disable wrap wrapArguments
+    // swiftlint:disable line_length
     private static let defaultRecommendations: [Recommendation] = [
-        Recommendation(title: "SwiftUI Essentials",
-                       description: "Learn the fundamentals of SwiftUI development",
-                       confidence: 0.95,
-                       category: "Learning",
-                       metadata: ["type": "course"]),
-        Recommendation(title: "Async/Await Patterns",
-                       description: "Master Swift concurrency with async/await",
-                       confidence: 0.88,
-                       category: "Learning",
-                       metadata: ["type": "tutorial"]),
-        Recommendation(title: "Clean Architecture",
-                       description: "Design scalable iOS applications",
-                       confidence: 0.82,
-                       category: "Architecture",
-                       metadata: ["type": "guide"]),
-        Recommendation(title: "Testing Best Practices",
-                       description: "Write effective unit and integration tests",
-                       confidence: 0.75,
-                       category: "Testing",
-                       metadata: ["type": "documentation"]),
-        Recommendation(title: "Performance Optimization",
-                       description: "Optimize your app for speed and efficiency",
-                       confidence: 0.70,
-                       category: "Performance",
-                       metadata: ["type": "guide"])
+        Recommendation(title: "SwiftUI Essentials", description: "Learn the fundamentals of SwiftUI development", confidence: 0.95, category: "Learning", metadata: ["type": "course"]),
+        Recommendation(title: "Async/Await Patterns", description: "Master Swift concurrency with async/await", confidence: 0.88, category: "Learning", metadata: ["type": "tutorial"]),
+        Recommendation(title: "Clean Architecture", description: "Design scalable iOS applications", confidence: 0.82, category: "Architecture", metadata: ["type": "guide"]),
+        Recommendation(title: "Testing Best Practices", description: "Write effective unit and integration tests", confidence: 0.75, category: "Testing", metadata: ["type": "documentation"]),
+        Recommendation(title: "Performance Optimization", description: "Optimize your app for speed and efficiency", confidence: 0.70, category: "Performance", metadata: ["type": "guide"])
     ]
+    // swiftlint:enable line_length
+    // swiftformat:enable wrap wrapArguments
 }

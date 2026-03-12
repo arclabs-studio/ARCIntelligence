@@ -8,8 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Grok Provider Generable Tests", .tags(.unit))
-struct GrokProviderGenerableTests {
+@Suite("Grok Provider Generable Tests", .tags(.unit)) struct GrokProviderGenerableTests {
     // MARK: - Test Types
 
     struct MovieReview: Codable, Sendable, Equatable {
@@ -36,26 +35,21 @@ struct GrokProviderGenerableTests {
         let message = OpenAIChatChoiceMessage(role: "assistant",
                                               content: nil,
                                               toolCalls: [toolCall])
-        mock.chatResponses = [
-            OpenAIChatResponse(id: "chatcmpl-gen",
-                               object: "chat.completion",
-                               model: "grok-3-fast",
-                               choices: [
-                                   OpenAIChatChoice(index: 0,
-                                                    message: message,
-                                                    finishReason: "tool_calls")
-                               ],
-                               usage: OpenAIUsage(promptTokens: 50,
-                                                  completionTokens: 100,
-                                                  totalTokens: 150))
-        ]
+        mock.chatResponses = [OpenAIChatResponse(id: "chatcmpl-gen",
+                                                 object: "chat.completion",
+                                                 model: "grok-3-fast",
+                                                 choices: [OpenAIChatChoice(index: 0,
+                                                                            message: message,
+                                                                            finishReason: "tool_calls")],
+                                                 usage: OpenAIUsage(promptTokens: 50,
+                                                                    completionTokens: 100,
+                                                                    totalTokens: 150))]
         return mock
     }
 
     // MARK: - Forced Tool Use
 
-    @Test("Generate sends forced tool_choice with correct tool name")
-    func forcedToolChoice() async throws {
+    @Test("Generate sends forced tool_choice with correct tool name") func forcedToolChoice() async throws {
         let mock = mockWithToolCallJsonOutput("""
         {"title":"Inception","rating":9,"summary":"A masterpiece"}
         """)
@@ -73,8 +67,7 @@ struct GrokProviderGenerableTests {
 
     // MARK: - JSON Decoding
 
-    @Test("Generate decodes JSON from tool call output")
-    func decodesJson() async throws {
+    @Test("Generate decodes JSON from tool call output") func decodesJson() async throws {
         let mock = mockWithToolCallJsonOutput("""
         {"title":"Inception","rating":9,"summary":"Mind-bending sci-fi"}
         """)
@@ -91,8 +84,7 @@ struct GrokProviderGenerableTests {
 
     // MARK: - Schema Description
 
-    @Test("Generate with schema description includes it in tool definition")
-    func schemaDescription() async throws {
+    @Test("Generate with schema description includes it in tool definition") func schemaDescription() async throws {
         let mock = mockWithToolCallJsonOutput("""
         {"title":"Test","rating":5,"summary":"ok"}
         """)
@@ -109,8 +101,7 @@ struct GrokProviderGenerableTests {
 
     // MARK: - Parse Errors
 
-    @Test("Generate throws parse error on invalid JSON")
-    func invalidJson() async {
+    @Test("Generate throws parse error on invalid JSON") func invalidJson() async {
         let mock = mockWithToolCallJsonOutput("not valid json")
         let sut = makeSUT(apiClient: mock)
 
@@ -121,8 +112,7 @@ struct GrokProviderGenerableTests {
         }
     }
 
-    @Test("Generate throws parse error when no tool call returned")
-    func missingToolCall() async {
+    @Test("Generate throws parse error when no tool call returned") func missingToolCall() async {
         let mock = MockOpenAICompatibleAPIClient.withResponse(content: "Just text, no tool call")
         let sut = makeSUT(apiClient: mock)
 

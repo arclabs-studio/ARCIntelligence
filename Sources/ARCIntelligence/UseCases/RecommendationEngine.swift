@@ -37,10 +37,8 @@ public final class RecommendationEngine: Sendable {
     public func recommend(basedOn context: some Codable & Sendable,
                           numberOfRecommendations: Int = 5,
                           configuration: RecommendationConfiguration = .default) async throws -> [Recommendation] {
-        logger.debug("Generating recommendations", metadata: [
-            "requestedCount": .public("\(numberOfRecommendations)"),
-            "contextType": .public("\(type(of: context))")
-        ])
+        logger.debug("Generating recommendations", metadata: ["requestedCount": .public("\(numberOfRecommendations)"),
+                                                              "contextType": .public("\(type(of: context))")])
 
         guard numberOfRecommendations > 0 else {
             logger.warning("Invalid recommendation request: count must be > 0")

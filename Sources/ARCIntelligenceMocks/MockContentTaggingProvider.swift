@@ -164,12 +164,10 @@ extension MockContentTaggingProvider {
     /// - Objects: "computer", "software"
     /// - Emotions: "curious", "focused"
     public static func standard() -> MockContentTaggingProvider {
-        MockContentTaggingProvider(tagsByCategory: [
-            .topic: ["technology", "programming"],
-            .action: ["coding", "learning"],
-            .object: ["computer", "software"],
-            .emotion: ["curious", "focused"]
-        ])
+        MockContentTaggingProvider(tagsByCategory: [.topic: ["technology", "programming"],
+                                                    .action: ["coding", "learning"],
+                                                    .object: ["computer", "software"],
+                                                    .emotion: ["curious", "focused"]])
     }
 
     /// Create a mock provider that always fails.

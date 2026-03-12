@@ -102,11 +102,9 @@ extension AnthropicProvider {
         return IntelligenceResponse(content: textContent,
                                     tokensUsed: tokensUsed,
                                     finishReason: finishReason,
-                                    metadata: [
-                                        "model": response.model,
-                                        "inputTokens": "\(response.usage.inputTokens)",
-                                        "outputTokens": "\(response.usage.outputTokens)"
-                                    ])
+                                    metadata: ["model": response.model,
+                                               "inputTokens": "\(response.usage.inputTokens)",
+                                               "outputTokens": "\(response.usage.outputTokens)"])
     }
 
     /// Map an API stop reason to `FinishReason`.

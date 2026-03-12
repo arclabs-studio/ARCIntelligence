@@ -37,10 +37,8 @@ public actor ConversationalAssistant {
                                         messages: [])
         activeConversation = conversation
 
-        logger.info("Started new conversation", metadata: [
-            "conversationId": .public(conversation.id.uuidString),
-            "hasSystemPrompt": .public("\(systemPrompt != nil)")
-        ])
+        logger.info("Started new conversation", metadata: ["conversationId": .public(conversation.id.uuidString),
+                                                           "hasSystemPrompt": .public("\(systemPrompt != nil)")])
 
         return conversation
     }
@@ -55,10 +53,8 @@ public actor ConversationalAssistant {
             throw IntelligenceError.noActiveConversation
         }
 
-        logger.debug("Sending user message", metadata: [
-            "conversationId": .public(conversation.id.uuidString),
-            "messageLength": .public("\(text.count)")
-        ])
+        logger.debug("Sending user message", metadata: ["conversationId": .public(conversation.id.uuidString),
+                                                        "messageLength": .public("\(text.count)")])
 
         let userMessage = Message(role: .user, content: text)
         let response = try await provider.sendMessage(userMessage, in: conversation)
@@ -68,11 +64,9 @@ public actor ConversationalAssistant {
         conversation.messages.append(response)
         activeConversation = conversation
 
-        logger.info("Received assistant response", metadata: [
-            "conversationId": .public(conversation.id.uuidString),
-            "responseLength": .public("\(response.content.count)"),
-            "totalMessages": .public("\(conversation.messages.count)")
-        ])
+        logger.info("Received assistant response", metadata: ["conversationId": .public(conversation.id.uuidString),
+                                                              "responseLength": .public("\(response.content.count)"),
+                                                              "totalMessages": .public("\(conversation.messages.count)")])
 
         return response.content
     }
@@ -86,10 +80,8 @@ public actor ConversationalAssistant {
     /// End the active conversation
     public func endConversation() {
         if let conversation = activeConversation {
-            logger.info("Ending conversation", metadata: [
-                "conversationId": .public(conversation.id.uuidString),
-                "totalMessages": .public("\(conversation.messages.count)")
-            ])
+            logger.info("Ending conversation", metadata: ["conversationId": .public(conversation.id.uuidString),
+                                                          "totalMessages": .public("\(conversation.messages.count)")])
         }
         activeConversation = nil
     }

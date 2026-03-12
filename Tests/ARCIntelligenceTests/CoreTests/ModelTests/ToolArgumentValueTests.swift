@@ -11,18 +11,15 @@ import Testing
 
 // MARK: - ToolArgumentValue Tests
 
-@Suite("ToolArgumentValue Tests", .tags(.unit))
-struct ToolArgumentValueTests {
+@Suite("ToolArgumentValue Tests", .tags(.unit)) struct ToolArgumentValueTests {
     // MARK: - Helpers
 
     private func makeSUT() -> [String: ToolArgumentValue] {
-        [
-            "name": .string("Paris"),
-            "count": .int(5),
-            "ratio": .double(0.75),
-            "active": .bool(true),
-            "nothing": .null
-        ]
+        ["name": .string("Paris"),
+         "count": .int(5),
+         "ratio": .double(0.75),
+         "active": .bool(true),
+         "nothing": .null]
     }
 
     private func encode(_ value: ToolArgumentValue) throws -> Data {
@@ -35,8 +32,7 @@ struct ToolArgumentValueTests {
 
     // MARK: - Accessors
 
-    @Test("stringValue returns value for .string case", .tags(.unit))
-    func stringValue_returnsValueForStringCase() {
+    @Test("stringValue returns value for .string case", .tags(.unit)) func stringValue_returnsValueForStringCase() {
         // Given
         let sut = ToolArgumentValue.string("hello")
 
@@ -47,8 +43,7 @@ struct ToolArgumentValueTests {
         #expect(sut.boolValue == nil)
     }
 
-    @Test("intValue returns value for .int case", .tags(.unit))
-    func intValue_returnsValueForIntCase() {
+    @Test("intValue returns value for .int case", .tags(.unit)) func intValue_returnsValueForIntCase() {
         // Given
         let sut = ToolArgumentValue.int(42)
 
@@ -59,8 +54,7 @@ struct ToolArgumentValueTests {
         #expect(sut.boolValue == nil)
     }
 
-    @Test("doubleValue returns value for .double case", .tags(.unit))
-    func doubleValue_returnsValueForDoubleCase() {
+    @Test("doubleValue returns value for .double case", .tags(.unit)) func doubleValue_returnsValueForDoubleCase() {
         // Given
         let sut = ToolArgumentValue.double(3.14)
 
@@ -71,8 +65,7 @@ struct ToolArgumentValueTests {
         #expect(sut.boolValue == nil)
     }
 
-    @Test("boolValue returns value for .bool case", .tags(.unit))
-    func boolValue_returnsValueForBoolCase() {
+    @Test("boolValue returns value for .bool case", .tags(.unit)) func boolValue_returnsValueForBoolCase() {
         // Given
         let sut = ToolArgumentValue.bool(false)
 
@@ -85,8 +78,7 @@ struct ToolArgumentValueTests {
 
     // MARK: - asString / description
 
-    @Test("asString converts all cases to string representation", .tags(.unit))
-    func asString_convertsAllCases() {
+    @Test("asString converts all cases to string representation", .tags(.unit)) func asString_convertsAllCases() {
         // Given / When / Then
         #expect(ToolArgumentValue.string("hi").asString == "hi")
         #expect(ToolArgumentValue.int(7).asString == "7")
@@ -95,12 +87,9 @@ struct ToolArgumentValueTests {
         #expect(ToolArgumentValue.null.asString == "null")
     }
 
-    @Test("description matches asString", .tags(.unit))
-    func description_matchesAsString() {
+    @Test("description matches asString", .tags(.unit)) func description_matchesAsString() {
         // Given
-        let values: [ToolArgumentValue] = [
-            .string("test"), .int(1), .double(2.0), .bool(false), .null
-        ]
+        let values: [ToolArgumentValue] = [.string("test"), .int(1), .double(2.0), .bool(false), .null]
 
         // When / Then
         for value in values {
@@ -110,8 +99,7 @@ struct ToolArgumentValueTests {
 
     // MARK: - Equatable
 
-    @Test("equal values are equal", .tags(.unit))
-    func equatable_equalValuesAreEqual() {
+    @Test("equal values are equal", .tags(.unit)) func equatable_equalValuesAreEqual() {
         #expect(ToolArgumentValue.string("a") == .string("a"))
         #expect(ToolArgumentValue.int(1) == .int(1))
         #expect(ToolArgumentValue.double(0.5) == .double(0.5))
@@ -121,8 +109,7 @@ struct ToolArgumentValueTests {
         #expect(ToolArgumentValue.object(["k": .string("v")]) == .object(["k": .string("v")]))
     }
 
-    @Test("different cases are not equal", .tags(.unit))
-    func equatable_differentCasesAreNotEqual() {
+    @Test("different cases are not equal", .tags(.unit)) func equatable_differentCasesAreNotEqual() {
         #expect(ToolArgumentValue.string("a") != .int(1))
         #expect(ToolArgumentValue.int(1) != .int(2))
         #expect(ToolArgumentValue.null != .bool(false))
@@ -130,8 +117,7 @@ struct ToolArgumentValueTests {
 
     // MARK: - Codable: Encode
 
-    @Test("encode string produces JSON string", .tags(.unit))
-    func encode_stringProducesJSONString() throws {
+    @Test("encode string produces JSON string", .tags(.unit)) func encode_stringProducesJSONString() throws {
         // Given
         let sut = ToolArgumentValue.string("Paris")
 
@@ -143,8 +129,7 @@ struct ToolArgumentValueTests {
         #expect(json as? String == "Paris")
     }
 
-    @Test("encode int produces JSON number", .tags(.unit))
-    func encode_intProducesJSONNumber() throws {
+    @Test("encode int produces JSON number", .tags(.unit)) func encode_intProducesJSONNumber() throws {
         // Given
         let sut = ToolArgumentValue.int(42)
 
@@ -156,8 +141,7 @@ struct ToolArgumentValueTests {
         #expect(json as? Int == 42)
     }
 
-    @Test("encode double produces JSON number", .tags(.unit))
-    func encode_doubleProducesJSONNumber() throws {
+    @Test("encode double produces JSON number", .tags(.unit)) func encode_doubleProducesJSONNumber() throws {
         // Given
         let sut = ToolArgumentValue.double(1.5)
 
@@ -169,8 +153,7 @@ struct ToolArgumentValueTests {
         #expect(json as? Double == 1.5)
     }
 
-    @Test("encode bool produces JSON bool", .tags(.unit))
-    func encode_boolProducesJSONBool() throws {
+    @Test("encode bool produces JSON bool", .tags(.unit)) func encode_boolProducesJSONBool() throws {
         // Given
         let sut = ToolArgumentValue.bool(true)
 
@@ -182,8 +165,7 @@ struct ToolArgumentValueTests {
         #expect(json as? Bool == true)
     }
 
-    @Test("encode null produces JSON null", .tags(.unit))
-    func encode_nullProducesJSONNull() throws {
+    @Test("encode null produces JSON null", .tags(.unit)) func encode_nullProducesJSONNull() throws {
         // Given
         let sut = ToolArgumentValue.null
 
@@ -194,8 +176,7 @@ struct ToolArgumentValueTests {
         #expect(String(data: data, encoding: .utf8) == "null")
     }
 
-    @Test("encode array produces JSON array", .tags(.unit))
-    func encode_arrayProducesJSONArray() throws {
+    @Test("encode array produces JSON array", .tags(.unit)) func encode_arrayProducesJSONArray() throws {
         // Given
         let sut = ToolArgumentValue.array([.string("a"), .int(1)])
 
@@ -209,8 +190,7 @@ struct ToolArgumentValueTests {
         #expect(json?.last as? Int == 1)
     }
 
-    @Test("encode object produces JSON object", .tags(.unit))
-    func encode_objectProducesJSONObject() throws {
+    @Test("encode object produces JSON object", .tags(.unit)) func encode_objectProducesJSONObject() throws {
         // Given
         let sut = ToolArgumentValue.object(["city": .string("Rome"), "pop": .int(3_000_000)])
 
@@ -225,8 +205,7 @@ struct ToolArgumentValueTests {
 
     // MARK: - Codable: Decode
 
-    @Test("decode string JSON produces .string", .tags(.unit))
-    func decode_stringJSONProducesString() throws {
+    @Test("decode string JSON produces .string", .tags(.unit)) func decode_stringJSONProducesString() throws {
         // Given
         let json = Data("\"hello\"".utf8)
 
@@ -237,8 +216,7 @@ struct ToolArgumentValueTests {
         #expect(result == .string("hello"))
     }
 
-    @Test("decode integer JSON produces .int", .tags(.unit))
-    func decode_integerJSONProducesInt() throws {
+    @Test("decode integer JSON produces .int", .tags(.unit)) func decode_integerJSONProducesInt() throws {
         // Given
         let json = Data("99".utf8)
 
@@ -249,8 +227,7 @@ struct ToolArgumentValueTests {
         #expect(result == .int(99))
     }
 
-    @Test("decode float JSON produces .double", .tags(.unit))
-    func decode_floatJSONProducesDouble() throws {
+    @Test("decode float JSON produces .double", .tags(.unit)) func decode_floatJSONProducesDouble() throws {
         // Given
         let json = Data("3.14".utf8)
 
@@ -261,8 +238,7 @@ struct ToolArgumentValueTests {
         #expect(result == .double(3.14))
     }
 
-    @Test("decode boolean JSON produces .bool", .tags(.unit))
-    func decode_booleanJSONProducesBool() throws {
+    @Test("decode boolean JSON produces .bool", .tags(.unit)) func decode_booleanJSONProducesBool() throws {
         // Given
         let trueJSON = Data("true".utf8)
         let falseJSON = Data("false".utf8)
@@ -276,8 +252,7 @@ struct ToolArgumentValueTests {
         #expect(falseResult == .bool(false))
     }
 
-    @Test("decode null JSON produces .null", .tags(.unit))
-    func decode_nullJSONProducesNull() throws {
+    @Test("decode null JSON produces .null", .tags(.unit)) func decode_nullJSONProducesNull() throws {
         // Given
         let json = Data("null".utf8)
 
@@ -288,8 +263,7 @@ struct ToolArgumentValueTests {
         #expect(result == .null)
     }
 
-    @Test("decode array JSON produces .array", .tags(.unit))
-    func decode_arrayJSONProducesArray() throws {
+    @Test("decode array JSON produces .array", .tags(.unit)) func decode_arrayJSONProducesArray() throws {
         // Given
         let json = Data("[\"x\", 2]".utf8)
 
@@ -300,8 +274,7 @@ struct ToolArgumentValueTests {
         #expect(result == .array([.string("x"), .int(2)]))
     }
 
-    @Test("decode object JSON produces .object", .tags(.unit))
-    func decode_objectJSONProducesObject() throws {
+    @Test("decode object JSON produces .object", .tags(.unit)) func decode_objectJSONProducesObject() throws {
         // Given
         let json = Data("{\"k\":\"v\"}".utf8)
 
@@ -317,16 +290,14 @@ struct ToolArgumentValueTests {
     @Test("encode then decode produces equal value for all cases", .tags(.unit))
     func codable_roundTripProducesEqualValue() throws {
         // Given
-        let values: [ToolArgumentValue] = [
-            .string("test"),
-            .int(123),
-            .double(4.56),
-            .bool(true),
-            .bool(false),
-            .null,
-            .array([.string("a"), .int(1), .bool(false)]),
-            .object(["key": .string("value"), "count": .int(3)])
-        ]
+        let values: [ToolArgumentValue] = [.string("test"),
+                                           .int(123),
+                                           .double(4.56),
+                                           .bool(true),
+                                           .bool(false),
+                                           .null,
+                                           .array([.string("a"), .int(1), .bool(false)]),
+                                           .object(["key": .string("value"), "count": .int(3)])]
 
         for original in values {
             // When
@@ -356,8 +327,7 @@ struct ToolArgumentValueTests {
         #expect(result.count == dict.count)
     }
 
-    @Test("toStringDictionary preserves all keys", .tags(.unit))
-    func toStringDictionary_preservesAllKeys() {
+    @Test("toStringDictionary preserves all keys", .tags(.unit)) func toStringDictionary_preservesAllKeys() {
         // Given
         let dict: [String: ToolArgumentValue] = ["a": .string("x"), "b": .int(1), "c": .null]
 

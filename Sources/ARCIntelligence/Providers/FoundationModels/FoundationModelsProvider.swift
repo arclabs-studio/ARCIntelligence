@@ -114,10 +114,8 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
 
     public func complete(prompt: String,
                          configuration: CompletionConfiguration) async throws -> IntelligenceResponse {
-        logger.debug("Starting completion request", metadata: [
-            "promptLength": .public("\(prompt.count)"),
-            "temperature": .public("\(configuration.temperature)")
-        ])
+        logger.debug("Starting completion request", metadata: ["promptLength": .public("\(prompt.count)"),
+                                                               "temperature": .public("\(configuration.temperature)")])
 
         let availability = await checkAvailability()
         guard availability.isAvailable else {
@@ -178,11 +176,9 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
     public func sendMessage(_ message: Message,
                             in conversation: Conversation) async throws -> Message {
         logger.debug("Sending message in conversation",
-                     metadata: [
-                         "conversationId": .public(conversation.id.uuidString),
-                         "messageRole": .public(message.role.rawValue),
-                         "historyCount": .public("\(conversation.messages.count)")
-                     ])
+                     metadata: ["conversationId": .public(conversation.id.uuidString),
+                                "messageRole": .public(message.role.rawValue),
+                                "historyCount": .public("\(conversation.messages.count)")])
 
         // Build prompt from conversation history
         let prompt = buildPrompt(from: conversation, adding: message)
@@ -219,9 +215,9 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
     // MARK: - Private Implementation
 
     #if canImport(FoundationModels)
-    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performCompletion(prompt: String,
-                                   configuration: CompletionConfiguration) async throws -> IntelligenceResponse {
+    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *) private func performCompletion(prompt: String,
+                                                                                      configuration: CompletionConfiguration) async throws
+    -> IntelligenceResponse {
         do {
             // Create session with instructions if provided
             let session = if let systemPrompt = configuration.systemPrompt ?? self.configuration.defaultInstructions {
@@ -247,11 +243,11 @@ public final class FoundationModelsProvider: IntelligenceProvider, ConversationP
         }
     }
 
-    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performStreamingCompletion(prompt: String,
-                                            configuration: CompletionConfiguration,
-                                            continuation: AsyncThrowingStream<String, Error>
-                                                .Continuation) async throws {
+    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *) private func performStreamingCompletion(prompt: String,
+                                                                                               configuration: CompletionConfiguration,
+                                                                                               continuation: AsyncThrowingStream<String,
+                                                                                                   Error>
+                                                                                                   .Continuation) async throws {
         do {
             // Create session with instructions if provided
             let session = if let systemPrompt = configuration.systemPrompt ?? self.configuration.defaultInstructions {

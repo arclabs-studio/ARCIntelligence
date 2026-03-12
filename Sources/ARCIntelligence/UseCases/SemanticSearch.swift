@@ -37,11 +37,9 @@ public final class SemanticSearch: Sendable {
     public func search(query: String,
                        in candidates: [String],
                        topK: Int = 5) async throws -> [(text: String, similarity: Float)] {
-        logger.debug("Starting semantic search", metadata: [
-            "queryLength": .public("\(query.count)"),
-            "candidateCount": .public("\(candidates.count)"),
-            "topK": .public("\(topK)")
-        ])
+        logger.debug("Starting semantic search", metadata: ["queryLength": .public("\(query.count)"),
+                                                            "candidateCount": .public("\(candidates.count)"),
+                                                            "topK": .public("\(topK)")])
 
         guard !query.isEmpty else {
             logger.warning("Search failed: empty query")
@@ -90,11 +88,9 @@ public final class SemanticSearch: Sendable {
     public func findSimilar(to reference: String,
                             in candidates: [String],
                             threshold: Float = 0.7) async throws -> [(text: String, similarity: Float)] {
-        logger.debug("Finding similar texts", metadata: [
-            "referenceLength": .public("\(reference.count)"),
-            "candidateCount": .public("\(candidates.count)"),
-            "threshold": .public("\(threshold)")
-        ])
+        logger.debug("Finding similar texts", metadata: ["referenceLength": .public("\(reference.count)"),
+                                                         "candidateCount": .public("\(candidates.count)"),
+                                                         "threshold": .public("\(threshold)")])
 
         guard !reference.isEmpty else {
             logger.warning("Find similar failed: empty reference")
@@ -124,10 +120,8 @@ public final class SemanticSearch: Sendable {
         // Sort by similarity (descending)
         let sortedResults = results.sorted { $0.similarity > $1.similarity }
 
-        logger.info("Find similar completed", metadata: [
-            "matchCount": .public("\(sortedResults.count)"),
-            "aboveThreshold": .public("\(sortedResults.count)")
-        ])
+        logger.info("Find similar completed", metadata: ["matchCount": .public("\(sortedResults.count)"),
+                                                         "aboveThreshold": .public("\(sortedResults.count)")])
 
         return sortedResults
     }
@@ -139,10 +133,8 @@ public final class SemanticSearch: Sendable {
     /// - Returns: Similarity score (0.0 to 1.0)
     /// - Throws: `IntelligenceError` if calculation fails
     public func similarity(between text1: String, and text2: String) async throws -> Float {
-        logger.debug("Calculating similarity", metadata: [
-            "text1Length": .public("\(text1.count)"),
-            "text2Length": .public("\(text2.count)")
-        ])
+        logger.debug("Calculating similarity", metadata: ["text1Length": .public("\(text1.count)"),
+                                                          "text2Length": .public("\(text2.count)")])
 
         guard !text1.isEmpty, !text2.isEmpty else {
             logger.warning("Similarity calculation failed: empty text")

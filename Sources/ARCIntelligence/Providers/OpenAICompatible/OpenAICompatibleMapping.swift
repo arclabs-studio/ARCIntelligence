@@ -114,11 +114,9 @@ enum OpenAICompatibleMapping {
         return IntelligenceResponse(content: textContent,
                                     tokensUsed: tokensUsed,
                                     finishReason: finishReason,
-                                    metadata: [
-                                        "model": response.model,
-                                        "promptTokens": "\(response.usage?.promptTokens ?? 0)",
-                                        "completionTokens": "\(response.usage?.completionTokens ?? 0)"
-                                    ])
+                                    metadata: ["model": response.model,
+                                               "promptTokens": "\(response.usage?.promptTokens ?? 0)",
+                                               "completionTokens": "\(response.usage?.completionTokens ?? 0)"])
     }
 
     /// Map a finish reason string to `FinishReason`.

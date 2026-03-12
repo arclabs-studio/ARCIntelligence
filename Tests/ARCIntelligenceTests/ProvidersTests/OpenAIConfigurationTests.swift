@@ -8,8 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("OpenAI Configuration Tests", .tags(.unit))
-struct OpenAIConfigurationTests {
+@Suite("OpenAI Configuration Tests", .tags(.unit)) struct OpenAIConfigurationTests {
     // MARK: - Helpers
 
     private func makeSUT(authentication: OpenAIAuthentication = .apiKey("test-key"),
@@ -26,8 +25,7 @@ struct OpenAIConfigurationTests {
 
     // MARK: - Defaults
 
-    @Test("Default configuration uses GPT-4o Mini model")
-    func defaultModel() {
+    @Test("Default configuration uses GPT-4o Mini model") func defaultModel() {
         // Given
         let sut = makeSUT()
 
@@ -35,8 +33,7 @@ struct OpenAIConfigurationTests {
         #expect(sut.model == .gpt4oMini)
     }
 
-    @Test("Default configuration has standard temperature")
-    func defaultTemperature() {
+    @Test("Default configuration has standard temperature") func defaultTemperature() {
         // Given
         let sut = makeSUT()
 
@@ -44,8 +41,7 @@ struct OpenAIConfigurationTests {
         #expect(sut.defaultTemperature == 0.7)
     }
 
-    @Test("Default configuration has 4096 max tokens")
-    func defaultMaxTokens() {
+    @Test("Default configuration has 4096 max tokens") func defaultMaxTokens() {
         // Given
         let sut = makeSUT()
 
@@ -55,8 +51,7 @@ struct OpenAIConfigurationTests {
 
     // MARK: - Clamping
 
-    @Test("Temperature is clamped to valid range")
-    func temperatureClamping() {
+    @Test("Temperature is clamped to valid range") func temperatureClamping() {
         // Given
         let low = makeSUT(defaultTemperature: -1.0)
         let high = makeSUT(defaultTemperature: 5.0)
@@ -66,8 +61,7 @@ struct OpenAIConfigurationTests {
         #expect(high.defaultTemperature == 2.0)
     }
 
-    @Test("Max tokens is clamped to valid range")
-    func maxTokensClamping() {
+    @Test("Max tokens is clamped to valid range") func maxTokensClamping() {
         // Given
         let low = makeSUT(defaultMaxTokens: 0)
         let high = makeSUT(defaultMaxTokens: 999_999)
@@ -77,8 +71,7 @@ struct OpenAIConfigurationTests {
         #expect(high.defaultMaxTokens == 128_000)
     }
 
-    @Test("Max tool rounds is clamped to valid range")
-    func maxToolRoundsClamping() {
+    @Test("Max tool rounds is clamped to valid range") func maxToolRoundsClamping() {
         // Given
         let low = makeSUT(maxToolRounds: 0)
         let high = makeSUT(maxToolRounds: 100)
@@ -90,8 +83,7 @@ struct OpenAIConfigurationTests {
 
     // MARK: - Model IDs
 
-    @Test("Model enum returns correct model IDs")
-    func modelIds() {
+    @Test("Model enum returns correct model IDs") func modelIds() {
         // Then
         #expect(OpenAIModel.gpt4oMini.modelId == "gpt-4o-mini")
         #expect(OpenAIModel.gpt4o.modelId == "gpt-4o")
@@ -101,8 +93,7 @@ struct OpenAIConfigurationTests {
 
     // MARK: - Presets
 
-    @Test("Fast preset uses GPT-4o Mini")
-    func fastPreset() {
+    @Test("Fast preset uses GPT-4o Mini") func fastPreset() {
         // Given
         let sut = OpenAIConfiguration.fast(authentication: .apiKey("k"))
 
@@ -112,8 +103,7 @@ struct OpenAIConfigurationTests {
         #expect(sut.defaultMaxTokens == 2048)
     }
 
-    @Test("Balanced preset uses GPT-4o")
-    func balancedPreset() {
+    @Test("Balanced preset uses GPT-4o") func balancedPreset() {
         // Given
         let sut = OpenAIConfiguration.balanced(authentication: .apiKey("k"))
 
@@ -122,8 +112,7 @@ struct OpenAIConfigurationTests {
         #expect(sut.defaultTemperature == 0.7)
     }
 
-    @Test("Quality preset uses o3-mini")
-    func qualityPreset() {
+    @Test("Quality preset uses o3-mini") func qualityPreset() {
         // Given
         let sut = OpenAIConfiguration.quality(authentication: .apiKey("k"))
 
@@ -134,8 +123,7 @@ struct OpenAIConfigurationTests {
 
     // MARK: - Authentication
 
-    @Test("API key authentication stores key")
-    func apiKeyAuth() {
+    @Test("API key authentication stores key") func apiKeyAuth() {
         // Given
         let auth = OpenAIAuthentication.apiKey("sk-test")
 
@@ -143,8 +131,7 @@ struct OpenAIConfigurationTests {
         #expect(auth == .apiKey("sk-test"))
     }
 
-    @Test("AIProxy authentication stores both values")
-    func aiProxyAuth() {
+    @Test("AIProxy authentication stores both values") func aiProxyAuth() {
         // Given
         let auth = OpenAIAuthentication.aiProxy(partialKey: "pk", serviceURL: "https://proxy.test")
 
@@ -154,8 +141,7 @@ struct OpenAIConfigurationTests {
 
     // MARK: - Organization
 
-    @Test("Organization is stored when provided")
-    func organizationStored() {
+    @Test("Organization is stored when provided") func organizationStored() {
         // Given
         let sut = OpenAIConfiguration(authentication: .apiKey("k"),
                                       organization: "org-test")
@@ -164,8 +150,7 @@ struct OpenAIConfigurationTests {
         #expect(sut.organization == "org-test")
     }
 
-    @Test("Organization is nil by default")
-    func organizationNilByDefault() {
+    @Test("Organization is nil by default") func organizationNilByDefault() {
         // Given
         let sut = makeSUT()
 

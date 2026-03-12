@@ -9,8 +9,7 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Mock Generable Provider Tests", .tags(.unit))
-struct MockGenerableProviderTests {
+@Suite("Mock Generable Provider Tests", .tags(.unit)) struct MockGenerableProviderTests {
     // MARK: - Test Types
 
     struct TestPerson: Codable, Sendable, Equatable {
@@ -26,8 +25,7 @@ struct MockGenerableProviderTests {
 
     // MARK: - Availability Tests
 
-    @Test("Mock generable provider is always available")
-    func isAvailable() async {
+    @Test("Mock generable provider is always available") func isAvailable() async {
         let provider = MockGenerableProvider()
         let available = await provider.isAvailable()
         #expect(available)
@@ -35,8 +33,7 @@ struct MockGenerableProviderTests {
 
     // MARK: - Generate Tests
 
-    @Test("Generate returns decoded type from JSON response")
-    func generateReturnsDecodedType() async throws {
+    @Test("Generate returns decoded type from JSON response") func generateReturnsDecodedType() async throws {
         let json = #"{"name": "Alice", "age": 30}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 
@@ -48,8 +45,7 @@ struct MockGenerableProviderTests {
         #expect(result.age == 30)
     }
 
-    @Test("Generate handles complex types")
-    func generateHandlesComplexTypes() async throws {
+    @Test("Generate handles complex types") func generateHandlesComplexTypes() async throws {
         let json = #"{"title": "Widget", "price": 19.99, "inStock": true}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 
@@ -62,8 +58,7 @@ struct MockGenerableProviderTests {
         #expect(result.inStock == true)
     }
 
-    @Test("Generate throws error when no JSON configured")
-    func generateThrowsErrorWhenNoJSON() async {
+    @Test("Generate throws error when no JSON configured") func generateThrowsErrorWhenNoJSON() async {
         let provider = MockGenerableProvider()
 
         await #expect(throws: IntelligenceError.self) {
@@ -73,8 +68,7 @@ struct MockGenerableProviderTests {
         }
     }
 
-    @Test("Generate throws error when JSON is invalid for type")
-    func generateThrowsErrorForInvalidJSON() async {
+    @Test("Generate throws error when JSON is invalid for type") func generateThrowsErrorForInvalidJSON() async {
         let json = #"{"invalid": "data"}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 
@@ -85,8 +79,7 @@ struct MockGenerableProviderTests {
         }
     }
 
-    @Test("Generate throws configured error when shouldFail is true")
-    func generateThrowsConfiguredError() async {
+    @Test("Generate throws configured error when shouldFail is true") func generateThrowsConfiguredError() async {
         let expectedError = IntelligenceError.modelNotReady
         let provider = MockGenerableProvider(shouldFail: true,
                                              errorToThrow: expectedError)
@@ -100,8 +93,7 @@ struct MockGenerableProviderTests {
 
     // MARK: - Schema Description Tests
 
-    @Test("Generate with schema description works")
-    func generateWithSchemaDescription() async throws {
+    @Test("Generate with schema description works") func generateWithSchemaDescription() async throws {
         let json = #"{"name": "Bob", "age": 25}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 
@@ -116,8 +108,7 @@ struct MockGenerableProviderTests {
 
     // MARK: - Complete Tests
 
-    @Test("Complete returns JSON as content")
-    func completeReturnsJSONAsContent() async throws {
+    @Test("Complete returns JSON as content") func completeReturnsJSONAsContent() async throws {
         let json = #"{"key": "value"}"#
         let provider = MockGenerableProvider(jsonResponse: json)
 

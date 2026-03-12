@@ -54,10 +54,8 @@ extension AnthropicProvider: GenerableProvider {
                                                           prompt: String,
                                                           schemaDescription: String?,
                                                           configuration: CompletionConfiguration) async throws -> T {
-        logger.debug("Starting structured generation", metadata: [
-            "type": .public(String(describing: type)),
-            "promptLength": .public("\(prompt.count)")
-        ])
+        logger.debug("Starting structured generation", metadata: ["type": .public(String(describing: type)),
+                                                                  "promptLength": .public("\(prompt.count)")])
 
         let request = buildGenerationRequest(type,
                                              prompt: prompt,
@@ -130,11 +128,9 @@ extension AnthropicProvider: GenerableProvider {
             logger.info("Structured generation successful", metadata: ["type": .public(String(describing: type))])
             return result
         } catch {
-            logger.error("Failed to decode structured response", metadata: [
-                "type": .public(String(describing: type)),
-                "error": .public(error
-                    .localizedDescription)
-            ])
+            logger.error("Failed to decode structured response", metadata: ["type": .public(String(describing: type)),
+                                                                            "error": .public(error
+                                                                                .localizedDescription)])
             throw IntelligenceError
                 .responseParseFailed("Failed to decode response as \(type): \(error.localizedDescription)")
         }

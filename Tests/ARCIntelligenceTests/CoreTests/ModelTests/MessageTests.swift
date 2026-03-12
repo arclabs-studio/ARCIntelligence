@@ -9,10 +9,8 @@ import Foundation
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Message Tests", .tags(.unit))
-struct MessageTests {
-    @Test("Message initializes with default values")
-    func messageInitializesWithDefaults() {
+@Suite("Message Tests", .tags(.unit)) struct MessageTests {
+    @Test("Message initializes with default values") func messageInitializesWithDefaults() {
         let message = Message(role: .user,
                               content: "Hello")
 
@@ -21,8 +19,7 @@ struct MessageTests {
         #expect(message.metadata.isEmpty)
     }
 
-    @Test("Message initializes with custom values")
-    func messageInitializesWithCustomValues() {
+    @Test("Message initializes with custom values") func messageInitializesWithCustomValues() {
         let id = UUID()
         let timestamp = Date()
         let metadata = ["key": "value"]
@@ -40,8 +37,7 @@ struct MessageTests {
         #expect(message.metadata == metadata)
     }
 
-    @Test("Message roles are correctly defined")
-    func messageRolesAreCorrect() {
+    @Test("Message roles are correctly defined") func messageRolesAreCorrect() {
         #expect(Message.Role.user.rawValue == "user")
         #expect(Message.Role.assistant.rawValue == "assistant")
         #expect(Message.Role.system.rawValue == "system")

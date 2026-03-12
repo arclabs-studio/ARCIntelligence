@@ -8,8 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Anthropic Configuration Tests", .tags(.unit))
-struct AnthropicConfigurationTests {
+@Suite("Anthropic Configuration Tests", .tags(.unit)) struct AnthropicConfigurationTests {
     // MARK: - Helpers
 
     private func makeSUT(authentication: AnthropicAuthentication = .apiKey("test-key"),
@@ -26,8 +25,7 @@ struct AnthropicConfigurationTests {
 
     // MARK: - Defaults
 
-    @Test("Default configuration uses Sonnet model")
-    func defaultModel() {
+    @Test("Default configuration uses Sonnet model") func defaultModel() {
         // Given
         let sut = makeSUT()
 
@@ -35,8 +33,7 @@ struct AnthropicConfigurationTests {
         #expect(sut.model == .sonnet)
     }
 
-    @Test("Default configuration has standard temperature")
-    func defaultTemperature() {
+    @Test("Default configuration has standard temperature") func defaultTemperature() {
         // Given
         let sut = makeSUT()
 
@@ -44,8 +41,7 @@ struct AnthropicConfigurationTests {
         #expect(sut.defaultTemperature == 0.7)
     }
 
-    @Test("Default configuration has 4096 max tokens")
-    func defaultMaxTokens() {
+    @Test("Default configuration has 4096 max tokens") func defaultMaxTokens() {
         // Given
         let sut = makeSUT()
 
@@ -55,8 +51,7 @@ struct AnthropicConfigurationTests {
 
     // MARK: - Clamping
 
-    @Test("Temperature is clamped to valid range")
-    func temperatureClamping() {
+    @Test("Temperature is clamped to valid range") func temperatureClamping() {
         // Given
         let low = makeSUT(defaultTemperature: -1.0)
         let high = makeSUT(defaultTemperature: 5.0)
@@ -66,8 +61,7 @@ struct AnthropicConfigurationTests {
         #expect(high.defaultTemperature == 1.0)
     }
 
-    @Test("Max tokens is clamped to valid range")
-    func maxTokensClamping() {
+    @Test("Max tokens is clamped to valid range") func maxTokensClamping() {
         // Given
         let low = makeSUT(defaultMaxTokens: 0)
         let high = makeSUT(defaultMaxTokens: 999_999)
@@ -77,8 +71,7 @@ struct AnthropicConfigurationTests {
         #expect(high.defaultMaxTokens == 128_000)
     }
 
-    @Test("Max tool rounds is clamped to valid range")
-    func maxToolRoundsClamping() {
+    @Test("Max tool rounds is clamped to valid range") func maxToolRoundsClamping() {
         // Given
         let low = makeSUT(maxToolRounds: 0)
         let high = makeSUT(maxToolRounds: 100)
@@ -90,8 +83,7 @@ struct AnthropicConfigurationTests {
 
     // MARK: - Model IDs
 
-    @Test("Model enum returns correct model IDs")
-    func modelIds() {
+    @Test("Model enum returns correct model IDs") func modelIds() {
         // Then
         #expect(AnthropicModel.haiku.modelId == "claude-3-5-haiku-latest")
         #expect(AnthropicModel.sonnet.modelId == "claude-sonnet-4-5-20250929")
@@ -101,8 +93,7 @@ struct AnthropicConfigurationTests {
 
     // MARK: - Presets
 
-    @Test("Fast preset uses Haiku")
-    func fastPreset() {
+    @Test("Fast preset uses Haiku") func fastPreset() {
         // Given
         let sut = AnthropicConfiguration.fast(authentication: .apiKey("k"))
 
@@ -112,8 +103,7 @@ struct AnthropicConfigurationTests {
         #expect(sut.defaultMaxTokens == 2048)
     }
 
-    @Test("Balanced preset uses Sonnet")
-    func balancedPreset() {
+    @Test("Balanced preset uses Sonnet") func balancedPreset() {
         // Given
         let sut = AnthropicConfiguration.balanced(authentication: .apiKey("k"))
 
@@ -122,8 +112,7 @@ struct AnthropicConfigurationTests {
         #expect(sut.defaultTemperature == 0.7)
     }
 
-    @Test("Quality preset uses Opus")
-    func qualityPreset() {
+    @Test("Quality preset uses Opus") func qualityPreset() {
         // Given
         let sut = AnthropicConfiguration.quality(authentication: .apiKey("k"))
 
@@ -134,8 +123,7 @@ struct AnthropicConfigurationTests {
 
     // MARK: - Authentication
 
-    @Test("API key authentication stores key")
-    func apiKeyAuth() {
+    @Test("API key authentication stores key") func apiKeyAuth() {
         // Given
         let auth = AnthropicAuthentication.apiKey("sk-ant-test")
 
@@ -143,8 +131,7 @@ struct AnthropicConfigurationTests {
         #expect(auth == .apiKey("sk-ant-test"))
     }
 
-    @Test("AIProxy authentication stores both values")
-    func aiProxyAuth() {
+    @Test("AIProxy authentication stores both values") func aiProxyAuth() {
         // Given
         let auth = AnthropicAuthentication.aiProxy(partialKey: "pk", serviceURL: "https://proxy.test")
 

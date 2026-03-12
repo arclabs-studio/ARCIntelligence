@@ -11,8 +11,7 @@ import Testing
 
 // MARK: - SessionTranscript Tests
 
-@Suite("SessionTranscript Tests", .tags(.unit))
-struct SessionTranscriptTests {
+@Suite("SessionTranscript Tests", .tags(.unit)) struct SessionTranscriptTests {
     // MARK: - Helpers
 
     private func makePrompt(id: String = "p1", content: String = "Hello") -> TranscriptPrompt {
@@ -43,8 +42,7 @@ struct SessionTranscriptTests {
 
     // MARK: - Initialization
 
-    @Test("empty init produces empty transcript", .tags(.unit))
-    func emptyInit_producesEmptyTranscript() {
+    @Test("empty init produces empty transcript", .tags(.unit)) func emptyInit_producesEmptyTranscript() {
         // Given / When
         let sut = SessionTranscript()
 
@@ -53,13 +51,10 @@ struct SessionTranscriptTests {
         #expect(sut.entries.isEmpty)
     }
 
-    @Test("init with entries stores entries in order", .tags(.unit))
-    func initWithEntries_storesEntriesInOrder() {
+    @Test("init with entries stores entries in order", .tags(.unit)) func initWithEntries_storesEntriesInOrder() {
         // Given
-        let entries: [TranscriptEntry] = [
-            .prompt(makePrompt()),
-            .response(makeResponse())
-        ]
+        let entries: [TranscriptEntry] = [.prompt(makePrompt()),
+                                          .response(makeResponse())]
 
         // When
         let sut = makeSUT(entries: entries)
@@ -71,8 +66,7 @@ struct SessionTranscriptTests {
 
     // MARK: - Computed Properties
 
-    @Test("first returns first entry", .tags(.unit))
-    func first_returnsFirstEntry() {
+    @Test("first returns first entry", .tags(.unit)) func first_returnsFirstEntry() {
         // Given
         let prompt = makePrompt(id: "first")
         let sut = makeSUT(entries: [.prompt(prompt), .response(makeResponse())])
@@ -85,8 +79,7 @@ struct SessionTranscriptTests {
         }
     }
 
-    @Test("last returns last entry", .tags(.unit))
-    func last_returnsLastEntry() {
+    @Test("last returns last entry", .tags(.unit)) func last_returnsLastEntry() {
         // Given
         let response = makeResponse(id: "last")
         let sut = makeSUT(entries: [.prompt(makePrompt()), .response(response)])
@@ -99,8 +92,7 @@ struct SessionTranscriptTests {
         }
     }
 
-    @Test("first and last are nil on empty transcript", .tags(.unit))
-    func firstAndLast_areNilWhenEmpty() {
+    @Test("first and last are nil on empty transcript", .tags(.unit)) func firstAndLast_areNilWhenEmpty() {
         // Given
         let sut = SessionTranscript()
 
@@ -109,15 +101,12 @@ struct SessionTranscriptTests {
         #expect(sut.last == nil)
     }
 
-    @Test("prompts returns only prompt entries", .tags(.unit))
-    func prompts_returnsOnlyPromptEntries() {
+    @Test("prompts returns only prompt entries", .tags(.unit)) func prompts_returnsOnlyPromptEntries() {
         // Given
-        let sut = makeSUT(entries: [
-            .instructions(makeInstructions()),
-            .prompt(makePrompt(id: "p1")),
-            .response(makeResponse()),
-            .prompt(makePrompt(id: "p2"))
-        ])
+        let sut = makeSUT(entries: [.instructions(makeInstructions()),
+                                    .prompt(makePrompt(id: "p1")),
+                                    .response(makeResponse()),
+                                    .prompt(makePrompt(id: "p2"))])
 
         // When
         let prompts = sut.prompts
@@ -127,15 +116,12 @@ struct SessionTranscriptTests {
         #expect(prompts.map(\.id) == ["p1", "p2"])
     }
 
-    @Test("responses returns only response entries", .tags(.unit))
-    func responses_returnsOnlyResponseEntries() {
+    @Test("responses returns only response entries", .tags(.unit)) func responses_returnsOnlyResponseEntries() {
         // Given
-        let sut = makeSUT(entries: [
-            .prompt(makePrompt()),
-            .response(makeResponse(id: "r1")),
-            .toolCall(makeToolCall()),
-            .response(makeResponse(id: "r2"))
-        ])
+        let sut = makeSUT(entries: [.prompt(makePrompt()),
+                                    .response(makeResponse(id: "r1")),
+                                    .toolCall(makeToolCall()),
+                                    .response(makeResponse(id: "r2"))])
 
         // When
         let responses = sut.responses
@@ -145,15 +131,12 @@ struct SessionTranscriptTests {
         #expect(responses.map(\.id) == ["r1", "r2"])
     }
 
-    @Test("toolCalls returns only toolCall entries", .tags(.unit))
-    func toolCalls_returnsOnlyToolCallEntries() {
+    @Test("toolCalls returns only toolCall entries", .tags(.unit)) func toolCalls_returnsOnlyToolCallEntries() {
         // Given
-        let sut = makeSUT(entries: [
-            .prompt(makePrompt()),
-            .toolCall(makeToolCall(id: "tc1", toolName: "weather")),
-            .toolOutput(makeToolOutput()),
-            .toolCall(makeToolCall(id: "tc2", toolName: "search"))
-        ])
+        let sut = makeSUT(entries: [.prompt(makePrompt()),
+                                    .toolCall(makeToolCall(id: "tc1", toolName: "weather")),
+                                    .toolOutput(makeToolOutput()),
+                                    .toolCall(makeToolCall(id: "tc2", toolName: "search"))])
 
         // When
         let toolCalls = sut.toolCalls
@@ -165,8 +148,7 @@ struct SessionTranscriptTests {
 
     // MARK: - Subscript
 
-    @Test("subscript accesses entry by index", .tags(.unit))
-    func subscript_accessesEntryByIndex() {
+    @Test("subscript accesses entry by index", .tags(.unit)) func subscript_accessesEntryByIndex() {
         // Given
         let prompt = makePrompt(id: "target")
         let sut = makeSUT(entries: [.response(makeResponse()), .prompt(prompt)])
@@ -184,8 +166,7 @@ struct SessionTranscriptTests {
 
     // MARK: - RandomAccessCollection
 
-    @Test("startIndex is 0", .tags(.unit))
-    func startIndex_isZero() {
+    @Test("startIndex is 0", .tags(.unit)) func startIndex_isZero() {
         // Given
         let sut = makeSUT(entries: [.prompt(makePrompt())])
 
@@ -193,8 +174,7 @@ struct SessionTranscriptTests {
         #expect(sut.startIndex == 0)
     }
 
-    @Test("endIndex equals count", .tags(.unit))
-    func endIndex_equalsCount() {
+    @Test("endIndex equals count", .tags(.unit)) func endIndex_equalsCount() {
         // Given
         let sut = makeSUT(entries: [.prompt(makePrompt()), .response(makeResponse())])
 
@@ -202,8 +182,7 @@ struct SessionTranscriptTests {
         #expect(sut.endIndex == sut.count)
     }
 
-    @Test("can iterate with for-in", .tags(.unit))
-    func collection_canIterateWithForIn() {
+    @Test("can iterate with for-in", .tags(.unit)) func collection_canIterateWithForIn() {
         // Given
         let sut = makeSUT(entries: [.prompt(makePrompt(id: "p")), .response(makeResponse(id: "r"))])
         var ids: [String] = []
@@ -219,8 +198,7 @@ struct SessionTranscriptTests {
 
     // MARK: - Equatable
 
-    @Test("transcripts with same entries are equal", .tags(.unit))
-    func equatable_sameEntriesAreEqual() {
+    @Test("transcripts with same entries are equal", .tags(.unit)) func equatable_sameEntriesAreEqual() {
         // Given
         let entries: [TranscriptEntry] = [.prompt(makePrompt()), .response(makeResponse())]
         let first = makeSUT(entries: entries)
@@ -245,13 +223,11 @@ struct SessionTranscriptTests {
     @Test("TranscriptEntry id delegates to wrapped value id", .tags(.unit))
     func transcriptEntry_idDelegatesToWrappedId() {
         // Given
-        let entries: [TranscriptEntry] = [
-            .instructions(makeInstructions(id: "i")),
-            .prompt(makePrompt(id: "p")),
-            .response(makeResponse(id: "r")),
-            .toolCall(makeToolCall(id: "tc")),
-            .toolOutput(makeToolOutput(id: "to"))
-        ]
+        let entries: [TranscriptEntry] = [.instructions(makeInstructions(id: "i")),
+                                          .prompt(makePrompt(id: "p")),
+                                          .response(makeResponse(id: "r")),
+                                          .toolCall(makeToolCall(id: "tc")),
+                                          .toolOutput(makeToolOutput(id: "to"))]
 
         // When / Then
         #expect(entries[0].id == "i")
@@ -266,13 +242,11 @@ struct SessionTranscriptTests {
     @Test("SessionTranscript codable round-trip preserves all entries", .tags(.unit))
     func sessionTranscript_codableRoundTrip() throws {
         // Given
-        let sut = makeSUT(entries: [
-            .instructions(makeInstructions()),
-            .prompt(makePrompt()),
-            .response(makeResponse()),
-            .toolCall(makeToolCall()),
-            .toolOutput(makeToolOutput())
-        ])
+        let sut = makeSUT(entries: [.instructions(makeInstructions()),
+                                    .prompt(makePrompt()),
+                                    .response(makeResponse()),
+                                    .toolCall(makeToolCall()),
+                                    .toolOutput(makeToolOutput())])
 
         // When
         let data = try JSONEncoder().encode(sut)
@@ -298,8 +272,7 @@ struct SessionTranscriptTests {
         #expect(decoded == entry)
     }
 
-    @Test("TranscriptEntry prompt round-trips correctly", .tags(.unit))
-    func transcriptEntry_promptRoundTrip() throws {
+    @Test("TranscriptEntry prompt round-trips correctly", .tags(.unit)) func transcriptEntry_promptRoundTrip() throws {
         // Given
         let entry = TranscriptEntry.prompt(makePrompt(id: "p99", content: "What is Swift?"))
 

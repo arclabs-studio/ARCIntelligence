@@ -9,17 +9,14 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Mock Provider Tests", .tags(.unit))
-struct MockProviderTests {
-    @Test("Mock provider is always available")
-    func mockProviderIsAvailable() async {
+@Suite("Mock Provider Tests", .tags(.unit)) struct MockProviderTests {
+    @Test("Mock provider is always available") func mockProviderIsAvailable() async {
         let provider = MockIntelligenceProvider()
         let available = await provider.isAvailable()
         #expect(available)
     }
 
-    @Test("Mock provider returns configured responses")
-    func mockProviderReturnsConfiguredResponses() async throws {
+    @Test("Mock provider returns configured responses") func mockProviderReturnsConfiguredResponses() async throws {
         let expectedResponse = "Test response"
         let provider = MockIntelligenceProvider(responses: [expectedResponse],
                                                 shouldFail: false)
@@ -40,8 +37,7 @@ struct MockProviderTests {
         }
     }
 
-    @Test("Mock provider streams responses")
-    func mockProviderStreamsResponses() async throws {
+    @Test("Mock provider streams responses") func mockProviderStreamsResponses() async throws {
         let expectedResponse = "Stream"
         let provider = MockIntelligenceProvider(responses: [expectedResponse],
                                                 simulatedDelay: 0.01)

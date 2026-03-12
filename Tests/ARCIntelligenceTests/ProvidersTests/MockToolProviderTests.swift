@@ -9,12 +9,10 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Mock Tool Provider Tests", .tags(.unit))
-struct MockToolProviderTests {
+@Suite("Mock Tool Provider Tests", .tags(.unit)) struct MockToolProviderTests {
     // MARK: - Availability Tests
 
-    @Test("Mock tool provider is always available")
-    func isAvailable() async {
+    @Test("Mock tool provider is always available") func isAvailable() async {
         let provider = MockToolProvider()
         let available = await provider.isAvailable()
         #expect(available)
@@ -22,8 +20,7 @@ struct MockToolProviderTests {
 
     // MARK: - Response Tests
 
-    @Test("Respond returns configured response")
-    func respondReturnsConfiguredResponse() async throws {
+    @Test("Respond returns configured response") func respondReturnsConfiguredResponse() async throws {
         let expectedResponse = "The answer is 42"
         let provider = MockToolProvider(response: expectedResponse)
 
@@ -55,8 +52,7 @@ struct MockToolProviderTests {
 
     // MARK: - Tool Execution Tests
 
-    @Test("Provider calls actual tools when shouldCallTools is true")
-    func providerCallsActualTools() async throws {
+    @Test("Provider calls actual tools when shouldCallTools is true") func providerCallsActualTools() async throws {
         let tool = MockTool(name: "greeter",
                             description: "Greets people",
                             responseToReturn: "Hello, World!")
@@ -72,8 +68,7 @@ struct MockToolProviderTests {
         #expect(toolCalls[0].output == "Hello, World!")
     }
 
-    @Test("MockTool returns configured response")
-    func mockToolReturnsConfiguredResponse() async throws {
+    @Test("MockTool returns configured response") func mockToolReturnsConfiguredResponse() async throws {
         let tool = MockTool(name: "echo",
                             description: "Echoes input",
                             responseToReturn: "Echo response")
@@ -83,8 +78,7 @@ struct MockToolProviderTests {
         #expect(result == "Echo response")
     }
 
-    @Test("MockTool throws error when configured to fail")
-    func mockToolThrowsErrorWhenFailing() async {
+    @Test("MockTool throws error when configured to fail") func mockToolThrowsErrorWhenFailing() async {
         let tool = MockTool(name: "failing",
                             description: "Always fails",
                             shouldFail: true)
@@ -96,8 +90,7 @@ struct MockToolProviderTests {
 
     // MARK: - Error Tests
 
-    @Test("Provider throws error when shouldFail is true")
-    func providerThrowsErrorWhenFailing() async {
+    @Test("Provider throws error when shouldFail is true") func providerThrowsErrorWhenFailing() async {
         let provider = MockToolProvider(shouldFail: true)
 
         await #expect(throws: IntelligenceError.self) {
@@ -107,8 +100,7 @@ struct MockToolProviderTests {
         }
     }
 
-    @Test("Provider throws configured error")
-    func providerThrowsConfiguredError() async {
+    @Test("Provider throws configured error") func providerThrowsConfiguredError() async {
         let expectedError = IntelligenceError.rateLimitExceeded
         let provider = MockToolProvider(shouldFail: true,
                                         errorToThrow: expectedError)
@@ -122,12 +114,9 @@ struct MockToolProviderTests {
 
     // MARK: - Metadata Tests
 
-    @Test("Response includes tool call count in metadata")
-    func responseIncludesToolCallMetadata() async throws {
-        let simulatedCalls = [
-            ToolCallRecord(toolName: "tool1", arguments: [:], output: "out1", duration: 0.1),
-            ToolCallRecord(toolName: "tool2", arguments: [:], output: "out2", duration: 0.1)
-        ]
+    @Test("Response includes tool call count in metadata") func responseIncludesToolCallMetadata() async throws {
+        let simulatedCalls = [ToolCallRecord(toolName: "tool1", arguments: [:], output: "out1", duration: 0.1),
+                              ToolCallRecord(toolName: "tool2", arguments: [:], output: "out2", duration: 0.1)]
         let provider = MockToolProvider(response: "Done",
                                         toolCallsToSimulate: simulatedCalls)
 
@@ -140,8 +129,7 @@ struct MockToolProviderTests {
 
     // MARK: - Stream Tests
 
-    @Test("Stream complete returns response")
-    func streamCompleteReturnsResponse() async throws {
+    @Test("Stream complete returns response") func streamCompleteReturnsResponse() async throws {
         let expectedResponse = "Streamed response"
         let provider = MockToolProvider(response: expectedResponse)
 
