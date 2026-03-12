@@ -31,12 +31,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Streaming implementation uses `Task.detached` with `onTermination` for safe stream lifecycle
 - `cosineSimilarity` optimised using Accelerate `vDSP` for performance
 - `SemanticSearch` and `RecommendationEngine` use `reserveCapacity` for better allocation
+- `AnthropicHTTPClient` and `OpenAICompatibleHTTPClient` now default to
+  `RetryInterceptor(maxRetries: 2)` + `LoggingInterceptor`, adding automatic exponential-backoff
+  retry on transient 5xx errors without changing any public API
 
 ### Fixed
 - Stream capture safety: eliminated data races in `AsyncThrowingStream` continuation captures
 - `CancellationError` now propagates correctly through streaming pipelines
 - Replaced `fatalError` with safe optional URL initialisation in provider configuration
 - StrictConcurrency enabled for `ARCIntelligenceMocks` target
+
+### Tests
+- `MockHTTPClient` extended with `streamLinesToReturn` and `streamErrorToThrow` to enable
+  full streaming-path coverage without network access
+- Added 4 streaming-path tests covering happy path and 401→`authenticationFailed` mapping
+  for both `AnthropicHTTPClient.streamMessage` and `OpenAICompatibleHTTPClient.streamChatCompletion`
 
 ## [0.1.0] - 2025-01-01
 
