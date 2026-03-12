@@ -33,6 +33,19 @@ import Testing
                                 toolChoice: nil)
     }
 
+    private func makeStreamingRequest() -> AnthropicMessageRequest {
+        AnthropicMessageRequest(model: "claude-sonnet-4-5-20250929",
+                                messages: [AnthropicAPIMessage(role: "user", text: "Hello")],
+                                maxTokens: 1024,
+                                system: nil,
+                                temperature: nil,
+                                topP: nil,
+                                stopSequences: nil,
+                                stream: true,
+                                tools: nil,
+                                toolChoice: nil)
+    }
+
     private func makeResponse(content: String = "Hello") -> AnthropicMessageResponse {
         AnthropicMessageResponse(id: "msg_test",
                                  type: "message",
@@ -265,5 +278,52 @@ import Testing
             return
         }
         #expect(message.contains("503"))
+    }
+
+    // MARK: - Stream Message — Happy Path
+
+    @Test("Should yield messageStop event when mock yields valid SSE lines")
+    func streamMessage_yieldsMessageStopEvent() async throws {
+        // Given
+        let (sut, mock) = makeSUT()
+        let messageStartLine = #"data: {"type":"message_start","message":{"id":"msg_test","type":"message","model":"claude-sonnet-4-5-20250929","content":[],"stop_reason":null,"usage":{"input_tokens":10,"output_tokens":0}}}"#
+        let messageStopLine = #"data: {"type":"message_stop"}"#
+        mock.streamLinesToReturn = try [#require(messageStartLine.data(using: .utf8)),
+                                        #require(messageStopLine.data(using: .utf8))]
+
+        // When
+        var events: [AnthropicStreamEvent] = []
+        for try await event in sut.streamMessage(makeStreamingRequest()) {
+            events.append(event)
+        }
+
+        // Then
+        var sawMessageStop = false
+        for event in events {
+            if case .messageStop = event { sawMessageStop = true }
+        }
+        #expect(sawMessageStop)
+    }
+
+    // MARK: - Stream Message — Error Mapping
+
+    @Test("Should map 401 HTTP error to authenticationFailed on streaming path")
+    func streamMessage_maps401ToAuthenticationFailed() async {
+        // Given
+        let (sut, mock) = makeSUT()
+        mock.streamErrorToThrow = HTTPError.requestFailed(401)
+
+        // When
+        var thrownError: IntelligenceError?
+        do {
+            for try await _ in sut.streamMessage(makeStreamingRequest()) {}
+        } catch let error as IntelligenceError {
+            thrownError = error
+        } catch {
+            Issue.record("Unexpected error type: \(error)")
+        }
+
+        // Then
+        #expect(thrownError == .authenticationFailed)
     }
 }

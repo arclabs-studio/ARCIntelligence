@@ -39,6 +39,20 @@ import Testing
                           responseFormat: nil)
     }
 
+    private func makeStreamingRequest() -> OpenAIChatRequest {
+        OpenAIChatRequest(model: "gpt-4o",
+                          messages: [OpenAIChatMessage(role: "user", content: "Hello", toolCalls: nil,
+                                                       toolCallId: nil)],
+                          temperature: nil,
+                          topP: nil,
+                          maxTokens: nil,
+                          stop: nil,
+                          stream: true,
+                          tools: nil,
+                          toolChoice: nil,
+                          responseFormat: nil)
+    }
+
     private func makeResponse() -> OpenAIChatResponse {
         OpenAIChatResponse(id: "chatcmpl-test",
                            object: "chat.completion",
@@ -233,5 +247,50 @@ import Testing
             return
         }
         #expect(message.contains("418"))
+    }
+
+    // MARK: - Stream Chat Completion — Happy Path
+
+    @Test("Should yield chunk with finishReason when mock yields valid SSE lines")
+    func streamChatCompletion_yieldsChunkWithFinishReason() async throws {
+        // Given
+        let (sut, mock) = makeSUT()
+        let contentChunkLine = #"data: {"id":"chatcmpl-test","choices":[{"index":0,"delta":{"role":"assistant","content":"Hi"},"finish_reason":null}]}"#
+        let finalChunkLine = #"data: {"id":"chatcmpl-test","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}"#
+        mock.streamLinesToReturn = try [#require(contentChunkLine.data(using: .utf8)),
+                                        #require(finalChunkLine.data(using: .utf8))]
+
+        // When
+        var chunks: [OpenAIStreamChunk] = []
+        for try await chunk in sut.streamChatCompletion(makeStreamingRequest()) {
+            chunks.append(chunk)
+        }
+
+        // Then
+        let finishedChunk = chunks.first(where: { $0.choices?.first?.finishReason != nil })
+        #expect(finishedChunk != nil)
+        #expect(finishedChunk?.choices?.first?.finishReason == "stop")
+    }
+
+    // MARK: - Stream Chat Completion — Error Mapping
+
+    @Test("Should map 401 HTTP error to authenticationFailed on streaming path")
+    func streamChatCompletion_maps401ToAuthenticationFailed() async {
+        // Given
+        let (sut, mock) = makeSUT()
+        mock.streamErrorToThrow = HTTPError.requestFailed(401)
+
+        // When
+        var thrownError: IntelligenceError?
+        do {
+            for try await _ in sut.streamChatCompletion(makeStreamingRequest()) {}
+        } catch let error as IntelligenceError {
+            thrownError = error
+        } catch {
+            Issue.record("Unexpected error type: \(error)")
+        }
+
+        // Then
+        #expect(thrownError == .authenticationFailed)
     }
 }
