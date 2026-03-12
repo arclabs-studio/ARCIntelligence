@@ -14,12 +14,21 @@ import Foundation
 /// Stores a single response (as `Any`) and/or an error. The generic `execute`
 /// casts the stored response to `T.Response` — configure it to match the
 /// endpoint you are testing.
+///
+/// For streaming tests, set `streamLinesToReturn` to a sequence of raw SSE
+/// `Data` lines to yield, or `streamErrorToThrow` to have the stream fail
+/// immediately with that error.
 final class MockHTTPClient: HTTPClientProtocol, @unchecked Sendable {
     // MARK: - State
 
     var responseToReturn: Any?
     var errorToThrow: Error?
     var lastExecutedEndpoint: (any Endpoint)?
+
+    /// SSE lines to yield from `stream(_:)`. Each element is one raw line (e.g. `"data: {...}"` as UTF-8 `Data`).
+    var streamLinesToReturn: [Data]?
+    /// Error to throw immediately from `stream(_:)`.
+    var streamErrorToThrow: Error?
 
     // MARK: - HTTPClientProtocol
 
@@ -37,5 +46,20 @@ final class MockHTTPClient: HTTPClientProtocol, @unchecked Sendable {
         }
 
         return response
+    }
+
+    func stream(_: some Endpoint) -> AsyncThrowingStream<Data, Error> {
+        if let error = streamErrorToThrow {
+            return AsyncThrowingStream { continuation in
+                continuation.finish(throwing: error)
+            }
+        }
+        let lines = streamLinesToReturn ?? []
+        return AsyncThrowingStream { continuation in
+            for line in lines {
+                continuation.yield(line)
+            }
+            continuation.finish()
+        }
     }
 }
