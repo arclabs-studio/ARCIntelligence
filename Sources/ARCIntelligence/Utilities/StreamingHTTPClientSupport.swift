@@ -31,6 +31,12 @@ protocol StreamingHTTPClientSupport {
 
     /// Extract a human-readable error message from raw response data.
     func extractErrorMessage(from data: Data?) -> String?
+
+    /// Map an HTTP status code (and optional error body) to an `IntelligenceError`.
+    ///
+    /// Conformers may override this to handle provider-specific status codes
+    /// (e.g. Anthropic's 529 overload code).
+    func mapHTTPStatusCode(_ statusCode: Int, data: Data?) -> IntelligenceError
 }
 
 // MARK: - Default Implementations
@@ -81,7 +87,7 @@ private struct StreamingErrorEnvelope: Decodable {
     let error: ErrorBody
 }
 
-// MARK: - Private Helpers
+// MARK: - Default Status Code Mapping
 
 extension StreamingHTTPClientSupport {
     func mapHTTPStatusCode(_ statusCode: Int, data: Data?) -> IntelligenceError {

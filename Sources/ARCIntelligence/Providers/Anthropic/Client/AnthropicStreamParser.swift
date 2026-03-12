@@ -15,9 +15,7 @@ struct AnthropicStreamParser: Sendable {
     private let decoder: JSONDecoder
 
     init() {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        self.decoder = decoder
+        decoder = JSONDecoder()
     }
 
     /// Parse a sequence of raw bytes into stream events.
