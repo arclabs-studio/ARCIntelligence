@@ -99,28 +99,24 @@ extension OpenAIProvider: IntelligenceProvider {
 
     public func complete(prompt: String,
                          configuration: CompletionConfiguration) async throws -> IntelligenceResponse {
-        logger.debug("Starting completion request", metadata: [
-            "promptLength": .public("\(prompt.count)"),
-            "model": .public(self.configuration.model.modelId)
-        ])
+        logger.debug("Starting completion request", metadata: ["promptLength": .public("\(prompt.count)"),
+                                                               "model": .public(self.configuration.model.modelId)])
 
         let request = buildRequest(prompt: prompt, configuration: configuration)
         let response = try await apiClient.sendChatCompletion(request)
 
-        logger.info("Completion successful", metadata: [
-            "promptTokens": .public("\(response.usage?.promptTokens ?? 0)"),
-            "completionTokens": .public("\(response.usage?.completionTokens ?? 0)")
-        ])
+        // swiftlint:disable line_length
+        logger.info("Completion successful", metadata: ["promptTokens": .public("\(response.usage?.promptTokens ?? 0)"),
+                                                        "completionTokens": .public("\(response.usage?.completionTokens ?? 0)")])
+        // swiftlint:enable line_length
 
         return mapResponse(response)
     }
 
     public func streamComplete(prompt: String,
                                configuration: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
-        logger.debug("Starting streaming completion", metadata: [
-            "promptLength": .public("\(prompt.count)"),
-            "model": .public(self.configuration.model.modelId)
-        ])
+        logger.debug("Starting streaming completion", metadata: ["promptLength": .public("\(prompt.count)"),
+                                                                 "model": .public(self.configuration.model.modelId)])
 
         let request = buildRequest(prompt: prompt, configuration: configuration, stream: true)
 
@@ -156,10 +152,8 @@ extension OpenAIProvider: ConversationProvider {
     public func sendMessage(_ message: Message,
                             in conversation: Conversation) async throws -> Message {
         logger.debug("Sending message in conversation",
-                     metadata: [
-                         "conversationId": .public(conversation.id.uuidString),
-                         "historyCount": .public("\(conversation.messages.count)")
-                     ])
+                     metadata: ["conversationId": .public(conversation.id.uuidString),
+                                "historyCount": .public("\(conversation.messages.count)")])
 
         let completionConfig = CompletionConfiguration(temperature: configuration.defaultTemperature,
                                                        maxTokens: configuration.defaultMaxTokens,
@@ -177,10 +171,8 @@ extension OpenAIProvider: ConversationProvider {
 
         return Message(role: .assistant,
                        content: mapped.content,
-                       metadata: [
-                           "tokens": "\(mapped.tokensUsed)",
-                           "model": configuration.model.modelId
-                       ])
+                       metadata: ["tokens": "\(mapped.tokensUsed)",
+                                  "model": configuration.model.modelId])
     }
 
     public func continueConversation(_ conversation: Conversation,

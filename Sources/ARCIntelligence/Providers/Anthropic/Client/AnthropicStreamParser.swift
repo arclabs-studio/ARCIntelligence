@@ -15,36 +15,25 @@ struct AnthropicStreamParser: Sendable {
     private let decoder: JSONDecoder
 
     init() {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        self.decoder = decoder
+        decoder = JSONDecoder()
     }
 
-    /// Parse a sequence of raw bytes into stream events.
+    /// Parse a stream of line-delimited data chunks into stream events.
     ///
-    /// - Parameter bytes: The async byte sequence from URLSession.
+    /// - Parameter dataStream: An `AsyncThrowingStream` where each element is one SSE line.
     /// - Returns: An async stream of parsed events.
-    func parse(_ bytes: URLSession.AsyncBytes) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
+    func parse(_ dataStream: AsyncThrowingStream<Data, Error>) -> AsyncThrowingStream<AnthropicStreamEvent, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    var buffer = ""
-                    for try await byte in bytes {
-                        let char = Character(UnicodeScalar(byte))
-                        buffer.append(char)
+                    for try await lineData in dataStream {
+                        let line = String(data: lineData, encoding: .utf8)?.trimmingCharacters(in: .newlines) ?? ""
+                        if let event = try parseLine(line) {
+                            continuation.yield(event)
 
-                        // SSE lines are delimited by newlines
-                        if char == "\n" {
-                            let line = buffer.trimmingCharacters(in: .newlines)
-                            buffer = ""
-
-                            if let event = try parseLine(line) {
-                                continuation.yield(event)
-
-                                if case .messageStop = event {
-                                    continuation.finish()
-                                    return
-                                }
+                            if case .messageStop = event {
+                                continuation.finish()
+                                return
                             }
                         }
                     }

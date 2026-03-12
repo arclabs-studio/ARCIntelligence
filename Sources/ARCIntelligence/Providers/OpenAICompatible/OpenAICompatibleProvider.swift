@@ -119,10 +119,8 @@ extension OpenAICompatibleProvider {
                                                           prompt: String,
                                                           schemaDescription: String?,
                                                           configuration: CompletionConfiguration) async throws -> T {
-        logger.debug("Starting structured generation", metadata: [
-            "type": .public(String(describing: type)),
-            "promptLength": .public("\(prompt.count)")
-        ])
+        logger.debug("Starting structured generation", metadata: ["type": .public(String(describing: type)),
+                                                                  "promptLength": .public("\(prompt.count)")])
 
         let request = OpenAICompatibleMapping.buildGenerationRequest(type,
                                                                      prompt: prompt,
@@ -151,10 +149,9 @@ extension OpenAICompatibleProvider {
                         metadata: ["type": .public(String(describing: type))])
             return result
         } catch {
-            logger.error("Failed to decode structured response", metadata: [
-                "type": .public(String(describing: type)),
-                "error": .public(error.localizedDescription)
-            ])
+            logger.error("Failed to decode structured response", metadata: ["type": .public(String(describing: type)),
+                                                                            "error": .public(error
+                                                                                .localizedDescription)])
             throw error
         }
     }
@@ -189,10 +186,8 @@ extension OpenAICompatibleProvider {
                                      tools: [any IntelligenceTool],
                                      configuration: CompletionConfiguration) async throws
     -> (response: IntelligenceResponse, toolCalls: [ToolCallRecord]) {
-        logger.debug("Starting tool-assisted generation", metadata: [
-            "promptLength": .public("\(prompt.count)"),
-            "toolCount": .public("\(tools.count)")
-        ])
+        logger.debug("Starting tool-assisted generation", metadata: ["promptLength": .public("\(prompt.count)"),
+                                                                     "toolCount": .public("\(tools.count)")])
 
         let context = OpenAICompatibleToolCallingContext(toolDefinitions: tools.map { mapToolToDefinition($0) },
                                                          toolsByName: Dictionary(uniqueKeysWithValues: tools
@@ -209,10 +204,8 @@ extension OpenAICompatibleProvider {
         let intelligenceResponse = mapResponse(response)
 
         logger.info("Tool-assisted generation successful",
-                    metadata: [
-                        "totalToolCalls": .public("\(allToolCalls.count)"),
-                        "tokensUsed": .public("\(intelligenceResponse.tokensUsed)")
-                    ])
+                    metadata: ["totalToolCalls": .public("\(allToolCalls.count)"),
+                               "tokensUsed": .public("\(intelligenceResponse.tokensUsed)")])
 
         return (intelligenceResponse, allToolCalls)
     }
@@ -244,10 +237,8 @@ extension OpenAICompatibleProvider {
             allToolCalls.append(contentsOf: records)
             messages.append(contentsOf: toolMessages)
 
-            logger.debug("Tool round completed", metadata: [
-                "round": .public("\(round + 1)"),
-                "toolCalls": .public("\(toolCalls.count)")
-            ])
+            logger.debug("Tool round completed", metadata: ["round": .public("\(round + 1)"),
+                                                            "toolCalls": .public("\(toolCalls.count)")])
         }
 
         logger.warning("Max tool rounds exceeded")
@@ -319,10 +310,8 @@ extension OpenAICompatibleProvider {
                 output = try await tool.execute(arguments: arguments)
             } catch {
                 output = "Error: \(error.localizedDescription)"
-                logger.warning("Tool execution failed", metadata: [
-                    "tool": .public(toolCall.name),
-                    "error": .public(error.localizedDescription)
-                ])
+                logger.warning("Tool execution failed", metadata: ["tool": .public(toolCall.name),
+                                                                   "error": .public(error.localizedDescription)])
             }
         } else {
             output = "Error: Unknown tool '\(toolCall.name)'"

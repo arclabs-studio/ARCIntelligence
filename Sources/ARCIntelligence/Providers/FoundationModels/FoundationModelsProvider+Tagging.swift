@@ -29,12 +29,10 @@ extension FoundationModelsProvider: ContentTaggingProvider {
     public func generateTags(for text: String,
                              categories: [TagCategory],
                              maxTags: Int) async throws -> [ContentTag] {
-        logger.debug("Starting content tagging", metadata: [
-            "textLength": .public("\(text.count)"),
-            "categories": .public(categories.map(\.rawValue)
-                .joined(separator: ", ")),
-            "maxTags": .public("\(maxTags)")
-        ])
+        logger.debug("Starting content tagging", metadata: ["textLength": .public("\(text.count)"),
+                                                            "categories": .public(categories.map(\.rawValue)
+                                                                .joined(separator: ", ")),
+                                                            "maxTags": .public("\(maxTags)")])
 
         guard !text.isEmpty else {
             throw IntelligenceError.invalidRequest("Text cannot be empty")
@@ -63,10 +61,10 @@ extension FoundationModelsProvider: ContentTaggingProvider {
     // MARK: - Private Implementation
 
     #if canImport(FoundationModels)
-    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performContentTagging(text: String,
-                                       categories: [TagCategory],
-                                       maxTags: Int) async throws -> [ContentTag] {
+    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *) private func performContentTagging(text: String,
+                                                                                          categories: [TagCategory],
+                                                                                          maxTags: Int) async throws
+    -> [ContentTag] {
         var allTags: [ContentTag] = []
 
         for category in categories {
@@ -81,10 +79,10 @@ extension FoundationModelsProvider: ContentTaggingProvider {
         return allTags
     }
 
-    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func generateTagsForCategory(text: String,
-                                         category: TagCategory,
-                                         maxTags: Int) async throws -> [ContentTag] {
+    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *) private func generateTagsForCategory(text: String,
+                                                                                            category: TagCategory,
+                                                                                            maxTags: Int) async throws
+    -> [ContentTag] {
         do {
             let session = LanguageModelSession(instructions: """
             You are a content tagger. Extract \(category.rawValue)s from the given text.

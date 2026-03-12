@@ -8,8 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Anthropic Provider Tests", .tags(.unit))
-struct AnthropicProviderTests {
+@Suite("Anthropic Provider Tests", .tags(.unit)) struct AnthropicProviderTests {
     // MARK: - Helpers
 
     private func makeSUT(apiClient: MockAnthropicAPIClient = MockAnthropicAPIClient(),
@@ -21,35 +20,30 @@ struct AnthropicProviderTests {
 
     // MARK: - Identification
 
-    @Test("Provider has correct id")
-    func providerId() {
+    @Test("Provider has correct id") func providerId() {
         let sut = makeSUT()
         #expect(sut.id == "com.arclabs.intelligence.anthropic")
     }
 
-    @Test("Provider has correct display name")
-    func providerDisplayName() {
+    @Test("Provider has correct display name") func providerDisplayName() {
         let sut = makeSUT()
         #expect(sut.displayName == "Anthropic Claude")
     }
 
-    @Test("Provider has correct version")
-    func providerVersion() {
+    @Test("Provider has correct version") func providerVersion() {
         let sut = makeSUT()
         #expect(sut.version == "1.0")
     }
 
     // MARK: - Availability
 
-    @Test("Provider is available with valid API key")
-    func isAvailableWithKey() async {
+    @Test("Provider is available with valid API key") func isAvailableWithKey() async {
         let sut = makeSUT()
         let available = await sut.isAvailable()
         #expect(available)
     }
 
-    @Test("Provider is not available with empty API key")
-    func isNotAvailableWithEmptyKey() async {
+    @Test("Provider is not available with empty API key") func isNotAvailableWithEmptyKey() async {
         let config = AnthropicConfiguration(authentication: .apiKey(""))
         let sut = AnthropicProvider(configuration: config,
                                     apiClient: MockAnthropicAPIClient())
@@ -59,8 +53,7 @@ struct AnthropicProviderTests {
 
     // MARK: - Complete
 
-    @Test("Complete returns mapped response")
-    func completeReturnsResponse() async throws {
+    @Test("Complete returns mapped response") func completeReturnsResponse() async throws {
         let mock = MockAnthropicAPIClient.withResponse(content: "Hello from Claude")
         let sut = makeSUT(apiClient: mock)
 
@@ -73,8 +66,7 @@ struct AnthropicProviderTests {
         #expect(response.metadata["model"] == "claude-sonnet-4-5-20250929")
     }
 
-    @Test("Complete forwards configuration to request")
-    func completeForwardsConfig() async throws {
+    @Test("Complete forwards configuration to request") func completeForwardsConfig() async throws {
         let mock = MockAnthropicAPIClient.withResponse(content: "ok")
         let sut = makeSUT(apiClient: mock, model: .opus)
 
@@ -91,8 +83,7 @@ struct AnthropicProviderTests {
         #expect(request?.stream == false)
     }
 
-    @Test("Complete propagates errors")
-    func completePropagatesErrors() async {
+    @Test("Complete propagates errors") func completePropagatesErrors() async {
         let mock = MockAnthropicAPIClient.withError(.authenticationFailed)
         let sut = makeSUT(apiClient: mock)
 
@@ -103,14 +94,11 @@ struct AnthropicProviderTests {
 
     // MARK: - Stream Complete
 
-    @Test("Stream complete yields text deltas")
-    func streamCompleteYieldsDeltas() async throws {
+    @Test("Stream complete yields text deltas") func streamCompleteYieldsDeltas() async throws {
         let mock = MockAnthropicAPIClient()
-        mock.streamEvents = [
-            .contentBlockDelta(index: 0, text: "Hello "),
-            .contentBlockDelta(index: 0, text: "world"),
-            .messageStop
-        ]
+        mock.streamEvents = [.contentBlockDelta(index: 0, text: "Hello "),
+                             .contentBlockDelta(index: 0, text: "world"),
+                             .messageStop]
         let sut = makeSUT(apiClient: mock)
 
         var collected = ""
@@ -121,8 +109,7 @@ struct AnthropicProviderTests {
         #expect(collected == "Hello world")
     }
 
-    @Test("Stream complete propagates errors")
-    func streamCompletePropagatesErrors() async {
+    @Test("Stream complete propagates errors") func streamCompletePropagatesErrors() async {
         let mock = MockAnthropicAPIClient.withError(.rateLimitExceeded)
         let sut = makeSUT(apiClient: mock)
 
@@ -133,8 +120,7 @@ struct AnthropicProviderTests {
 
     // MARK: - Conversation
 
-    @Test("Send message returns assistant message")
-    func sendMessageReturnsAssistantMessage() async throws {
+    @Test("Send message returns assistant message") func sendMessageReturnsAssistantMessage() async throws {
         let mock = MockAnthropicAPIClient.withResponse(content: "I can help with that!")
         let sut = makeSUT(apiClient: mock)
 
@@ -147,15 +133,12 @@ struct AnthropicProviderTests {
         #expect(response.content == "I can help with that!")
     }
 
-    @Test("Continue conversation sends user message")
-    func continueConversation() async throws {
+    @Test("Continue conversation sends user message") func continueConversation() async throws {
         let mock = MockAnthropicAPIClient.withResponse(content: "Response text")
         let sut = makeSUT(apiClient: mock)
 
-        let conversation = Conversation(messages: [
-            Message(role: .user, content: "First message"),
-            Message(role: .assistant, content: "First reply")
-        ])
+        let conversation = Conversation(messages: [Message(role: .user, content: "First message"),
+                                                   Message(role: .assistant, content: "First reply")])
 
         let response = try await sut.continueConversation(conversation, with: "Follow up")
 
@@ -167,8 +150,7 @@ struct AnthropicProviderTests {
         #expect(request?.messages.count == 3) // 2 history + 1 new
     }
 
-    @Test("Estimate tokens returns reasonable estimate")
-    func estimateTokens() {
+    @Test("Estimate tokens returns reasonable estimate") func estimateTokens() {
         let sut = makeSUT()
 
         let conversation = Conversation(systemPrompt: "System prompt",
@@ -180,24 +162,21 @@ struct AnthropicProviderTests {
 
     // MARK: - Stop Reason Mapping
 
-    @Test("Stop reason end_turn maps to completed")
-    func stopReasonEndTurn() async throws {
+    @Test("Stop reason end_turn maps to completed") func stopReasonEndTurn() async throws {
         let mock = MockAnthropicAPIClient.withResponse(content: "ok", stopReason: "end_turn")
         let sut = makeSUT(apiClient: mock)
         let response = try await sut.complete(prompt: "test", configuration: .default)
         #expect(response.finishReason == .completed)
     }
 
-    @Test("Stop reason max_tokens maps to maxTokens")
-    func stopReasonMaxTokens() async throws {
+    @Test("Stop reason max_tokens maps to maxTokens") func stopReasonMaxTokens() async throws {
         let mock = MockAnthropicAPIClient.withResponse(content: "ok", stopReason: "max_tokens")
         let sut = makeSUT(apiClient: mock)
         let response = try await sut.complete(prompt: "test", configuration: .default)
         #expect(response.finishReason == .maxTokens)
     }
 
-    @Test("Stop reason stop_sequence maps to stopSequence")
-    func stopReasonStopSequence() async throws {
+    @Test("Stop reason stop_sequence maps to stopSequence") func stopReasonStopSequence() async throws {
         let mock = MockAnthropicAPIClient.withResponse(content: "ok", stopReason: "stop_sequence")
         let sut = makeSUT(apiClient: mock)
         let response = try await sut.complete(prompt: "test", configuration: .default)

@@ -15,10 +15,8 @@ struct TestUserContext: Codable, Sendable {
     let history: [String]
 }
 
-@Suite("Recommendation Engine Tests", .tags(.unit))
-struct RecommendationEngineTests {
-    @Test("Recommend returns requested number of recommendations")
-    func recommend_returnsRequestedCount() async throws {
+@Suite("Recommendation Engine Tests", .tags(.unit)) struct RecommendationEngineTests {
+    @Test("Recommend returns requested number of recommendations") func recommend_returnsRequestedCount() async throws {
         // Arrange
         let provider = MockRecommendationProvider()
         let engine = RecommendationEngine(provider: provider)
@@ -34,8 +32,7 @@ struct RecommendationEngineTests {
         #expect(recommendations.count == 3)
     }
 
-    @Test("Recommend with zero count throws error")
-    func recommend_withZeroCountThrowsError() async throws {
+    @Test("Recommend with zero count throws error") func recommend_withZeroCountThrowsError() async throws {
         // Arrange
         let provider = MockRecommendationProvider()
         let engine = RecommendationEngine(provider: provider)
@@ -49,8 +46,7 @@ struct RecommendationEngineTests {
         }
     }
 
-    @Test("Recommend with negative count throws error")
-    func recommend_withNegativeCountThrowsError() async throws {
+    @Test("Recommend with negative count throws error") func recommend_withNegativeCountThrowsError() async throws {
         // Arrange
         let provider = MockRecommendationProvider()
         let engine = RecommendationEngine(provider: provider)
@@ -64,8 +60,7 @@ struct RecommendationEngineTests {
         }
     }
 
-    @Test("Recommendations have valid confidence scores")
-    func recommend_hasValidConfidenceScores() async throws {
+    @Test("Recommendations have valid confidence scores") func recommend_hasValidConfidenceScores() async throws {
         // Arrange
         let provider = MockRecommendationProvider()
         let engine = RecommendationEngine(provider: provider)
@@ -84,8 +79,7 @@ struct RecommendationEngineTests {
         }
     }
 
-    @Test("Recommend with failing provider throws error")
-    func recommend_withFailingProviderThrowsError() async throws {
+    @Test("Recommend with failing provider throws error") func recommend_withFailingProviderThrowsError() async throws {
         // Arrange
         let provider = MockRecommendationProvider(shouldFail: true)
         let engine = RecommendationEngine(provider: provider)

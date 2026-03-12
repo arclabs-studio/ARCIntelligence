@@ -8,8 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Grok Configuration Tests", .tags(.unit))
-struct GrokConfigurationTests {
+@Suite("Grok Configuration Tests", .tags(.unit)) struct GrokConfigurationTests {
     // MARK: - Helpers
 
     private func makeSUT(authentication: GrokAuthentication = .apiKey("test-key"),
@@ -26,8 +25,7 @@ struct GrokConfigurationTests {
 
     // MARK: - Defaults
 
-    @Test("Default configuration uses Grok 3 Fast model")
-    func defaultModel() {
+    @Test("Default configuration uses Grok 3 Fast model") func defaultModel() {
         // Given
         let sut = makeSUT()
 
@@ -35,8 +33,7 @@ struct GrokConfigurationTests {
         #expect(sut.model == .grok3Fast)
     }
 
-    @Test("Default configuration has standard temperature")
-    func defaultTemperature() {
+    @Test("Default configuration has standard temperature") func defaultTemperature() {
         // Given
         let sut = makeSUT()
 
@@ -44,8 +41,7 @@ struct GrokConfigurationTests {
         #expect(sut.defaultTemperature == 0.7)
     }
 
-    @Test("Default configuration has 4096 max tokens")
-    func defaultMaxTokens() {
+    @Test("Default configuration has 4096 max tokens") func defaultMaxTokens() {
         // Given
         let sut = makeSUT()
 
@@ -55,8 +51,7 @@ struct GrokConfigurationTests {
 
     // MARK: - Clamping
 
-    @Test("Temperature is clamped to valid range")
-    func temperatureClamping() {
+    @Test("Temperature is clamped to valid range") func temperatureClamping() {
         // Given
         let low = makeSUT(defaultTemperature: -1.0)
         let high = makeSUT(defaultTemperature: 5.0)
@@ -66,8 +61,7 @@ struct GrokConfigurationTests {
         #expect(high.defaultTemperature == 2.0)
     }
 
-    @Test("Max tokens is clamped to valid range")
-    func maxTokensClamping() {
+    @Test("Max tokens is clamped to valid range") func maxTokensClamping() {
         // Given
         let low = makeSUT(defaultMaxTokens: 0)
         let high = makeSUT(defaultMaxTokens: 999_999)
@@ -77,8 +71,7 @@ struct GrokConfigurationTests {
         #expect(high.defaultMaxTokens == 128_000)
     }
 
-    @Test("Max tool rounds is clamped to valid range")
-    func maxToolRoundsClamping() {
+    @Test("Max tool rounds is clamped to valid range") func maxToolRoundsClamping() {
         // Given
         let low = makeSUT(maxToolRounds: 0)
         let high = makeSUT(maxToolRounds: 100)
@@ -90,8 +83,7 @@ struct GrokConfigurationTests {
 
     // MARK: - Model IDs
 
-    @Test("Model enum returns correct model IDs")
-    func modelIds() {
+    @Test("Model enum returns correct model IDs") func modelIds() {
         // Then
         #expect(GrokModel.grok3.modelId == "grok-3")
         #expect(GrokModel.grok3Fast.modelId == "grok-3-fast")
@@ -100,8 +92,7 @@ struct GrokConfigurationTests {
 
     // MARK: - Presets
 
-    @Test("Fast preset uses Grok 3 Fast")
-    func fastPreset() {
+    @Test("Fast preset uses Grok 3 Fast") func fastPreset() {
         // Given
         let sut = GrokConfiguration.fast(authentication: .apiKey("k"))
 
@@ -111,8 +102,7 @@ struct GrokConfigurationTests {
         #expect(sut.defaultMaxTokens == 2048)
     }
 
-    @Test("Balanced preset uses Grok 3")
-    func balancedPreset() {
+    @Test("Balanced preset uses Grok 3") func balancedPreset() {
         // Given
         let sut = GrokConfiguration.balanced(authentication: .apiKey("k"))
 
@@ -121,8 +111,7 @@ struct GrokConfigurationTests {
         #expect(sut.defaultTemperature == 0.7)
     }
 
-    @Test("Quality preset uses Grok 3")
-    func qualityPreset() {
+    @Test("Quality preset uses Grok 3") func qualityPreset() {
         // Given
         let sut = GrokConfiguration.quality(authentication: .apiKey("k"))
 
@@ -133,8 +122,7 @@ struct GrokConfigurationTests {
 
     // MARK: - Authentication
 
-    @Test("API key authentication stores key")
-    func apiKeyAuth() {
+    @Test("API key authentication stores key") func apiKeyAuth() {
         // Given
         let auth = GrokAuthentication.apiKey("xai-test")
 
@@ -142,8 +130,7 @@ struct GrokConfigurationTests {
         #expect(auth == .apiKey("xai-test"))
     }
 
-    @Test("AIProxy authentication stores both values")
-    func aiProxyAuth() {
+    @Test("AIProxy authentication stores both values") func aiProxyAuth() {
         // Given
         let auth = GrokAuthentication.aiProxy(partialKey: "pk", serviceURL: "https://proxy.test")
 

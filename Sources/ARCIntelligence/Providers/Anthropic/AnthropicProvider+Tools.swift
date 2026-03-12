@@ -30,10 +30,8 @@ extension AnthropicProvider: ToolProvider {
                                      configuration: CompletionConfiguration) async throws
         -> (response: IntelligenceResponse,
             toolCalls: [ToolCallRecord]) {
-        logger.debug("Starting tool-assisted generation", metadata: [
-            "promptLength": .public("\(prompt.count)"),
-            "toolCount": .public("\(tools.count)")
-        ])
+        logger.debug("Starting tool-assisted generation", metadata: ["promptLength": .public("\(prompt.count)"),
+                                                                     "toolCount": .public("\(tools.count)")])
 
         let context = ToolCallingContext(toolDefinitions: tools.map { mapToolToDefinition($0) },
                                          toolsByName: Dictionary(uniqueKeysWithValues: tools.map { ($0.name, $0) }),
@@ -47,10 +45,8 @@ extension AnthropicProvider: ToolProvider {
         let intelligenceResponse = mapResponse(response)
 
         logger.info("Tool-assisted generation successful",
-                    metadata: [
-                        "totalToolCalls": .public("\(allToolCalls.count)"),
-                        "tokensUsed": .public("\(intelligenceResponse.tokensUsed)")
-                    ])
+                    metadata: ["totalToolCalls": .public("\(allToolCalls.count)"),
+                               "tokensUsed": .public("\(intelligenceResponse.tokensUsed)")])
 
         return (intelligenceResponse, allToolCalls)
     }
@@ -87,10 +83,8 @@ extension AnthropicProvider {
             allToolCalls.append(contentsOf: calls)
             messages.append(AnthropicAPIMessage(role: "user", blocks: resultBlocks))
 
-            logger.debug("Tool round completed", metadata: [
-                "round": .public("\(round + 1)"),
-                "toolCalls": .public("\(toolUseBlocks.count)")
-            ])
+            logger.debug("Tool round completed", metadata: ["round": .public("\(round + 1)"),
+                                                            "toolCalls": .public("\(toolUseBlocks.count)")])
         }
 
         logger.warning("Max tool rounds exceeded")
@@ -158,10 +152,8 @@ extension AnthropicProvider {
             } catch {
                 output = "Error: \(error.localizedDescription)"
                 isError = true
-                logger.warning("Tool execution failed", metadata: [
-                    "tool": .public(toolUse.name),
-                    "error": .public(error.localizedDescription)
-                ])
+                logger.warning("Tool execution failed", metadata: ["tool": .public(toolUse.name),
+                                                                   "error": .public(error.localizedDescription)])
             }
         } else {
             output = "Error: Unknown tool '\(toolUse.name)'"

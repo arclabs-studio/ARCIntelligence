@@ -8,8 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Anthropic Provider Tool Tests", .tags(.unit))
-struct AnthropicProviderToolTests {
+@Suite("Anthropic Provider Tool Tests", .tags(.unit)) struct AnthropicProviderToolTests {
     // MARK: - Helpers
 
     private func makeSUT(apiClient: MockAnthropicAPIClient = MockAnthropicAPIClient()) -> AnthropicProvider {
@@ -42,18 +41,15 @@ struct AnthropicProviderToolTests {
 
     // MARK: - Schema Mapping
 
-    @Test("Tool definition maps parameters schema correctly")
-    func schemaMapping() {
+    @Test("Tool definition maps parameters schema correctly") func schemaMapping() {
         let sut = makeSUT()
-        let parameters = [
-            ToolParameter(name: "city",
-                          type: .string,
-                          description: "City name"),
-            ToolParameter(name: "units",
-                          type: .string,
-                          description: "Temperature units",
-                          enumValues: ["celsius", "fahrenheit"])
-        ]
+        let parameters = [ToolParameter(name: "city",
+                                        type: .string,
+                                        description: "City name"),
+                          ToolParameter(name: "units",
+                                        type: .string,
+                                        description: "Temperature units",
+                                        enumValues: ["celsius", "fahrenheit"])]
         let schema = ToolParametersSchema(parameters: parameters,
                                           required: ["city"])
         let tool = TestTool(parametersSchema: schema)
@@ -68,8 +64,7 @@ struct AnthropicProviderToolTests {
         #expect(definition.inputSchema.required == ["city"])
     }
 
-    @Test("Tool without schema maps to empty object schema")
-    func emptySchema() {
+    @Test("Tool without schema maps to empty object schema") func emptySchema() {
         let sut = makeSUT()
         let tool = TestTool(parametersSchema: nil)
 
@@ -81,8 +76,7 @@ struct AnthropicProviderToolTests {
 
     // MARK: - Tool Execution
 
-    @Test("Tool calling loop executes tool and returns final response")
-    func toolCallingLoop() async throws {
+    @Test("Tool calling loop executes tool and returns final response") func toolCallingLoop() async throws {
         let mock = MockAnthropicAPIClient.withToolUse(toolName: "get_weather",
                                                       input: ["city": .string("Boston")],
                                                       followUpText: "The weather in Boston is 72°F.")
@@ -103,8 +97,7 @@ struct AnthropicProviderToolTests {
         #expect(toolCalls[0].duration > 0)
     }
 
-    @Test("Tool call records include string arguments")
-    func toolCallRecordArguments() async throws {
+    @Test("Tool call records include string arguments") func toolCallRecordArguments() async throws {
         let mock = MockAnthropicAPIClient.withToolUse(toolName: "search",
                                                       input: ["query": .string("restaurants")],
                                                       followUpText: "Found results.")
@@ -119,8 +112,7 @@ struct AnthropicProviderToolTests {
         #expect(toolCalls[0].arguments["query"] == "restaurants")
     }
 
-    @Test("Unknown tool produces error result")
-    func unknownTool() async throws {
+    @Test("Unknown tool produces error result") func unknownTool() async throws {
         let mock = MockAnthropicAPIClient.withToolUse(toolName: "unknown_tool",
                                                       input: [:],
                                                       followUpText: "I see the tool wasn't available.")
@@ -136,8 +128,7 @@ struct AnthropicProviderToolTests {
 
     // MARK: - Multi-turn Tool Use
 
-    @Test("Sends tool results back in message history")
-    func toolResultsInHistory() async throws {
+    @Test("Sends tool results back in message history") func toolResultsInHistory() async throws {
         let mock = MockAnthropicAPIClient.withToolUse(toolName: "calc",
                                                       input: ["expr": .string("2+2")],
                                                       followUpText: "The result is 4.")
@@ -157,8 +148,7 @@ struct AnthropicProviderToolTests {
 
     // MARK: - Error Handling
 
-    @Test("API errors propagate through tool calling")
-    func apiErrorsPropagateInToolCalling() async {
+    @Test("API errors propagate through tool calling") func apiErrorsPropagateInToolCalling() async {
         let mock = MockAnthropicAPIClient.withError(.rateLimitExceeded)
         let sut = makeSUT(apiClient: mock)
 

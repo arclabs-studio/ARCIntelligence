@@ -31,10 +31,8 @@ extension FoundationModelsProvider: ToolProvider {
                                      configuration: CompletionConfiguration) async throws
         -> (response: IntelligenceResponse,
             toolCalls: [ToolCallRecord]) {
-        logger.debug("Starting tool-assisted generation", metadata: [
-            "promptLength": .public("\(prompt.count)"),
-            "toolCount": .public("\(tools.count)")
-        ])
+        logger.debug("Starting tool-assisted generation", metadata: ["promptLength": .public("\(prompt.count)"),
+                                                                     "toolCount": .public("\(tools.count)")])
 
         let availability = await checkAvailability()
         guard availability.isAvailable else {
@@ -59,10 +57,9 @@ extension FoundationModelsProvider: ToolProvider {
     // MARK: - Private Implementation
 
     #if canImport(FoundationModels)
-    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performToolAssistedGeneration(prompt: String,
-                                               tools: [any IntelligenceTool],
-                                               configuration: CompletionConfiguration) async throws
+    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *) private func performToolAssistedGeneration(prompt: String,
+                                                                                                  tools: [any IntelligenceTool],
+                                                                                                  configuration: CompletionConfiguration) async throws
         -> (response: IntelligenceResponse,
             toolCalls: [ToolCallRecord]) {
         do {
@@ -106,8 +103,7 @@ extension FoundationModelsProvider: ToolProvider {
 // MARK: - Apple Tool Wrapper
 
 #if canImport(FoundationModels)
-@available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-private struct FoundationModelToolWrapper: Tool {
+@available(iOS 26.0, macOS 26.0, visionOS 26.0, *) private struct FoundationModelToolWrapper: Tool {
     let wrappedTool: any IntelligenceTool
 
     var name: String {
@@ -118,8 +114,7 @@ private struct FoundationModelToolWrapper: Tool {
         wrappedTool.description
     }
 
-    @Generable
-    struct Arguments {
+    @Generable struct Arguments {
         var jsonArguments: String
     }
 

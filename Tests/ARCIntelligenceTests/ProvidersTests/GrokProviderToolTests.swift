@@ -8,8 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Grok Provider Tool Tests", .tags(.unit))
-struct GrokProviderToolTests {
+@Suite("Grok Provider Tool Tests", .tags(.unit)) struct GrokProviderToolTests {
     // MARK: - Helpers
 
     private func makeSUT(apiClient: MockOpenAICompatibleAPIClient = MockOpenAICompatibleAPIClient()) -> GrokProvider {
@@ -42,18 +41,15 @@ struct GrokProviderToolTests {
 
     // MARK: - Schema Mapping
 
-    @Test("Tool definition maps parameters schema correctly")
-    func schemaMapping() {
+    @Test("Tool definition maps parameters schema correctly") func schemaMapping() {
         let sut = makeSUT()
-        let parameters = [
-            ToolParameter(name: "city",
-                          type: .string,
-                          description: "City name"),
-            ToolParameter(name: "units",
-                          type: .string,
-                          description: "Temperature units",
-                          enumValues: ["celsius", "fahrenheit"])
-        ]
+        let parameters = [ToolParameter(name: "city",
+                                        type: .string,
+                                        description: "City name"),
+                          ToolParameter(name: "units",
+                                        type: .string,
+                                        description: "Temperature units",
+                                        enumValues: ["celsius", "fahrenheit"])]
         let schema = ToolParametersSchema(parameters: parameters,
                                           required: ["city"])
         let tool = TestTool(parametersSchema: schema)
@@ -71,8 +67,7 @@ struct GrokProviderToolTests {
 
     // MARK: - Tool Execution
 
-    @Test("Tool calling loop executes tool and returns final response")
-    func toolCallingLoop() async throws {
+    @Test("Tool calling loop executes tool and returns final response") func toolCallingLoop() async throws {
         let mock = MockOpenAICompatibleAPIClient.withToolCall(functionName: "get_weather",
                                                               arguments: "{\"city\":\"Boston\"}",
                                                               followUpText: "The weather in Boston is 72°F.")
@@ -93,8 +88,7 @@ struct GrokProviderToolTests {
         #expect(toolCalls[0].duration > 0)
     }
 
-    @Test("Tool call records include string arguments")
-    func toolCallRecordArguments() async throws {
+    @Test("Tool call records include string arguments") func toolCallRecordArguments() async throws {
         let mock = MockOpenAICompatibleAPIClient.withToolCall(functionName: "search",
                                                               arguments: "{\"query\":\"restaurants\"}",
                                                               followUpText: "Found results.")
@@ -109,8 +103,7 @@ struct GrokProviderToolTests {
         #expect(toolCalls[0].arguments["query"] == "restaurants")
     }
 
-    @Test("Unknown tool produces error result")
-    func unknownTool() async throws {
+    @Test("Unknown tool produces error result") func unknownTool() async throws {
         let mock = MockOpenAICompatibleAPIClient.withToolCall(functionName: "unknown_tool",
                                                               arguments: "{}",
                                                               followUpText: "I see the tool wasn't available.")
@@ -126,8 +119,7 @@ struct GrokProviderToolTests {
 
     // MARK: - Multi-turn Tool Use
 
-    @Test("Sends tool results as role:tool messages in history")
-    func toolResultsInHistory() async throws {
+    @Test("Sends tool results as role:tool messages in history") func toolResultsInHistory() async throws {
         let mock = MockOpenAICompatibleAPIClient.withToolCall(functionName: "calc",
                                                               arguments: "{\"expr\":\"2+2\"}",
                                                               followUpText: "The result is 4.")
@@ -150,8 +142,7 @@ struct GrokProviderToolTests {
 
     // MARK: - Error Handling
 
-    @Test("API errors propagate through tool calling")
-    func apiErrorsPropagateInToolCalling() async {
+    @Test("API errors propagate through tool calling") func apiErrorsPropagateInToolCalling() async {
         let mock = MockOpenAICompatibleAPIClient.withError(.rateLimitExceeded)
         let sut = makeSUT(apiClient: mock)
 

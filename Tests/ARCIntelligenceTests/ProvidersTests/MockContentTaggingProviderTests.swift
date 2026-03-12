@@ -9,12 +9,10 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Mock Content Tagging Provider Tests", .tags(.unit))
-struct MockContentTaggingProviderTests {
+@Suite("Mock Content Tagging Provider Tests", .tags(.unit)) struct MockContentTaggingProviderTests {
     // MARK: - Availability Tests
 
-    @Test("Mock content tagging provider is always available")
-    func isAvailable() async {
+    @Test("Mock content tagging provider is always available") func isAvailable() async {
         let provider = MockContentTaggingProvider()
         let available = await provider.isAvailable()
         #expect(available)
@@ -22,12 +20,9 @@ struct MockContentTaggingProviderTests {
 
     // MARK: - Tag Generation Tests
 
-    @Test("Generate tags returns configured tags")
-    func generateTagsReturnsConfiguredTags() async throws {
-        let expectedTags = [
-            ContentTag(value: "technology", category: .topic),
-            ContentTag(value: "happy", category: .emotion)
-        ]
+    @Test("Generate tags returns configured tags") func generateTagsReturnsConfiguredTags() async throws {
+        let expectedTags = [ContentTag(value: "technology", category: .topic),
+                            ContentTag(value: "happy", category: .emotion)]
         let provider = MockContentTaggingProvider(tagsToReturn: expectedTags)
 
         let tags = try await provider.generateTags(for: "I love coding!",
@@ -39,13 +34,10 @@ struct MockContentTaggingProviderTests {
         #expect(tags.contains { $0.value == "happy" })
     }
 
-    @Test("Generate tags filters by category")
-    func generateTagsFiltersByCategory() async throws {
-        let allTags = [
-            ContentTag(value: "technology", category: .topic),
-            ContentTag(value: "coding", category: .action),
-            ContentTag(value: "happy", category: .emotion)
-        ]
+    @Test("Generate tags filters by category") func generateTagsFiltersByCategory() async throws {
+        let allTags = [ContentTag(value: "technology", category: .topic),
+                       ContentTag(value: "coding", category: .action),
+                       ContentTag(value: "happy", category: .emotion)]
         let provider = MockContentTaggingProvider(tagsToReturn: allTags)
 
         let tags = try await provider.generateTags(for: "Test",
@@ -57,8 +49,7 @@ struct MockContentTaggingProviderTests {
         #expect(tags[0].category == .topic)
     }
 
-    @Test("Generate tags respects maxTags limit")
-    func generateTagsRespectsMaxLimit() async throws {
+    @Test("Generate tags respects maxTags limit") func generateTagsRespectsMaxLimit() async throws {
         let manyTags = (1 ... 10).map { index in
             ContentTag(value: "tag\(index)", category: .topic)
         }
@@ -73,12 +64,9 @@ struct MockContentTaggingProviderTests {
 
     // MARK: - Category-Based Initialization Tests
 
-    @Test("Generate tags from category dictionary")
-    func generateTagsFromCategoryDictionary() async throws {
-        let provider = MockContentTaggingProvider(tagsByCategory: [
-            .topic: ["swift", "programming"],
-            .emotion: ["excited"]
-        ])
+    @Test("Generate tags from category dictionary") func generateTagsFromCategoryDictionary() async throws {
+        let provider = MockContentTaggingProvider(tagsByCategory: [.topic: ["swift", "programming"],
+                                                                   .emotion: ["excited"]])
 
         let tags = try await provider.generateTags(for: "Learning Swift",
                                                    categories: [.topic, .emotion],
@@ -89,8 +77,7 @@ struct MockContentTaggingProviderTests {
         #expect(tags.count(where: { $0.category == .emotion }) == 1)
     }
 
-    @Test("Category-based tags have confidence scores")
-    func categoryBasedTagsHaveConfidence() async throws {
+    @Test("Category-based tags have confidence scores") func categoryBasedTagsHaveConfidence() async throws {
         let provider = MockContentTaggingProvider(tagsByCategory: [.topic: ["test"]])
 
         let tags = try await provider.generateTags(for: "Test",
@@ -104,8 +91,7 @@ struct MockContentTaggingProviderTests {
 
     // MARK: - Factory Method Tests
 
-    @Test("Standard factory returns common tags")
-    func standardFactoryReturnsCommonTags() async throws {
+    @Test("Standard factory returns common tags") func standardFactoryReturnsCommonTags() async throws {
         let provider = MockContentTaggingProvider.standard()
 
         let tags = try await provider.generateTags(for: "Test",
@@ -117,8 +103,7 @@ struct MockContentTaggingProviderTests {
         #expect(tags.contains { $0.value == "coding" })
     }
 
-    @Test("Failing factory throws error")
-    func failingFactoryThrowsError() async {
+    @Test("Failing factory throws error") func failingFactoryThrowsError() async {
         let provider = MockContentTaggingProvider.failing()
 
         await #expect(throws: IntelligenceError.self) {
@@ -128,8 +113,7 @@ struct MockContentTaggingProviderTests {
         }
     }
 
-    @Test("Failing factory throws custom error")
-    func failingFactoryThrowsCustomError() async {
+    @Test("Failing factory throws custom error") func failingFactoryThrowsCustomError() async {
         let customError = IntelligenceError.modelNotReady
         let provider = MockContentTaggingProvider.failing(with: customError)
 
@@ -142,8 +126,7 @@ struct MockContentTaggingProviderTests {
 
     // MARK: - Batch Tests
 
-    @Test("Generate tags batch processes multiple texts")
-    func generateTagsBatchProcessesMultipleTexts() async throws {
+    @Test("Generate tags batch processes multiple texts") func generateTagsBatchProcessesMultipleTexts() async throws {
         let provider = MockContentTaggingProvider(tagsByCategory: [.topic: ["test"]])
 
         let results = try await provider.generateTagsBatch(for: ["Text 1", "Text 2", "Text 3"],
@@ -156,8 +139,7 @@ struct MockContentTaggingProviderTests {
 
     // MARK: - Error Tests
 
-    @Test("Provider throws error when shouldFail is true")
-    func providerThrowsErrorWhenFailing() async {
+    @Test("Provider throws error when shouldFail is true") func providerThrowsErrorWhenFailing() async {
         let provider = MockContentTaggingProvider(shouldFail: true)
 
         await #expect(throws: IntelligenceError.self) {
@@ -167,8 +149,7 @@ struct MockContentTaggingProviderTests {
         }
     }
 
-    @Test("Provider throws configured error")
-    func providerThrowsConfiguredError() async {
+    @Test("Provider throws configured error") func providerThrowsConfiguredError() async {
         let expectedError = IntelligenceError.contextWindowExceeded(used: 1000, limit: 500)
         let provider = MockContentTaggingProvider(shouldFail: true,
                                                   errorToThrow: expectedError)
@@ -182,8 +163,7 @@ struct MockContentTaggingProviderTests {
 
     // MARK: - Complete Tests
 
-    @Test("Complete returns tag descriptions as content")
-    func completeReturnsTagDescriptions() async throws {
+    @Test("Complete returns tag descriptions as content") func completeReturnsTagDescriptions() async throws {
         let tags = [ContentTag(value: "tech", category: .topic)]
         let provider = MockContentTaggingProvider(tagsToReturn: tags)
 

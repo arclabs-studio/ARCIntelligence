@@ -1,5 +1,5 @@
 {
-  "originHash" : "12f2305da7192e3abfeb884fecbb5224974860b3e66c5a44e625c8423f20e4d8",
+  "originHash" : "436ca604e430d3e4d5f3895ac079f96af0e7f4e28532927e35e49bb5d794f056",
   "pins" : [
     {
       "identity" : "arclogger",
@@ -15,8 +15,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/arclabs-studio/ARCNetworking",
       "state" : {
-        "revision" : "ab878f591fa164f3ea852507fa15c88ce069b1fb",
-        "version" : "1.0.0"
+        "branch" : "develop",
+        "revision" : "05e8176f711577fab554e576106199f4b2aa77c6"
+      }
+    },
+    {
+      "identity" : "swift-http-types",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-http-types",
+      "state" : {
+        "revision" : "45eb0224913ea070ec4fba17291b9e7ecf4749ca",
+        "version" : "1.5.1"
       }
     }
   ],

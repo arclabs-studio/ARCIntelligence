@@ -29,10 +29,8 @@ extension FoundationModelsProvider: GenerableProvider {
     public func generate<T: Codable & Sendable>(_ type: T.Type,
                                                 prompt: String,
                                                 configuration: CompletionConfiguration) async throws -> T {
-        logger.debug("Starting guided generation", metadata: [
-            "type": .public(String(describing: type)),
-            "promptLength": .public("\(prompt.count)")
-        ])
+        logger.debug("Starting guided generation", metadata: ["type": .public(String(describing: type)),
+                                                              "promptLength": .public("\(prompt.count)")])
 
         let availability = await checkAvailability()
         guard availability.isAvailable else {

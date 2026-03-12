@@ -18,10 +18,12 @@ excluded:
 
 # Disabled rules
 disabled_rules:
-  - trailing_whitespace  # SwiftFormat handles this
-  - todo                 # We allow TODOs
-  - sorted_imports       # Conflicts with @testable imports preference (should be last)
-  - attributes           # SwiftFormat handles this (always same line in ARC Labs)
+  - trailing_whitespace        # SwiftFormat handles this
+  - todo                       # We allow TODOs
+  - sorted_imports             # Conflicts with @testable imports preference (should be last)
+  - attributes                 # SwiftFormat handles this (always same line in ARC Labs)
+  - superfluous_disable_command # CI and local SwiftLint versions differ; disable comments
+                                # may be necessary on CI but appear superfluous locally
 
 # Opt-in rules (explicitly enabled per ARCKnowledge)
 opt_in_rules:

@@ -8,8 +8,7 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Anthropic Provider Generable Tests", .tags(.unit))
-struct AnthropicProviderGenerableTests {
+@Suite("Anthropic Provider Generable Tests", .tags(.unit)) struct AnthropicProviderGenerableTests {
     // MARK: - Test Types
 
     struct MovieReview: Codable, Sendable, Equatable {
@@ -41,8 +40,7 @@ struct AnthropicProviderGenerableTests {
 
     // MARK: - Forced Tool Use
 
-    @Test("Generate sends forced tool_choice with correct tool name")
-    func forcedToolChoice() async throws {
+    @Test("Generate sends forced tool_choice with correct tool name") func forcedToolChoice() async throws {
         let mock = mockWithToolUseJsonOutput("""
         {"title":"Inception","rating":9,"summary":"A masterpiece"}
         """)
@@ -60,8 +58,7 @@ struct AnthropicProviderGenerableTests {
 
     // MARK: - JSON Decoding
 
-    @Test("Generate decodes JSON from tool_use output")
-    func decodesJson() async throws {
+    @Test("Generate decodes JSON from tool_use output") func decodesJson() async throws {
         let mock = mockWithToolUseJsonOutput("""
         {"title":"Inception","rating":9,"summary":"Mind-bending sci-fi"}
         """)
@@ -78,8 +75,7 @@ struct AnthropicProviderGenerableTests {
 
     // MARK: - Schema Description
 
-    @Test("Generate with schema description includes it in tool definition")
-    func schemaDescription() async throws {
+    @Test("Generate with schema description includes it in tool definition") func schemaDescription() async throws {
         let mock = mockWithToolUseJsonOutput("""
         {"title":"Test","rating":5,"summary":"ok"}
         """)
@@ -96,8 +92,7 @@ struct AnthropicProviderGenerableTests {
 
     // MARK: - Parse Errors
 
-    @Test("Generate throws parse error on invalid JSON")
-    func invalidJson() async {
+    @Test("Generate throws parse error on invalid JSON") func invalidJson() async {
         let mock = mockWithToolUseJsonOutput("not valid json")
         let sut = makeSUT(apiClient: mock)
 
@@ -108,8 +103,7 @@ struct AnthropicProviderGenerableTests {
         }
     }
 
-    @Test("Generate throws parse error when no tool_use block returned")
-    func missingToolUse() async {
+    @Test("Generate throws parse error when no tool_use block returned") func missingToolUse() async {
         let mock = MockAnthropicAPIClient.withResponse(content: "Just text, no tool use")
         let sut = makeSUT(apiClient: mock)
 

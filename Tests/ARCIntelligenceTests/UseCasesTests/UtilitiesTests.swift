@@ -8,16 +8,13 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("PromptBuilder Tests", .tags(.unit))
-struct PromptBuilderTests {
-    @Test("Build simple prompt")
-    func buildSimplePrompt() {
+@Suite("PromptBuilder Tests", .tags(.unit)) struct PromptBuilderTests {
+    @Test("Build simple prompt") func buildSimplePrompt() {
         let prompt = PromptBuilder.simple(query: "What is AI?")
         #expect(prompt.contains("What is AI?"))
     }
 
-    @Test("Build prompt with context")
-    func buildPromptWithContext() {
+    @Test("Build prompt with context") func buildPromptWithContext() {
         let prompt = PromptBuilder.withContext(query: "Summarize",
                                                context: "Some context")
 
@@ -25,8 +22,7 @@ struct PromptBuilderTests {
         #expect(prompt.contains("Some context"))
     }
 
-    @Test("Build prompt with system instruction")
-    func buildPromptWithSystemInstruction() {
+    @Test("Build prompt with system instruction") func buildPromptWithSystemInstruction() {
         let prompt = PromptBuilder.withSystem(query: "Help me",
                                               systemInstruction: "Be helpful")
 
@@ -34,8 +30,7 @@ struct PromptBuilderTests {
         #expect(prompt.contains("Be helpful"))
     }
 
-    @Test("Build custom prompt")
-    func buildCustomPrompt() {
+    @Test("Build custom prompt") func buildCustomPrompt() {
         let prompt = PromptBuilder()
             .withSystemInstruction("System")
             .withContext("Context")
@@ -48,10 +43,8 @@ struct PromptBuilderTests {
     }
 }
 
-@Suite("TokenCounter Tests", .tags(.unit))
-struct TokenCounterTests {
-    @Test("Estimate tokens for text")
-    func estimateTokensForText() {
+@Suite("TokenCounter Tests", .tags(.unit)) struct TokenCounterTests {
+    @Test("Estimate tokens for text") func estimateTokensForText() {
         let counter = TokenCounter()
         let text = "This is a test"
         let tokens = counter.estimateTokens(for: text)
@@ -60,8 +53,7 @@ struct TokenCounterTests {
         #expect(tokens >= text.count / 4)
     }
 
-    @Test("Estimate tokens for multiple texts")
-    func estimateTokensForMultipleTexts() {
+    @Test("Estimate tokens for multiple texts") func estimateTokensForMultipleTexts() {
         let counter = TokenCounter()
         let texts = ["First", "Second", "Third"]
         let tokens = counter.estimateTokens(for: texts)
@@ -69,8 +61,7 @@ struct TokenCounterTests {
         #expect(tokens > 0)
     }
 
-    @Test("Check if text fits within limit")
-    func checkTextFitsWithinLimit() {
+    @Test("Check if text fits within limit") func checkTextFitsWithinLimit() {
         let counter = TokenCounter()
         let shortText = "Hi"
         let longText = String(repeating: "a", count: 10000)
@@ -79,8 +70,7 @@ struct TokenCounterTests {
         #expect(!counter.fitsWithinLimit(longText, limit: 10))
     }
 
-    @Test("Truncate text to fit limit")
-    func truncateTextToFitLimit() {
+    @Test("Truncate text to fit limit") func truncateTextToFitLimit() {
         let counter = TokenCounter()
         let longText = String(repeating: "a", count: 1000)
         let truncated = counter.truncate(longText, toLimit: 10)
@@ -89,8 +79,7 @@ struct TokenCounterTests {
         #expect(truncated.hasSuffix("..."))
     }
 
-    @Test("Static estimate method works")
-    func staticEstimateWorks() {
+    @Test("Static estimate method works") func staticEstimateWorks() {
         let tokens = TokenCounter.estimate("Test text")
         #expect(tokens > 0)
     }
