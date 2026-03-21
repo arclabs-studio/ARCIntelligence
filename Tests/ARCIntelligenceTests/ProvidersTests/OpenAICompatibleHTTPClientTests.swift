@@ -129,7 +129,7 @@ import Testing
     func maps401ToAuthenticationFailed() async {
         // Given
         let (sut, mock) = makeSUT()
-        mock.errorToThrow = HTTPError.requestFailed(401)
+        mock.errorToThrow = HTTPError.requestFailed(statusCode: 401, data: Data())
 
         // When / Then
         await #expect(throws: IntelligenceError.authenticationFailed) {
@@ -140,7 +140,7 @@ import Testing
     @Test("Should map 429 status to IntelligenceError.rateLimitExceeded") func maps429ToRateLimitExceeded() async {
         // Given
         let (sut, mock) = makeSUT()
-        mock.errorToThrow = HTTPError.requestFailed(429)
+        mock.errorToThrow = HTTPError.requestFailed(statusCode: 429, data: Data())
 
         // When / Then
         await #expect(throws: IntelligenceError.rateLimitExceeded) {
@@ -279,7 +279,7 @@ import Testing
     func streamChatCompletion_maps401ToAuthenticationFailed() async {
         // Given
         let (sut, mock) = makeSUT()
-        mock.streamErrorToThrow = HTTPError.requestFailed(401)
+        mock.streamErrorToThrow = HTTPError.requestFailed(statusCode: 401, data: Data())
 
         // When
         var thrownError: IntelligenceError?
