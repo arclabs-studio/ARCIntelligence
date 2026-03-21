@@ -47,8 +47,8 @@ extension StreamingHTTPClientSupport {
         switch error {
         case .invalidURL:
             .invalidRequest("Invalid API URL")
-        case let .requestFailed(statusCode):
-            mapHTTPStatusCode(statusCode, data: nil)
+        case let .requestFailed(statusCode, data):
+            mapHTTPStatusCode(statusCode, data: data)
         case let .decodingFailed(underlyingError):
             .responseParseFailed(underlyingError.localizedDescription)
         case let .unknown(underlyingError):
