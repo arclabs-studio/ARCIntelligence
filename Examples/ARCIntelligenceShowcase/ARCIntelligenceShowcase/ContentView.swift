@@ -45,6 +45,30 @@ struct ContentView: View {
                                    title: "Utilities",
                                    description: "Prompt builder & token counter")
                     }
+
+                    NavigationLink {
+                        GuidedGenerationView()
+                    } label: {
+                        ExampleRow(icon: "wand.and.stars",
+                                   title: "Guided Generation",
+                                   description: "Structured output via GenerableProvider")
+                    }
+
+                    NavigationLink {
+                        ContentTaggingView()
+                    } label: {
+                        ExampleRow(icon: "tag.fill",
+                                   title: "Content Tagging",
+                                   description: "Topic, action & emotion tags")
+                    }
+
+                    NavigationLink {
+                        ToolCallingView()
+                    } label: {
+                        ExampleRow(icon: "wrench.and.screwdriver",
+                                   title: "Tool Calling",
+                                   description: "AI that calls local functions")
+                    }
                 }
 
                 Section("Configuration") {

@@ -8,14 +8,16 @@ ARCIntelligence supports multiple AI providers, each with different characterist
 
 ## Available Providers
 
-### Foundation Models (iOS 18.0+)
+### Foundation Models (iOS 26+ / macOS 26+)
 
 Apple's on-device AI models provide maximum privacy and zero latency.
 
 **Availability:**
-- iOS 18.0+
-- macOS 15.0+
+- iOS 26.0+
+- macOS 26.0+
 - Requires compatible hardware
+
+**Supported Protocols:** `IntelligenceProvider`, `ConversationProvider`, `GenerableProvider`, `ToolProvider`, `ContentTaggingProvider`
 
 **Pros:**
 - ✅ Complete privacy (on-device processing)
@@ -23,18 +25,18 @@ Apple's on-device AI models provide maximum privacy and zero latency.
 - ✅ No API keys required
 - ✅ No usage costs
 - ✅ Works offline
+- ✅ Content tagging (exclusive)
 
 **Cons:**
 - ❌ Limited to newer devices
-- ❌ Smaller model capabilities
+- ❌ Smaller model capabilities vs cloud models
 - ❌ Limited context window
-- ❌ No custom fine-tuning
 
 **Best for:**
 - Privacy-sensitive applications
 - Offline-first apps
 - Quick, simple completions
-- On-device assistant features
+- Content tagging and classification
 
 **Example:**
 
@@ -59,6 +61,157 @@ let response = try await provider.complete(
 )
 ```
 
+---
+
+### Anthropic Claude
+
+Cloud-based access to Claude models (Haiku, Sonnet, Opus).
+
+**Availability:**
+- iOS 17.0+ / macOS 14.0+
+- Requires API key or AIProxy
+
+**Supported Protocols:** `IntelligenceProvider`, `ConversationProvider`, `GenerableProvider`, `ToolProvider`
+
+**Pros:**
+- ✅ Very long context windows (up to 200K tokens)
+- ✅ Strong reasoning and code generation
+- ✅ Tool calling support
+- ✅ Structured JSON output via `GenerableProvider`
+- ✅ Works on older devices
+
+**Cons:**
+- ❌ Requires API key
+- ❌ Data leaves the device
+- ❌ Usage costs apply
+- ❌ Requires network
+
+**Best for:**
+- Complex reasoning tasks
+- Long-document analysis
+- Applications needing tool calling
+- When on-device AI is not available
+
+**Example:**
+
+```swift
+let config = AnthropicConfiguration(
+    authentication: .apiKey("sk-ant-..."),
+    model: .sonnet
+)
+let provider = ARCIntelligence.anthropic(configuration: config)
+
+let response = try await provider.complete(
+    prompt: "Explain quantum entanglement",
+    configuration: .factual
+)
+
+// For production: use AIProxy to protect your key
+let prodProvider = ARCIntelligence.anthropic(
+    aiProxyPartialKey: "your-partial-key",
+    serviceURL: "https://your-service.aiproxy.pro"
+)
+```
+
+---
+
+### OpenAI
+
+Cloud-based access to GPT-4o, GPT-4o Mini, and o3-mini.
+
+**Availability:**
+- iOS 17.0+ / macOS 14.0+
+- Requires API key or AIProxy
+
+**Supported Protocols:** `IntelligenceProvider`, `ConversationProvider`, `GenerableProvider`, `ToolProvider`
+
+**Pros:**
+- ✅ Wide model choice (speed vs quality)
+- ✅ Strong general-purpose capabilities
+- ✅ Tool calling and structured output
+- ✅ o3-mini for advanced reasoning
+
+**Cons:**
+- ❌ Requires API key
+- ❌ Data leaves the device
+- ❌ Usage costs apply
+- ❌ Requires network
+
+**Best for:**
+- General-purpose AI features
+- Applications already using OpenAI
+- Scenarios needing o3-mini reasoning
+
+**Example:**
+
+```swift
+let config = OpenAIConfiguration(
+    authentication: .apiKey("sk-..."),
+    model: .gpt4o
+)
+let provider = ARCIntelligence.openAI(configuration: config)
+
+// Tool calling
+let toolResponse = try await provider.respondWithToolCalls(
+    to: "What's the weather in Madrid?",
+    tools: [WeatherTool()],
+    configuration: .default
+)
+print(toolResponse.response.content)
+print("Tool calls: \(toolResponse.toolCalls.count)")
+```
+
+---
+
+### Grok (xAI)
+
+Cloud-based access to Grok 3 and Grok 3 Fast.
+
+**Availability:**
+- iOS 17.0+ / macOS 14.0+
+- Requires xAI API key or AIProxy
+
+**Supported Protocols:** `IntelligenceProvider`, `ConversationProvider`, `GenerableProvider`, `ToolProvider`
+
+**Pros:**
+- ✅ Fast response times (Grok 3 Fast)
+- ✅ Strong reasoning (Grok 3)
+- ✅ Tool calling and structured output
+
+**Cons:**
+- ❌ Requires xAI API key
+- ❌ Data leaves the device
+- ❌ Usage costs apply
+- ❌ Requires network
+
+**Best for:**
+- Speed-sensitive use cases (Grok 3 Fast)
+- Applications in xAI's ecosystem
+
+**Example:**
+
+```swift
+let config = GrokConfiguration(
+    authentication: .apiKey("xai-..."),
+    model: .grok3Fast  // or .grok3 for higher quality
+)
+let provider = ARCIntelligence.grok(configuration: config)
+
+// Guided generation
+struct Sentiment: Codable, Sendable {
+    let label: String  // "positive", "negative", "neutral"
+    let score: Float
+}
+
+let sentiment: Sentiment = try await provider.generate(
+    Sentiment.self,
+    prompt: "Analyze: 'This product is amazing!'",
+    configuration: .factual
+)
+```
+
+---
+
 ### Mock Provider (Testing)
 
 Configurable mock for testing without real API calls.
@@ -67,12 +220,7 @@ Configurable mock for testing without real API calls.
 - Always available
 - All platforms
 
-**Pros:**
-- ✅ No API calls
-- ✅ Deterministic responses
-- ✅ Configurable delays
-- ✅ Error simulation
-- ✅ Fast tests
+**Supported Protocols:** `IntelligenceProvider`, `ConversationProvider`
 
 **Best for:**
 - Unit testing
@@ -91,206 +239,133 @@ let mockProvider = MockIntelligenceProvider(
     simulatedDelay: 0.1
 )
 
-let assistant = ConversationalAssistant(provider: mockProvider)
-_ = await assistant.startConversation()
-let response = try await assistant.sendMessage("Test")
-// response == "Mocked response 1"
+// For guided generation tests
+let generableMock = MockGenerableProvider(
+    jsonResponse: #"{"title": "Test Book", "genre": "Fiction"}"#
+)
+
+// For tool calling tests
+let toolMock = MockToolProvider(
+    response: "The weather is sunny",
+    toolCallsToSimulate: [
+        ToolCallRecord(
+            toolName: "getWeather",
+            arguments: ["city": "Boston"],
+            output: "72°F, Sunny",
+            duration: 0.5
+        )
+    ]
+)
 ```
 
-### Future Providers
-
-Additional providers planned for future releases:
-
-**OpenAI (Coming Soon)**
-- GPT-4, GPT-3.5
-- Cloud-based
-- Powerful language understanding
-- Requires API key and network
-
-**Anthropic Claude (Coming Soon)**
-- Claude 3 models
-- Cloud-based
-- Long context windows
-- Requires API key and network
-
-**Local LLMs (Planned)**
-- llama.cpp integration
-- On-device, open-source models
-- More powerful than Foundation Models
-- Requires larger device resources
+---
 
 ## Provider Comparison
 
-| Feature | Foundation Models | Mock | OpenAI* | Anthropic* |
-|---------|------------------|------|---------|------------|
-| Privacy | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-| Power | ⭐⭐ | N/A | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Cost | Free | Free | Paid | Paid |
-| Offline | Yes | Yes | No | No |
-| Setup | None | None | API Key | API Key |
-| iOS Version | 18.0+ | Any | Any | Any |
+| Feature | Foundation Models | Anthropic | OpenAI | Grok | Mock |
+|---------|:---:|:---:|:---:|:---:|:---:|
+| Privacy | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Capability | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | N/A |
+| Cost | Free | Paid | Paid | Paid | Free |
+| Offline | ✅ | ❌ | ❌ | ❌ | ✅ |
+| API Key | None | Required | Required | Required | None |
+| Min iOS | 26.0 | 17.0 | 17.0 | 17.0 | Any |
+| Conversation | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Guided Gen | ✅ | ✅ | ✅ | ✅ | ✅ (mock) |
+| Tool Calling | ✅ | ✅ | ✅ | ✅ | ✅ (mock) |
+| Content Tagging | ✅ | ❌ | ❌ | ❌ | ❌ |
 
-*Coming soon
+---
 
 ## Decision Matrix
 
 ### Choose Foundation Models when:
-
 - Privacy is paramount
 - Your app needs to work offline
 - You want zero API costs
-- Completions are simple (summarization, categorization)
-- Your minimum iOS version is 18.0+
+- You need content tagging
+- Your minimum iOS version is 26.0+
+
+### Choose Anthropic when:
+- You need very long context windows (up to 200K tokens)
+- Complex reasoning or detailed analysis is required
+- You want one of the most capable models available
+
+### Choose OpenAI when:
+- You need a versatile general-purpose model
+- You're already integrated with OpenAI in your infrastructure
+- o3-mini reasoning tasks are needed
+
+### Choose Grok when:
+- Speed is a priority (Grok 3 Fast)
+- You're in xAI's ecosystem
 
 ### Choose Mock Provider when:
-
-- Writing unit tests
+- Writing unit or UI tests
 - Developing without API access
 - Running CI/CD pipelines
-- Simulating specific scenarios
 
-### Choose Cloud Providers (Future) when:
-
-- You need maximum language understanding
-- Complex reasoning is required
-- Long context windows are needed
-- Privacy is less critical
-- Network connectivity is reliable
+---
 
 ## Multi-Provider Strategy
 
-For maximum flexibility, support multiple providers:
+For maximum flexibility, support multiple providers with a runtime fallback:
 
 ```swift
-enum AIProviderType {
-    case foundationModels
-    case openAI
-    case mock
-}
+func createProvider(preference: ProviderPreference) async -> IntelligenceProvider {
+    switch preference {
+    case .privacyFirst:
+        let provider = ARCIntelligence.foundationModels()
+        if await provider.isAvailable() { return provider }
+        // Fallback if device doesn't support Foundation Models
+        return ARCIntelligence.anthropic(apiKey: storedAPIKey)
 
-func createProvider(type: AIProviderType) -> IntelligenceProvider {
-    switch type {
-    case .foundationModels:
-        return ARCIntelligence.foundationModels()
+    case .powerFirst:
+        return ARCIntelligence.anthropic(
+            configuration: AnthropicConfiguration(
+                authentication: .apiKey(storedAPIKey),
+                model: .opus
+            )
+        )
 
-    case .openAI:
-        // Future: return OpenAIProvider(apiKey: ...)
-        fatalError("OpenAI not yet implemented")
-
-    case .mock:
-        return MockIntelligenceProvider()
+    case .fastest:
+        return ARCIntelligence.grok(
+            configuration: GrokConfiguration(
+                authentication: .apiKey(storedAPIKey),
+                model: .grok3Fast
+            )
+        )
     }
 }
-
-// Use provider based on user preference or availability
-let preferredType: AIProviderType = .foundationModels
-let provider = createProvider(type: preferredType)
-
-if await provider.isAvailable() {
-    // Use preferred provider
-} else {
-    // Fallback to alternative
-    let fallbackProvider = createProvider(type: .mock)
-}
 ```
+
+---
 
 ## Privacy Considerations
 
 ### On-Device vs Cloud
 
-**On-Device (Foundation Models, Local LLMs):**
+**On-Device (Foundation Models):**
 - User data never leaves the device
 - No network monitoring possible
 - Complete user control
 - Ideal for sensitive data
 
-**Cloud-Based (OpenAI, Anthropic):**
+**Cloud-Based (Anthropic, OpenAI, Grok):**
 - Data sent to third-party servers
 - Subject to provider's privacy policy
 - May be logged or used for training
-- Consider data classification
+- Consider data classification before use
 
 ### Best Practices
 
 1. **Default to Privacy**: Use on-device providers when possible
 2. **User Choice**: Let users choose their preferred provider
 3. **Transparency**: Clearly communicate what data is sent where
-4. **Minimize Data**: Only send necessary context
+4. **Use AIProxy in Production**: Never ship raw API keys in your app
 5. **Sanitize**: Remove PII before sending to cloud providers
 
-```swift
-// Good: Privacy-first approach
-func generateSummary(text: String, userPreference: ProviderPreference) async throws -> String {
-    let provider: IntelligenceProvider
-
-    switch userPreference {
-    case .privacyFirst:
-        provider = ARCIntelligence.foundationModels()
-
-    case .powerFirst:
-        // Use cloud provider if available
-        provider = createCloudProvider()
-
-    case .balanced:
-        // Try on-device first, fallback to cloud
-        let onDevice = ARCIntelligence.foundationModels()
-        provider = await onDevice.isAvailable() ? onDevice : createCloudProvider()
-    }
-
-    let response = try await provider.complete(
-        prompt: "Summarize: \(text)",
-        configuration: .default
-    )
-
-    return response.content
-}
-```
-
-## Performance Characteristics
-
-### Latency
-
-- **Foundation Models**: < 100ms (on-device)
-- **Mock**: Configurable (instant to seconds)
-- **OpenAI**: 500ms - 5s (network dependent)
-- **Anthropic**: 500ms - 5s (network dependent)
-
-### Throughput
-
-- **Foundation Models**: Limited by device CPU/NPU
-- **Cloud Providers**: Limited by API rate limits
-
-### Context Window
-
-- **Foundation Models**: ~2K-4K tokens
-- **GPT-4**: Up to 128K tokens
-- **Claude 3**: Up to 200K tokens
-
-## Configuration Recommendations
-
-### Foundation Models for Privacy
-
-```swift
-let privacyConfig = FoundationModelsConfiguration(
-    defaultTemperature: 0.7,
-    maxTokensPerRequest: 2048,
-    onDeviceOnly: true  // Critical: no cloud fallback
-)
-
-let provider = ARCIntelligence.foundationModels(configuration: privacyConfig)
-```
-
-### Foundation Models for Performance
-
-```swift
-let performanceConfig = FoundationModelsConfiguration(
-    defaultTemperature: 0.5,
-    maxTokensPerRequest: 4096,
-    onDeviceOnly: false  // Allow cloud fallback if needed
-)
-
-let provider = ARCIntelligence.foundationModels(configuration: performanceConfig)
-```
+---
 
 ## See Also
 
@@ -298,3 +373,12 @@ let provider = ARCIntelligence.foundationModels(configuration: performanceConfig
 - <doc:BestPractices>
 - ``FoundationModelsProvider``
 - ``FoundationModelsConfiguration``
+- ``AnthropicProvider``
+- ``AnthropicConfiguration``
+- ``AnthropicModel``
+- ``OpenAIProvider``
+- ``OpenAIConfiguration``
+- ``OpenAIModel``
+- ``GrokProvider``
+- ``GrokConfiguration``
+- ``GrokModel``
