@@ -124,7 +124,7 @@ import Testing
     func maps401ToAuthenticationFailed() async {
         // Given
         let (sut, mock) = makeSUT()
-        mock.errorToThrow = HTTPError.requestFailed(401)
+        mock.errorToThrow = HTTPError.requestFailed(statusCode: 401, data: Data())
 
         // When / Then
         await #expect(throws: IntelligenceError.authenticationFailed) {
@@ -135,7 +135,7 @@ import Testing
     @Test("Should map 429 status to IntelligenceError.rateLimitExceeded") func maps429ToRateLimitExceeded() async {
         // Given
         let (sut, mock) = makeSUT()
-        mock.errorToThrow = HTTPError.requestFailed(429)
+        mock.errorToThrow = HTTPError.requestFailed(statusCode: 429, data: Data())
 
         // When / Then
         await #expect(throws: IntelligenceError.rateLimitExceeded) {
@@ -146,7 +146,7 @@ import Testing
     @Test("Should map 400 status to IntelligenceError.invalidRequest") func maps400ToInvalidRequest() async {
         // Given
         let (sut, mock) = makeSUT()
-        mock.errorToThrow = HTTPError.requestFailed(400)
+        mock.errorToThrow = HTTPError.requestFailed(statusCode: 400, data: Data())
 
         // When / Then
         await #expect(throws: IntelligenceError.self) {
@@ -158,7 +158,7 @@ import Testing
     func maps529ToRequestFailed() async throws {
         // Given
         let (sut, mock) = makeSUT()
-        mock.errorToThrow = HTTPError.requestFailed(529)
+        mock.errorToThrow = HTTPError.requestFailed(statusCode: 529, data: Data())
 
         // When
         var thrownError: IntelligenceError?
@@ -179,7 +179,7 @@ import Testing
     @Test("Should map 500 status to IntelligenceError.requestFailed") func maps500ToRequestFailed() async {
         // Given
         let (sut, mock) = makeSUT()
-        mock.errorToThrow = HTTPError.requestFailed(500)
+        mock.errorToThrow = HTTPError.requestFailed(statusCode: 500, data: Data())
 
         // When / Then
         await #expect(throws: IntelligenceError.self) {
@@ -312,7 +312,7 @@ import Testing
     func streamMessage_maps401ToAuthenticationFailed() async {
         // Given
         let (sut, mock) = makeSUT()
-        mock.streamErrorToThrow = HTTPError.requestFailed(401)
+        mock.streamErrorToThrow = HTTPError.requestFailed(statusCode: 401, data: Data())
 
         // When
         var thrownError: IntelligenceError?
