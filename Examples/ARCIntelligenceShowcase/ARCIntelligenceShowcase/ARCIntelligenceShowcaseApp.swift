@@ -9,8 +9,7 @@ import ARCIntelligence
 import ARCIntelligenceMocks
 import SwiftUI
 
-@main
-struct ARCIntelligenceShowcaseApp: App {
+@main struct ARCIntelligenceShowcaseApp: App {
     @State private var appState = AppState()
 
     var body: some Scene {
@@ -24,8 +23,7 @@ struct ARCIntelligenceShowcaseApp: App {
 // MARK: - App State
 
 @MainActor
-@Observable
-final class AppState {
+@Observable final class AppState {
     var selectedProvider: ProviderType = .mock
     var currentProvider: IntelligenceProvider
 
@@ -42,9 +40,8 @@ final class AppState {
     var grokModel: GrokModel = .grok3Fast
 
     init() {
-        currentProvider = MockIntelligenceProvider(responses: [
-            "This is a mock response. Switch to Foundation Models in Settings for real AI."
-        ])
+        currentProvider =
+            MockIntelligenceProvider(responses: ["This is a mock response. Switch to Foundation Models in Settings for real AI."])
     }
 
     func updateProvider(to type: ProviderType) {
@@ -52,11 +49,9 @@ final class AppState {
 
         switch type {
         case .mock:
-            currentProvider = MockIntelligenceProvider(responses: [
-                "This is a mock response from ARCIntelligence.",
-                "Mock providers are great for testing and development!",
-                "Switch to a cloud provider for real AI capabilities."
-            ])
+            currentProvider = MockIntelligenceProvider(responses: ["This is a mock response from ARCIntelligence.",
+                                                                   "Mock providers are great for testing and development!",
+                                                                   "Switch to a cloud provider for real AI capabilities."])
 
         case .foundationModels:
             currentProvider = ARCIntelligence.foundationModels()
@@ -83,6 +78,18 @@ final class AppState {
 
     var conversationProvider: ConversationProvider {
         currentProvider as? ConversationProvider ?? MockIntelligenceProvider()
+    }
+
+    var generableProvider: (any GenerableProvider)? {
+        currentProvider as? any GenerableProvider
+    }
+
+    var toolProvider: (any ToolProvider)? {
+        currentProvider as? any ToolProvider
+    }
+
+    var contentTaggingProvider: (any ContentTaggingProvider)? {
+        currentProvider as? any ContentTaggingProvider
     }
 }
 
