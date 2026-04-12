@@ -23,16 +23,24 @@ public struct IntelligenceResponse: Sendable, Equatable {
     /// Optional metadata from the provider
     public let metadata: [String: String]
 
+    /// Grounding metadata from the provider, if grounding was enabled and supported.
+    ///
+    /// `nil` when the provider does not support grounding or grounding was not
+    /// requested via `CompletionConfiguration.groundingEnabled`.
+    public let groundingMetadata: GroundingMetadata?
+
     // MARK: - Initialization
 
     public init(content: String,
                 tokensUsed: Int,
                 finishReason: FinishReason = .completed,
-                metadata: [String: String] = [:]) {
+                metadata: [String: String] = [:],
+                groundingMetadata: GroundingMetadata? = nil) {
         self.content = content
         self.tokensUsed = tokensUsed
         self.finishReason = finishReason
         self.metadata = metadata
+        self.groundingMetadata = groundingMetadata
     }
 
     // MARK: - Finish Reason

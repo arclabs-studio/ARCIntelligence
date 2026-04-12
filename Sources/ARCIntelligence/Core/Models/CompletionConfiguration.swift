@@ -29,18 +29,34 @@ public struct CompletionConfiguration: Sendable, Equatable {
     /// Nucleus sampling threshold (0.0 - 1.0, nil = disabled)
     public let topP: Float?
 
+    /// Desired response format. Defaults to `.text`.
+    ///
+    /// When `.json(schema:)` is used, provider adapters map this to the
+    /// provider-specific structured output mechanism. Providers that do not
+    /// support structured output silently fall back to plain-text generation.
+    public let responseFormat: ResponseFormat
+
+    /// When `true`, the provider should use search grounding to verify factual
+    /// claims in its response (if supported). Providers that do not support
+    /// grounding silently ignore this flag.
+    public let groundingEnabled: Bool
+
     // MARK: - Initialization
 
     public init(temperature: Float = 0.7,
                 maxTokens: Int? = nil,
                 systemPrompt: String? = nil,
                 stopSequences: [String] = [],
-                topP: Float? = nil) {
+                topP: Float? = nil,
+                responseFormat: ResponseFormat = .text,
+                groundingEnabled: Bool = false) {
         self.temperature = max(0.0, min(1.0, temperature))
         self.maxTokens = maxTokens
         self.systemPrompt = systemPrompt
         self.stopSequences = stopSequences
         self.topP = topP.map { max(0.0, min(1.0, $0)) }
+        self.responseFormat = responseFormat
+        self.groundingEnabled = groundingEnabled
     }
 
     // MARK: - Presets
