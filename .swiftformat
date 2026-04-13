@@ -15,7 +15,7 @@
 --wrapparameters after-first
 --wrapcollections after-first
 --closingparen same-line
---disable wrapMultilineStatementBraces
+--disable wrapMultilineStatementBraces,redundantSendable,swiftTestingTestCaseNames
 
 # Imports
 --importgrouping testable-bottom
