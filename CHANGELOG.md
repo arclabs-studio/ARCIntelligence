@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tool calling, and generable (structured output) via the Anthropic API
 - **OpenAI provider** (`OpenAIProvider`) with support for completions, streaming, tool calling,
   and generable via the OpenAI-compatible API
+- **Gemini provider** (`GeminiProvider`) with support for completions, streaming, tool calling,
+  and structured output (generable) via the Google Gemini native v1 REST API
+  (`generativelanguage.googleapis.com`). Provides resilience redundancy with `ARCFirebaseAI` —
+  use both and fall back when Firebase reports model overload
+- `GeminiConfiguration` for provider setup with `.fast`, `.balanced`, and `.quality` presets;
+  `GeminiAuthentication` and `GeminiModel` enums; `GeminiHTTPClient` and `GeminiStreamParser`
+  for native API networking
 - **Grok provider** (`GrokProvider`) with support for completions, streaming, tool calling,
   and generable via the xAI Grok API
 - **`ToolArgumentValue`** type replacing `[String: Any]` in the tool protocol for type-safe

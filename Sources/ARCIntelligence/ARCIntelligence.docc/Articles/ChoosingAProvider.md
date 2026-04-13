@@ -212,6 +212,62 @@ let sentiment: Sentiment = try await provider.generate(
 
 ---
 
+### Google Gemini
+
+Cloud-based access to Gemini 2.0 Flash, Gemini 2.0 Flash-Lite, and Gemini 1.5 Pro via the
+native Google AI Studio v1 REST API. Useful as a redundancy layer alongside `ARCFirebaseAI`
+— if Firebase returns "model overloaded", fall back to direct API access.
+
+**Availability:**
+- iOS 17.0+ / macOS 14.0+
+- Requires Google AI Studio API key or AIProxy
+
+**Supported Protocols:** `IntelligenceProvider`, `ConversationProvider`, `GenerableProvider`, `ToolProvider`
+
+**Pros:**
+- ✅ Multiple model tiers (speed vs quality)
+- ✅ 2.0 Flash is fast and cost-effective
+- ✅ Large context window (up to 1M tokens for 1.5 Pro)
+- ✅ Redundancy with Firebase Gemini integration
+- ✅ Tool calling and structured output
+- ✅ Works on older devices
+
+**Cons:**
+- ❌ Requires API key
+- ❌ Data leaves the device
+- ❌ Usage costs apply
+- ❌ Requires network
+
+**Best for:**
+- Apps using ARCFirebaseAI needing a direct-API fallback
+- Cost-effective completions (Gemini 2.0 Flash-Lite)
+- Large context window tasks (Gemini 1.5 Pro)
+- Multi-modal use cases (image support coming)
+
+**Example:**
+
+```swift
+// Preset configurations
+let fast = GeminiConfiguration.fast(authentication: .apiKey("AIza..."))      // Flash-Lite, 0.3 temp
+let balanced = GeminiConfiguration.balanced(authentication: .apiKey("AIza...")) // Flash, 0.7 temp
+let quality = GeminiConfiguration.quality(authentication: .apiKey("AIza..."))   // 1.5 Pro, 8192 tokens
+
+let provider = ARCIntelligence.gemini(configuration: balanced)
+
+let response = try await provider.complete(
+    prompt: "Summarise this document",
+    configuration: .default
+)
+
+// Firebase redundancy pattern
+func createGeminiProvider() -> IntelligenceProvider {
+    // Try Firebase Gemini first; on overload, use direct API
+    ARCIntelligence.gemini(apiKey: storedAPIKey)
+}
+```
+
+---
+
 ### Mock Provider (Testing)
 
 Configurable mock for testing without real API calls.
@@ -262,18 +318,18 @@ let toolMock = MockToolProvider(
 
 ## Provider Comparison
 
-| Feature | Foundation Models | Anthropic | OpenAI | Grok | Mock |
-|---------|:---:|:---:|:---:|:---:|:---:|
-| Privacy | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Capability | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | N/A |
-| Cost | Free | Paid | Paid | Paid | Free |
-| Offline | ✅ | ❌ | ❌ | ❌ | ✅ |
-| API Key | None | Required | Required | Required | None |
-| Min iOS | 26.0 | 17.0 | 17.0 | 17.0 | Any |
-| Conversation | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Guided Gen | ✅ | ✅ | ✅ | ✅ | ✅ (mock) |
-| Tool Calling | ✅ | ✅ | ✅ | ✅ | ✅ (mock) |
-| Content Tagging | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Feature | Foundation Models | Anthropic | OpenAI | Grok | Gemini | Mock |
+|---------|:---:|:---:|:---:|:---:|:---:|:---:|
+| Privacy | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Capability | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | N/A |
+| Cost | Free | Paid | Paid | Paid | Paid | Free |
+| Offline | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| API Key | None | Required | Required | Required | Required | None |
+| Min iOS | 26.0 | 17.0 | 17.0 | 17.0 | 17.0 | Any |
+| Conversation | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Guided Gen | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (mock) |
+| Tool Calling | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (mock) |
+| Content Tagging | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 ---
 
@@ -299,6 +355,12 @@ let toolMock = MockToolProvider(
 ### Choose Grok when:
 - Speed is a priority (Grok 3 Fast)
 - You're in xAI's ecosystem
+
+### Choose Gemini when:
+- You're already using Firebase Gemini and want a direct-API fallback
+- Large context windows are required (up to 1M tokens with 1.5 Pro)
+- Cost-effective, high-throughput completions (2.0 Flash-Lite)
+- You have a Google AI Studio API key and want to avoid Firebase overhead
 
 ### Choose Mock Provider when:
 - Writing unit or UI tests
@@ -382,3 +444,6 @@ func createProvider(preference: ProviderPreference) async -> IntelligenceProvide
 - ``GrokProvider``
 - ``GrokConfiguration``
 - ``GrokModel``
+- ``GeminiProvider``
+- ``GeminiConfiguration``
+- ``GeminiModel``
