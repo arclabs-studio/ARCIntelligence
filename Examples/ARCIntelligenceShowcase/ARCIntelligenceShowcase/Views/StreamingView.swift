@@ -127,8 +127,7 @@ struct StreamingView: View {
 // MARK: - View Model
 
 @MainActor
-@Observable
-final class StreamingViewModel {
+@Observable final class StreamingViewModel {
     var prompt = "Write a short story about AI and humans working together"
     var streamedResponse = ""
     var isStreaming = false
@@ -148,7 +147,9 @@ final class StreamingViewModel {
                                                      configuration: .creative)
 
                 for try await chunk in stream {
-                    if Task.isCancelled { break }
+                    if Task.isCancelled {
+                        break
+                    }
                     streamedResponse += chunk
                 }
 

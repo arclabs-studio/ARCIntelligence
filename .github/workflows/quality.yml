@@ -1,3 +1,8 @@
+# ARCDevTools Workflow Template (Swift Package)
+# Source: https://github.com/arclabs-studio/ARCDevTools/workflows-spm/quality.yml
+#
+# This file was copied from ARCDevTools. You can customize it for your project.
+# To update: re-run ./ARCDevTools/arcdevtools-setup or manually copy from ARCDevTools/workflows-spm/
 name: Code Quality
 
 on:
@@ -5,6 +10,22 @@ on:
     branches: [main, develop, feature/*]
   pull_request:
     branches: [main, develop]
+
+# ============================================================================
+# TOOL VERSION PINNING
+# ============================================================================
+# SwiftLint and SwiftFormat are installed at the EXACT versions pinned in
+# `.arc-tool-versions` (copied from ARCDevTools/configs/tool-versions by
+# `arcdevtools-setup`). Never `brew install swiftlint` here — brew has no
+# versioned formula, so it drifts to whatever is latest and silently breaks
+# PRs that were green locally (e.g. `superfluous_disable_command` errors when
+# a newer SwiftLint stops flagging what an older one required a disable for).
+#
+# Git hooks and `make lint` resolve the same pins via
+# ARCDevTools/scripts/tool-env.sh, so local == CI.
+#
+# These jobs stay on macOS to match developer machines byte-for-byte.
+# ============================================================================
 
 jobs:
   swiftlint:
@@ -17,11 +38,26 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install SwiftLint
-        run: brew install swiftlint
+      - name: Read pinned tool versions
+        id: versions
+        # Falls back to the submodule copy when a project has not re-run
+        # arcdevtools-setup yet (so .arc-tool-versions is not committed).
+        run: |
+          PINS=.arc-tool-versions
+          [ -f "$PINS" ] || PINS=ARCDevTools/configs/tool-versions
+          grep -E '^[A-Z_]+=' "$PINS" >> "$GITHUB_OUTPUT"
 
-      - name: Run SwiftLint
-        run: swiftlint lint --strict
+      - name: Cache pinned tools
+        uses: actions/cache@v4
+        with:
+          path: .arc-tools
+          key: arc-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.arc-tool-versions', 'ARCDevTools/configs/tool-versions') }}
+
+      - name: Install pinned SwiftLint
+        run: ./ARCDevTools/scripts/install-tools.sh swiftlint
+
+      - name: Run SwiftLint (${{ steps.versions.outputs.SWIFTLINT_VERSION }})
+        run: .arc-tools/bin/swiftlint lint --strict
 
   swiftformat:
     name: SwiftFormat
@@ -33,11 +69,28 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install SwiftFormat
-        run: brew install swiftformat
+      - name: Read pinned tool versions
+        id: versions
+        # Falls back to the submodule copy when a project has not re-run
+        # arcdevtools-setup yet (so .arc-tool-versions is not committed).
+        run: |
+          PINS=.arc-tool-versions
+          [ -f "$PINS" ] || PINS=ARCDevTools/configs/tool-versions
+          grep -E '^[A-Z_]+=' "$PINS" >> "$GITHUB_OUTPUT"
 
-      - name: Check formatting
-        run: swiftformat --lint Sources/ Tests/
+      - name: Cache pinned tools
+        uses: actions/cache@v4
+        with:
+          path: .arc-tools
+          key: arc-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.arc-tool-versions', 'ARCDevTools/configs/tool-versions') }}
+
+      - name: Install pinned SwiftFormat
+        run: ./ARCDevTools/scripts/install-tools.sh swiftformat
+
+      # Uses the project's own .swiftformat (same file the git hooks use),
+      # not ARCDevTools/configs/swiftformat, so project overrides apply.
+      - name: Check formatting (${{ steps.versions.outputs.SWIFTFORMAT_VERSION }})
+        run: .arc-tools/bin/swiftformat --config .swiftformat --lint Sources/ Tests/
 
   markdown-links:
     name: Validate Markdown Links

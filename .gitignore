@@ -31,3 +31,40 @@ xcuserdata/
 # Archivos de configuración local
 .claude-code/
 *.local
+
+
+# ARCDevTools pinned tool binaries
+.arc-tools/
+
+
+# ARCKnowledge skills (symlinks)
+.claude/skills/arc-audit
+.claude/skills/arc-data-layer
+.claude/skills/arc-final-review
+.claude/skills/arc-karpathy-guidelines
+.claude/skills/arc-localization
+.claude/skills/arc-memory
+.claude/skills/arc-notes-system
+.claude/skills/arc-presentation-layer
+.claude/skills/arc-project-setup
+.claude/skills/arc-quality-standards
+.claude/skills/arc-swift-architecture
+.claude/skills/arc-tdd-patterns
+.claude/skills/arc-workflow
+.claude/skills/arc-worktrees-workflow
+.claude/skills/arc-xcode-cloud
+
+
+# ARCKnowledge agents (symlinks)
+.claude/agents/arc-aso.md
+.claude/agents/arc-dependency-auditor.md
+.claude/agents/arc-linear-bridge.md
+.claude/agents/arc-pr-publisher.md
+.claude/agents/arc-release-orchestrator.md
+.claude/agents/arc-spm-manager.md
+.claude/agents/arc-swift-debugger.md
+.claude/agents/arc-swift-reviewer.md
+.claude/agents/arc-swift-tdd.md
+.claude/agents/arc-swiftdata-migration.md
+.claude/agents/arc-testflight.md
+.claude/agents/arc-xcode-explorer.md

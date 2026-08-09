@@ -135,8 +135,7 @@ struct CompletionsView: View {
 // MARK: - View Model
 
 @MainActor
-@Observable
-final class CompletionsViewModel {
+@Observable final class CompletionsViewModel {
     var prompt = "Explain quantum computing in simple terms"
     var selectedPreset: ConfigPreset = .default
     var temperature: Double = 0.7

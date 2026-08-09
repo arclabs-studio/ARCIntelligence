@@ -1,10 +1,15 @@
 # ARCDevTools Makefile (Swift Package)
 # Auto-generated - Do not edit manually
+#
+# build/test targets shell out to `swift` for CI and headless use.
+# For interactive build, test, and diagnostics, prefer the Xcode MCP
+# (see the `arc-mcp-xcode` skill) over running these targets by hand.
 
-.PHONY: help lint format fix build test setup hooks clean
+.PHONY: help tools lint format fix build test setup hooks clean
 
 help:
 	@echo "ARCDevTools - Available commands:"
+	@echo "  make tools     - Install pinned SwiftLint/SwiftFormat (.arc-tools/)"
 	@echo "  make lint      - Run SwiftLint"
 	@echo "  make format    - Run SwiftFormat (dry-run)"
 	@echo "  make fix       - Apply SwiftFormat"
@@ -14,26 +19,20 @@ help:
 	@echo "  make hooks     - Re-install git hooks only"
 	@echo "  make clean     - Clean build artifacts"
 
+# Quality targets delegate to ARCDevTools scripts, which resolve the SwiftLint
+# and SwiftFormat versions pinned in .arc-tool-versions — the same versions CI
+# installs. Run `make tools` once (and after any pin bump) to install them.
+tools:
+	@./ARCDevTools/scripts/install-tools.sh
+
 lint:
-	@if command -v swiftlint >/dev/null 2>&1; then \
-		swiftlint lint --config .swiftlint.yml; \
-	else \
-		echo "⚠️  SwiftLint not installed: brew install swiftlint"; \
-	fi
+	@./ARCDevTools/scripts/lint.sh
 
 format:
-	@if command -v swiftformat >/dev/null 2>&1; then \
-		swiftformat --config .swiftformat --lint .; \
-	else \
-		echo "⚠️  SwiftFormat not installed: brew install swiftformat"; \
-	fi
+	@./ARCDevTools/scripts/format.sh --dry-run
 
 fix:
-	@if command -v swiftformat >/dev/null 2>&1; then \
-		swiftformat --config .swiftformat .; \
-	else \
-		echo "⚠️  SwiftFormat not installed: brew install swiftformat"; \
-	fi
+	@./ARCDevTools/scripts/format.sh
 
 build:
 	@swift build
