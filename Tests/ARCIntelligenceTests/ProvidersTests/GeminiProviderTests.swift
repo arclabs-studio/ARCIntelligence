@@ -79,7 +79,9 @@ import Testing
         #expect(request?.generationConfig?.temperature == 0.5)
         #expect(request?.generationConfig?.maxOutputTokens == 1000)
         let systemText = request?.systemInstruction?.parts.compactMap {
-            if case let .text(text) = $0 { return text }
+            if case let .text(text) = $0 {
+                return text
+            }
             return nil
         }.first
         #expect(systemText == "Be helpful")

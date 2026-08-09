@@ -104,7 +104,9 @@ extension GeminiProvider {
 
         let textContent = candidate?.content?.parts
             .compactMap { part -> String? in
-                if case let .text(text) = part { return text }
+                if case let .text(text) = part {
+                    return text
+                }
                 return nil
             }
             .joined() ?? ""
