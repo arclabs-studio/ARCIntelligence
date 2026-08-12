@@ -52,4 +52,4 @@
 --extensionacl on-declarations
 
 # Exclude
---exclude .build,DerivedData,Pods,Carthage,Generated
+--exclude .build,DerivedData,Pods,Carthage,Generated,ARCDevTools,Tools/ARCDevTools,.arc-tools

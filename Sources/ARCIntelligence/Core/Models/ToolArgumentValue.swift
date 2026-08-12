@@ -34,25 +34,33 @@ public enum ToolArgumentValue: Sendable, Codable, Equatable, CustomStringConvert
 
     /// Returns the string value if this is a `.string` case, nil otherwise.
     public var stringValue: String? {
-        if case let .string(value) = self { return value }
+        if case let .string(value) = self {
+            return value
+        }
         return nil
     }
 
     /// Returns the integer value if this is an `.int` case, nil otherwise.
     public var intValue: Int? {
-        if case let .int(value) = self { return value }
+        if case let .int(value) = self {
+            return value
+        }
         return nil
     }
 
     /// Returns the double value if this is a `.double` case, nil otherwise.
     public var doubleValue: Double? {
-        if case let .double(value) = self { return value }
+        if case let .double(value) = self {
+            return value
+        }
         return nil
     }
 
     /// Returns the boolean value if this is a `.bool` case, nil otherwise.
     public var boolValue: Bool? {
-        if case let .bool(value) = self { return value }
+        if case let .bool(value) = self {
+            return value
+        }
         return nil
     }
 

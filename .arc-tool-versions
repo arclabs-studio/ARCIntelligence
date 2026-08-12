@@ -1,0 +1,36 @@
+# ARCDevTools — Pinned Quality Tool Versions
+#
+# SINGLE SOURCE OF TRUTH for the SwiftLint / SwiftFormat versions used by
+# ARC Labs Studio. Every consumer of these tools resolves the version here:
+#
+#   - CI workflows          (workflows-spm/quality.yml, workflows-ios/quality.yml)
+#   - Xcode Cloud           (templates/ci_scripts/ci_post_clone.sh)
+#   - Git hooks             (hooks/pre-commit, hooks/pre-push)
+#   - Local scripts / make  (scripts/lint.sh, scripts/format.sh, scripts/pr-ready.sh)
+#
+# `arcdevtools-setup` copies this file into every consumer project as
+# `.arc-tool-versions` (studio-owned, refreshed on every run).
+#
+# WHY THIS EXISTS
+# ---------------
+# Before pinning, three different SwiftLint versions were in play at once:
+# dev machines (whatever brew installed months ago), SPM CI (`brew install
+# swiftlint` = always latest), and iOS CI (a moving Docker tag behind
+# norio-nomura/action-swiftlint). Rules change between releases, so a PR that
+# was green locally failed in CI — most visibly with
+# `superfluous_disable_command` errors under `--strict`, where an older
+# SwiftLint required a disable comment that a newer one no longer needs.
+#
+# HOW TO BUMP
+# -----------
+# 1. Change a version below.
+# 2. Run `./ARCDevTools/scripts/install-tools.sh` locally, then `make lint format`.
+# 3. Fix any new violations, commit, tag a release.
+# 4. Consumer projects pick it up on their next submodule update + setup run.
+#
+# Releases:
+#   SwiftLint   https://github.com/realm/SwiftLint/releases
+#   SwiftFormat https://github.com/nicklockwood/SwiftFormat/releases
+
+SWIFTLINT_VERSION=0.65.0
+SWIFTFORMAT_VERSION=0.62.1

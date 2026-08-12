@@ -301,7 +301,9 @@ import Testing
         // Then
         var sawMessageStop = false
         for event in events {
-            if case .messageStop = event { sawMessageStop = true }
+            if case .messageStop = event {
+                sawMessageStop = true
+            }
         }
         #expect(sawMessageStop)
     }

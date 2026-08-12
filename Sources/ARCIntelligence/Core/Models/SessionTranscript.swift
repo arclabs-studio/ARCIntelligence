@@ -70,7 +70,9 @@ public struct SessionTranscript: Sendable, Equatable {
     /// All prompt entries in the transcript.
     public var prompts: [TranscriptPrompt] {
         entries.compactMap { entry in
-            if case let .prompt(prompt) = entry { return prompt }
+            if case let .prompt(prompt) = entry {
+                return prompt
+            }
             return nil
         }
     }
@@ -78,7 +80,9 @@ public struct SessionTranscript: Sendable, Equatable {
     /// All response entries in the transcript.
     public var responses: [TranscriptResponse] {
         entries.compactMap { entry in
-            if case let .response(response) = entry { return response }
+            if case let .response(response) = entry {
+                return response
+            }
             return nil
         }
     }
@@ -86,7 +90,9 @@ public struct SessionTranscript: Sendable, Equatable {
     /// All tool call entries in the transcript.
     public var toolCalls: [TranscriptToolCall] {
         entries.compactMap { entry in
-            if case let .toolCall(call) = entry { return call }
+            if case let .toolCall(call) = entry {
+                return call
+            }
             return nil
         }
     }

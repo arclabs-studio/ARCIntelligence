@@ -118,8 +118,7 @@ struct MessageBubble: View {
 // MARK: - View Model
 
 @MainActor
-@Observable
-final class ConversationViewModel {
+@Observable final class ConversationViewModel {
     var messages: [Message] = []
     var inputText = ""
     var isThinking = false
