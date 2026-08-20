@@ -37,18 +37,14 @@ public protocol IntelligenceProvider: Sendable {
     ///   - configuration: Completion configuration (temperature, max tokens, etc.)
     /// - Returns: The generated response
     /// - Throws: `IntelligenceError` if the request fails
-    func complete(
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) async throws -> IntelligenceResponse
+    func complete(prompt: String,
+                  configuration: CompletionConfiguration) async throws -> IntelligenceResponse
 
     /// Stream completion tokens as they are generated
     /// - Parameters:
     ///   - prompt: The input text prompt
     ///   - configuration: Completion configuration
     /// - Returns: An async stream of response chunks
-    func streamComplete(
-        prompt: String,
-        configuration: CompletionConfiguration
-    ) -> AsyncThrowingStream<String, Error>
+    func streamComplete(prompt: String,
+                        configuration: CompletionConfiguration) -> AsyncThrowingStream<String, Error>
 }

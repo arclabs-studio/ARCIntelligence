@@ -31,14 +31,12 @@ public struct Recommendation: Sendable, Identifiable, Codable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        id: UUID = UUID(),
-        title: String,
-        description: String,
-        confidence: Float,
-        category: String? = nil,
-        metadata: [String: String] = [:]
-    ) {
+    public init(id: UUID = UUID(),
+                title: String,
+                description: String,
+                confidence: Float,
+                category: String? = nil,
+                metadata: [String: String] = [:]) {
         self.id = id
         self.title = title
         self.description = description

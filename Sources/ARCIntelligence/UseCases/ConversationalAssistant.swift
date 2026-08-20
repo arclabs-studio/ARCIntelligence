@@ -17,10 +17,8 @@ public actor ConversationalAssistant {
 
     private let provider: ConversationProvider
     private var activeConversation: Conversation?
-    private let logger = ARCLogger(
-        subsystem: "com.arclabs.intelligence",
-        category: "ConversationalAssistant"
-    )
+    private let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
+                                   category: "ConversationalAssistant")
 
     // MARK: - Initialization
 
@@ -34,17 +32,13 @@ public actor ConversationalAssistant {
     /// - Parameter systemPrompt: Instructions for the AI assistant
     /// - Returns: The new conversation instance
     public func startConversation(systemPrompt: String? = nil) -> Conversation {
-        let conversation = Conversation(
-            id: UUID(),
-            systemPrompt: systemPrompt,
-            messages: []
-        )
+        let conversation = Conversation(id: UUID(),
+                                        systemPrompt: systemPrompt,
+                                        messages: [])
         activeConversation = conversation
 
-        logger.info("Started new conversation", metadata: [
-            "conversationId": .public(conversation.id.uuidString),
-            "hasSystemPrompt": .public("\(systemPrompt != nil)")
-        ])
+        logger.info("Started new conversation", metadata: ["conversationId": .public(conversation.id.uuidString),
+                                                           "hasSystemPrompt": .public("\(systemPrompt != nil)")])
 
         return conversation
     }
@@ -59,10 +53,8 @@ public actor ConversationalAssistant {
             throw IntelligenceError.noActiveConversation
         }
 
-        logger.debug("Sending user message", metadata: [
-            "conversationId": .public(conversation.id.uuidString),
-            "messageLength": .public("\(text.count)")
-        ])
+        logger.debug("Sending user message", metadata: ["conversationId": .public(conversation.id.uuidString),
+                                                        "messageLength": .public("\(text.count)")])
 
         let userMessage = Message(role: .user, content: text)
         let response = try await provider.sendMessage(userMessage, in: conversation)
@@ -72,11 +64,11 @@ public actor ConversationalAssistant {
         conversation.messages.append(response)
         activeConversation = conversation
 
-        logger.info("Received assistant response", metadata: [
-            "conversationId": .public(conversation.id.uuidString),
-            "responseLength": .public("\(response.content.count)"),
-            "totalMessages": .public("\(conversation.messages.count)")
-        ])
+        // swiftlint:disable line_length
+        logger.info("Received assistant response", metadata: ["conversationId": .public(conversation.id.uuidString),
+                                                              "responseLength": .public("\(response.content.count)"),
+                                                              "totalMessages": .public("\(conversation.messages.count)")])
+        // swiftlint:enable line_length
 
         return response.content
     }
@@ -90,10 +82,8 @@ public actor ConversationalAssistant {
     /// End the active conversation
     public func endConversation() {
         if let conversation = activeConversation {
-            logger.info("Ending conversation", metadata: [
-                "conversationId": .public(conversation.id.uuidString),
-                "totalMessages": .public("\(conversation.messages.count)")
-            ])
+            logger.info("Ending conversation", metadata: ["conversationId": .public(conversation.id.uuidString),
+                                                          "totalMessages": .public("\(conversation.messages.count)")])
         }
         activeConversation = nil
     }

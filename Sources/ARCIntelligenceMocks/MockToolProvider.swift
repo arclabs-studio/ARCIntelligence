@@ -52,14 +52,12 @@ public final class MockToolProvider: IntelligenceProvider, ToolProvider, Sendabl
     ///   - shouldCallTools: Whether to actually call the provided tools.
     ///   - simulatedDelay: Delay before returning response.
     ///   - errorToThrow: Specific error to throw when failing.
-    public init(
-        response: String = "Mock tool response",
-        toolCallsToSimulate: [ToolCallRecord] = [],
-        shouldFail: Bool = false,
-        shouldCallTools: Bool = false,
-        simulatedDelay: TimeInterval = 0.1,
-        errorToThrow: IntelligenceError? = nil
-    ) {
+    public init(response: String = "Mock tool response",
+                toolCallsToSimulate: [ToolCallRecord] = [],
+                shouldFail: Bool = false,
+                shouldCallTools: Bool = false,
+                simulatedDelay: TimeInterval = 0.1,
+                errorToThrow: IntelligenceError? = nil) {
         self.response = response
         self.toolCallsToSimulate = toolCallsToSimulate
         self.shouldFail = shouldFail
@@ -74,33 +72,25 @@ public final class MockToolProvider: IntelligenceProvider, ToolProvider, Sendabl
         true
     }
 
-    public func complete(
-        prompt _: String,
-        configuration _: CompletionConfiguration
-    ) async throws -> IntelligenceResponse {
+    public func complete(prompt _: String,
+                         configuration _: CompletionConfiguration) async throws -> IntelligenceResponse {
         try await Task.sleep(for: .seconds(simulatedDelay))
 
         if shouldFail {
             throw errorToThrow ?? IntelligenceError.requestFailed("Mock failure")
         }
 
-        return IntelligenceResponse(
-            content: response,
-            tokensUsed: response.count / 4,
-            finishReason: .completed
-        )
+        return IntelligenceResponse(content: response,
+                                    tokensUsed: response.count / 4,
+                                    finishReason: .completed)
     }
 
-    public func streamComplete(
-        prompt _: String,
-        configuration _: CompletionConfiguration
-    ) -> AsyncThrowingStream<String, Error> {
+    public func streamComplete(prompt _: String,
+                               configuration _: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 if shouldFail {
-                    continuation.finish(
-                        throwing: errorToThrow ?? IntelligenceError.requestFailed("Mock failure")
-                    )
+                    continuation.finish(throwing: errorToThrow ?? IntelligenceError.requestFailed("Mock failure"))
                     return
                 }
 
@@ -112,11 +102,11 @@ public final class MockToolProvider: IntelligenceProvider, ToolProvider, Sendabl
 
     // MARK: - ToolProvider
 
-    public func respondWithToolCalls(
-        to prompt: String,
-        tools: [any IntelligenceTool],
-        configuration _: CompletionConfiguration
-    ) async throws -> (response: IntelligenceResponse, toolCalls: [ToolCallRecord]) {
+    public func respondWithToolCalls(to prompt: String,
+                                     tools: [any IntelligenceTool],
+                                     configuration _: CompletionConfiguration) async throws
+        -> (response: IntelligenceResponse,
+            toolCalls: [ToolCallRecord]) {
         try await Task.sleep(for: .seconds(simulatedDelay))
 
         if shouldFail {
@@ -128,26 +118,23 @@ public final class MockToolProvider: IntelligenceProvider, ToolProvider, Sendabl
         // Optionally call the actual tools
         if shouldCallTools {
             actualToolCalls = []
+            actualToolCalls.reserveCapacity(tools.count)
             for tool in tools {
                 let startTime = Date()
-                let output = try await tool.execute(arguments: ["prompt": prompt])
+                let output = try await tool.execute(arguments: ["prompt": .string(prompt)])
                 let duration = Date().timeIntervalSince(startTime)
 
-                actualToolCalls.append(ToolCallRecord(
-                    toolName: tool.name,
-                    arguments: ["prompt": prompt],
-                    output: output,
-                    duration: duration
-                ))
+                actualToolCalls.append(ToolCallRecord(toolName: tool.name,
+                                                      arguments: ["prompt": prompt],
+                                                      output: output,
+                                                      duration: duration))
             }
         }
 
-        let intelligenceResponse = IntelligenceResponse(
-            content: response,
-            tokensUsed: response.count / 4,
-            finishReason: .completed,
-            metadata: ["toolCalls": "\(actualToolCalls.count)"]
-        )
+        let intelligenceResponse = IntelligenceResponse(content: response,
+                                                        tokensUsed: response.count / 4,
+                                                        finishReason: .completed,
+                                                        metadata: ["toolCalls": "\(actualToolCalls.count)"])
 
         return (intelligenceResponse, actualToolCalls)
     }
@@ -162,19 +149,17 @@ public struct MockTool: IntelligenceTool {
     public let responseToReturn: String
     public let shouldFail: Bool
 
-    public init(
-        name: String = "mockTool",
-        description: String = "A mock tool for testing",
-        responseToReturn: String = "Mock tool output",
-        shouldFail: Bool = false
-    ) {
+    public init(name: String = "mockTool",
+                description: String = "A mock tool for testing",
+                responseToReturn: String = "Mock tool output",
+                shouldFail: Bool = false) {
         self.name = name
         self.description = description
         self.responseToReturn = responseToReturn
         self.shouldFail = shouldFail
     }
 
-    public func execute(arguments _: [String: Any]) async throws -> String {
+    public func execute(arguments _: [String: ToolArgumentValue]) async throws -> String {
         if shouldFail {
             throw IntelligenceError.requestFailed("Mock tool execution failed")
         }

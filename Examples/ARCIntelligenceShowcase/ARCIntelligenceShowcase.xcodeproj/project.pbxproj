@@ -17,6 +17,10 @@
 		5DFBAC8F378B7999EB9A8B83 /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8575DA3AB5DD8931ED3703C5 /* ConversationView.swift */; };
 		E39582DECA9EDB086EC090E3 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A761876C8BA932D2D83E63A4 /* AboutView.swift */; };
 		E52FC71980C42460140A1F31 /* UtilitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2003D6879B26F1F6FC8A34A6 /* UtilitiesView.swift */; };
+		FA000001000000010000AA01 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000002000000010000AA01 /* SharedComponents.swift */; };
+		FA000001000000020000AA02 /* GuidedGenerationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000002000000020000AA02 /* GuidedGenerationView.swift */; };
+		FA000001000000030000AA03 /* ContentTaggingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000002000000030000AA03 /* ContentTaggingView.swift */; };
+		FA000001000000040000AA04 /* ToolCallingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA000002000000040000AA04 /* ToolCallingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +34,10 @@
 		8575DA3AB5DD8931ED3703C5 /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
 		A761876C8BA932D2D83E63A4 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		CB01E70D1FE3AF18308992EE /* CompletionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionsView.swift; sourceTree = "<group>"; };
+		FA000002000000010000AA01 /* SharedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedComponents.swift; sourceTree = "<group>"; };
+		FA000002000000020000AA02 /* GuidedGenerationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidedGenerationView.swift; sourceTree = "<group>"; };
+		FA000002000000030000AA03 /* ContentTaggingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTaggingView.swift; sourceTree = "<group>"; };
+		FA000002000000040000AA04 /* ToolCallingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolCallingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +88,10 @@
 				7D7ED629D121945586EA49CF /* SettingsView.swift */,
 				48EAD15BD9AFC7E6919C1269 /* StreamingView.swift */,
 				2003D6879B26F1F6FC8A34A6 /* UtilitiesView.swift */,
+				FA000002000000010000AA01 /* SharedComponents.swift */,
+				FA000002000000020000AA02 /* GuidedGenerationView.swift */,
+				FA000002000000030000AA03 /* ContentTaggingView.swift */,
+				FA000002000000040000AA04 /* ToolCallingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -160,6 +172,10 @@
 				33D2BAECEB8D63B8E6B6DA4A /* SettingsView.swift in Sources */,
 				526B0DF5BAB8160D5A1706D8 /* StreamingView.swift in Sources */,
 				E52FC71980C42460140A1F31 /* UtilitiesView.swift in Sources */,
+				FA000001000000010000AA01 /* SharedComponents.swift in Sources */,
+				FA000001000000020000AA02 /* GuidedGenerationView.swift in Sources */,
+				FA000001000000030000AA03 /* ContentTaggingView.swift in Sources */,
+				FA000001000000040000AA04 /* ToolCallingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

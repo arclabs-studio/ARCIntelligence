@@ -5,15 +5,16 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject var appState: AppState
+    @Environment(AppState.self) private var appState
     @State private var isCheckingAvailability = false
     @State private var availabilityStatus = ""
 
     var body: some View {
+        @Bindable var appState = appState
         List {
             Section {
                 ForEach(ProviderType.allCases, id: \.self) { providerType in
@@ -47,6 +48,77 @@ struct SettingsView: View {
                 Text("AI Provider")
             } footer: {
                 Text("Select which AI provider to use for examples. Mock provider is recommended for demo purposes.")
+            }
+
+            if appState.selectedProvider == .anthropic {
+                Section {
+                    SecureField("API Key (sk-ant-...)", text: $appState.anthropicAPIKey)
+                        .textContentType(.password)
+                        .autocorrectionDisabled()
+                        .onChange(of: appState.anthropicAPIKey) {
+                            appState.updateProvider(to: .anthropic)
+                        }
+
+                    Picker("Model", selection: $appState.anthropicModel) {
+                        Text("Haiku (Fast)").tag(AnthropicModel.haiku)
+                        Text("Sonnet (Balanced)").tag(AnthropicModel.sonnet)
+                        Text("Opus (Quality)").tag(AnthropicModel.opus)
+                    }
+                    .onChange(of: appState.anthropicModel) {
+                        appState.updateProvider(to: .anthropic)
+                    }
+                } header: {
+                    Text("Anthropic Settings")
+                } footer: {
+                    Text("Enter your Anthropic API key. Do not use in production apps — use AIProxy instead.")
+                }
+            }
+
+            if appState.selectedProvider == .openAI {
+                Section {
+                    SecureField("API Key (sk-...)", text: $appState.openAIAPIKey)
+                        .textContentType(.password)
+                        .autocorrectionDisabled()
+                        .onChange(of: appState.openAIAPIKey) {
+                            appState.updateProvider(to: .openAI)
+                        }
+
+                    Picker("Model", selection: $appState.openAIModel) {
+                        Text("GPT-4o Mini (Fast)").tag(OpenAIModel.gpt4oMini)
+                        Text("GPT-4o (Balanced)").tag(OpenAIModel.gpt4o)
+                        Text("o3-mini (Reasoning)").tag(OpenAIModel.o3Mini)
+                    }
+                    .onChange(of: appState.openAIModel) {
+                        appState.updateProvider(to: .openAI)
+                    }
+                } header: {
+                    Text("OpenAI Settings")
+                } footer: {
+                    Text("Enter your OpenAI API key. Do not use in production apps — use AIProxy instead.")
+                }
+            }
+
+            if appState.selectedProvider == .grok {
+                Section {
+                    SecureField("API Key (xai-...)", text: $appState.grokAPIKey)
+                        .textContentType(.password)
+                        .autocorrectionDisabled()
+                        .onChange(of: appState.grokAPIKey) {
+                            appState.updateProvider(to: .grok)
+                        }
+
+                    Picker("Model", selection: $appState.grokModel) {
+                        Text("Grok 3 Fast").tag(GrokModel.grok3Fast)
+                        Text("Grok 3").tag(GrokModel.grok3)
+                    }
+                    .onChange(of: appState.grokModel) {
+                        appState.updateProvider(to: .grok)
+                    }
+                } header: {
+                    Text("Grok (xAI) Settings")
+                } footer: {
+                    Text("Enter your xAI API key. Do not use in production apps — use AIProxy instead.")
+                }
             }
 
             Section {
@@ -104,17 +176,21 @@ struct SettingsView: View {
             }
 
             Section {
-                Link(destination: URL(string: "https://github.com/arclabs-studio/ARCIntelligence")!) {
-                    HStack {
-                        Image(systemName: "link")
-                        Text("View on GitHub")
+                if let githubURL = URL(string: "https://github.com/arclabs-studio/ARCIntelligence") {
+                    Link(destination: githubURL) {
+                        HStack {
+                            Image(systemName: "link")
+                            Text("View on GitHub")
+                        }
                     }
                 }
 
-                Link(destination: URL(string: "https://arclabs.studio")!) {
-                    HStack {
-                        Image(systemName: "globe")
-                        Text("ARC Labs Studio Website")
+                if let websiteURL = URL(string: "https://arclabs.studio") {
+                    Link(destination: websiteURL) {
+                        HStack {
+                            Image(systemName: "globe")
+                            Text("ARC Labs Studio Website")
+                        }
                     }
                 }
             } header: {
@@ -142,6 +218,6 @@ struct SettingsView: View {
 #Preview {
     NavigationView {
         SettingsView()
-            .environmentObject(AppState())
+            .environment(AppState())
     }
 }

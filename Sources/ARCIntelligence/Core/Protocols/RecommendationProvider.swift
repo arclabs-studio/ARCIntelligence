@@ -20,9 +20,7 @@ public protocol RecommendationProvider: IntelligenceProvider {
     ///   - configuration: Recommendation-specific configuration
     /// - Returns: Array of recommendations
     /// - Throws: `IntelligenceError` if generation fails
-    func generateRecommendations(
-        for context: some Codable & Sendable,
-        count: Int,
-        configuration: RecommendationConfiguration
-    ) async throws -> [Recommendation]
+    func generateRecommendations(for context: some Codable & Sendable,
+                                 count: Int,
+                                 configuration: RecommendationConfiguration) async throws -> [Recommendation]
 }

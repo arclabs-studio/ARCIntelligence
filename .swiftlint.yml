@@ -18,10 +18,12 @@ excluded:
 
 # Disabled rules
 disabled_rules:
-  - trailing_whitespace  # SwiftFormat handles this
-  - todo                 # We allow TODOs
-  - sorted_imports       # Conflicts with @testable imports preference (should be last)
-  - attributes           # SwiftFormat handles this (always same line in ARC Labs)
+  - trailing_whitespace        # SwiftFormat handles this
+  - todo                       # We allow TODOs
+  - sorted_imports             # Conflicts with @testable imports preference (should be last)
+  - attributes                 # SwiftFormat handles this (always same line in ARC Labs)
+  - superfluous_disable_command # CI and local SwiftLint versions differ; disable comments
+                                # may be necessary on CI but appear superfluous locally
 
 # Opt-in rules (explicitly enabled per ARCKnowledge)
 opt_in_rules:
@@ -49,10 +51,11 @@ opt_in_rules:
   - joined_default_parameter
   - last_where
   - literal_expression_end_indentation
-  - multiline_arguments
+  # multiline_arguments removed: conflicts with --wraparguments after-first (SwiftFormat aligns args
+  # after the first, SwiftLint requires all-or-nothing multiline — unresolvable without changing wrap style)
   - multiline_function_chains
-  - multiline_literal_brackets
-  - multiline_parameters
+  # multiline_literal_brackets removed: conflicts with --wrapcollections after-first
+  # multiline_parameters removed: conflicts with --wrapparameters after-first (same issue as multiline_arguments)
   - operator_usage_whitespace
   - overridden_super_call
   - prefer_self_type_over_type_of_self
@@ -113,6 +116,10 @@ custom_rules:
   observable_viewmodel:
     name: "ViewModels should use @Observable"
     regex: "final\\s+class\\s+\\w+ViewModel(?!.*@Observable)"
+    excluded_match_kinds:
+      - comment
+      - doccomment
+      - string
     message: "ViewModels must use @Observable in Swift 6"
     severity: warning
 
@@ -136,6 +143,7 @@ custom_rules:
     regex: 'try!'
     message: "Avoid force try. Use proper error handling"
     severity: error
+
 
 # Reporter (output format)
 reporter: "xcode"

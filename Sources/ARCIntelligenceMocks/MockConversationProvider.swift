@@ -32,22 +32,16 @@ public final class MockConversationProvider: ConversationProvider, Sendable {
         true
     }
 
-    public func complete(
-        prompt: String,
-        configuration _: CompletionConfiguration
-    ) async throws -> IntelligenceResponse {
+    public func complete(prompt: String,
+                         configuration _: CompletionConfiguration) async throws -> IntelligenceResponse {
         let response = responsePrefix + prompt
-        return IntelligenceResponse(
-            content: response,
-            tokensUsed: response.count / 4,
-            finishReason: .completed
-        )
+        return IntelligenceResponse(content: response,
+                                    tokensUsed: response.count / 4,
+                                    finishReason: .completed)
     }
 
-    public func streamComplete(
-        prompt: String,
-        configuration _: CompletionConfiguration
-    ) -> AsyncThrowingStream<String, Error> {
+    public func streamComplete(prompt: String,
+                               configuration _: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 let response = responsePrefix + prompt
@@ -62,26 +56,18 @@ public final class MockConversationProvider: ConversationProvider, Sendable {
 
     // MARK: - ConversationProvider
 
-    public func sendMessage(
-        _ message: Message,
-        in conversation: Conversation
-    ) async throws -> Message {
-        let response = try await complete(
-            prompt: message.content,
-            configuration: .default
-        )
+    public func sendMessage(_ message: Message,
+                            in conversation: Conversation) async throws -> Message {
+        let response = try await complete(prompt: message.content,
+                                          configuration: .default)
 
-        return Message(
-            role: .assistant,
-            content: response.content,
-            metadata: ["conversationId": conversation.id.uuidString]
-        )
+        return Message(role: .assistant,
+                       content: response.content,
+                       metadata: ["conversationId": conversation.id.uuidString])
     }
 
-    public func continueConversation(
-        _ conversation: Conversation,
-        with text: String
-    ) async throws -> Message {
+    public func continueConversation(_ conversation: Conversation,
+                                     with text: String) async throws -> Message {
         let userMessage = Message(role: .user, content: text)
         return try await sendMessage(userMessage, in: conversation)
     }

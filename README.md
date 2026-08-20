@@ -2,7 +2,7 @@
 
 ![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)
 ![Platforms](https://img.shields.io/badge/Platforms-iOS%2017%2B%20%7C%20macOS%2014%2B-blue.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
+![License](https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-orange.svg)
 ![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg)
 
 **Professional AI Capabilities for iOS & macOS Apps**
@@ -227,6 +227,50 @@ print("\(review.title): \(review.rating)/10")
 print("Pros: \(review.pros.joined(separator: ", "))")
 ```
 
+### Google Gemini
+
+Direct access to Google AI Studio with automatic retry and streaming support:
+
+```swift
+import ARCIntelligence
+
+// Quick setup
+let provider = ARCIntelligence.gemini(apiKey: "AIza...")
+
+// Or with a specific model / preset
+let config = GeminiConfiguration.quality(authentication: .apiKey("AIza..."))
+let qualityProvider = ARCIntelligence.gemini(configuration: config)
+
+// Streaming completion
+for try await chunk in provider.streamComplete(
+    prompt: "Explain machine learning",
+    configuration: .default
+) {
+    print(chunk, terminator: "")
+}
+
+// Structured generation (Generable)
+struct Recipe: Codable, Sendable {
+    let name: String
+    let ingredients: [String]
+    let steps: [String]
+}
+
+let genProvider = ARCIntelligence.generableProvider(geminiConfiguration: config)
+let recipe: Recipe = try await genProvider.generate(
+    Recipe.self,
+    prompt: "Give me a pasta recipe",
+    configuration: .default
+)
+print(recipe.name)
+
+// For production: use AIProxy to protect your key
+let prodProvider = ARCIntelligence.gemini(
+    aiProxyPartialKey: "your-partial-key",
+    serviceURL: "https://your-service.aiproxy.pro"
+)
+```
+
 ### Tool Calling
 
 Extend model capabilities with custom tools:
@@ -252,8 +296,8 @@ struct WeatherTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: Any]) async throws -> String {
-        let city = arguments["city"] as? String ?? "Unknown"
+    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+        let city = arguments["city"]?.stringValue ?? "Unknown"
         // Call your weather API here
         return "Weather in \(city): 72°F, Sunny"
     }
@@ -372,7 +416,10 @@ if counter.fitsWithinLimit(text, limit: 1000) {
 ### Providers
 
 - **`FoundationModelsProvider`** - Apple's on-device AI (iOS 26+)
-- More providers coming soon (OpenAI, Anthropic, etc.)
+- **`AnthropicProvider`** - Anthropic Claude (Haiku, Sonnet, Opus)
+- **`OpenAIProvider`** - OpenAI GPT-4o and o3-mini
+- **`GrokProvider`** - xAI Grok 3 and Grok 3 Fast
+- **`GeminiProvider`** - Google Gemini 2.0 Flash, 1.5 Pro via native v1 REST API
 
 ### Use Cases
 
@@ -535,9 +582,13 @@ See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## 📄 License
 
-MIT License © 2025 ARC Labs Studio
+**PolyForm Noncommercial License 1.0.0** © 2025–2026 ARC Labs Studio.
 
-See [LICENSE](LICENSE) for details.
+Source-available. Free for non-commercial use (research, study, hobby, evaluation). **Commercial use requires a separate license** — contact `arclabs.studio@gmail.com`.
+
+ARC Labs Studio's own commercial products are covered by an internal use grant — see [INTERNAL-USE.md](INTERNAL-USE.md).
+
+See [LICENSE](LICENSE) for the full license text.
 
 ---
 

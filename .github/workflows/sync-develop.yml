@@ -1,3 +1,8 @@
+# ARCDevTools Workflow Template (Swift Package)
+# Source: https://github.com/arclabs-studio/ARCDevTools/workflows-spm/sync-develop.yml
+#
+# This file was copied from ARCDevTools. You can customize it for your project.
+# To update: re-run ./ARCDevTools/arcdevtools-setup or manually copy from ARCDevTools/workflows-spm/
 name: Sync Develop
 
 on:

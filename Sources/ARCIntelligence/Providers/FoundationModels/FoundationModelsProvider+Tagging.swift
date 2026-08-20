@@ -26,16 +26,13 @@ extension FoundationModelsProvider: ContentTaggingProvider {
     ///   - maxTags: Maximum number of tags per category.
     /// - Returns: Array of content tags.
     /// - Throws: `IntelligenceError` if tagging fails.
-    public func generateTags(
-        for text: String,
-        categories: [TagCategory],
-        maxTags: Int
-    ) async throws -> [ContentTag] {
-        logger.debug("Starting content tagging", metadata: [
-            "textLength": .public("\(text.count)"),
-            "categories": .public(categories.map(\.rawValue).joined(separator: ", ")),
-            "maxTags": .public("\(maxTags)")
-        ])
+    public func generateTags(for text: String,
+                             categories: [TagCategory],
+                             maxTags: Int) async throws -> [ContentTag] {
+        logger.debug("Starting content tagging", metadata: ["textLength": .public("\(text.count)"),
+                                                            "categories": .public(categories.map(\.rawValue)
+                                                                .joined(separator: ", ")),
+                                                            "maxTags": .public("\(maxTags)")])
 
         guard !text.isEmpty else {
             throw IntelligenceError.invalidRequest("Text cannot be empty")
@@ -52,11 +49,9 @@ extension FoundationModelsProvider: ContentTaggingProvider {
 
         #if canImport(FoundationModels)
         if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
-            return try await performContentTagging(
-                text: text,
-                categories: categories,
-                maxTags: maxTags
-            )
+            return try await performContentTagging(text: text,
+                                                   categories: categories,
+                                                   maxTags: maxTags)
         }
         #endif
 
@@ -66,36 +61,28 @@ extension FoundationModelsProvider: ContentTaggingProvider {
     // MARK: - Private Implementation
 
     #if canImport(FoundationModels)
-    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func performContentTagging(
-        text: String,
-        categories: [TagCategory],
-        maxTags: Int
-    ) async throws -> [ContentTag] {
+    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *) private func performContentTagging(text: String,
+                                                                                          categories: [TagCategory],
+                                                                                          maxTags: Int) async throws
+    -> [ContentTag] {
         var allTags: [ContentTag] = []
 
         for category in categories {
-            let tags = try await generateTagsForCategory(
-                text: text,
-                category: category,
-                maxTags: maxTags
-            )
+            let tags = try await generateTagsForCategory(text: text,
+                                                         category: category,
+                                                         maxTags: maxTags)
             allTags.append(contentsOf: tags)
         }
 
-        logger.info("Content tagging successful", metadata: [
-            "totalTags": .public("\(allTags.count)")
-        ])
+        logger.info("Content tagging successful", metadata: ["totalTags": .public("\(allTags.count)")])
 
         return allTags
     }
 
-    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
-    private func generateTagsForCategory(
-        text: String,
-        category: TagCategory,
-        maxTags: Int
-    ) async throws -> [ContentTag] {
+    @available(iOS 26.0, macOS 26.0, visionOS 26.0, *) private func generateTagsForCategory(text: String,
+                                                                                            category: TagCategory,
+                                                                                            maxTags: Int) async throws
+    -> [ContentTag] {
         do {
             let session = LanguageModelSession(instructions: """
             You are a content tagger. Extract \(category.rawValue)s from the given text.
@@ -114,11 +101,9 @@ extension FoundationModelsProvider: ContentTaggingProvider {
                 .prefix(maxTags)
 
             return tagStrings.map { tagValue in
-                ContentTag(
-                    value: tagValue,
-                    category: category,
-                    confidence: 1.0
-                )
+                ContentTag(value: tagValue,
+                           category: category,
+                           confidence: 1.0)
             }
         } catch {
             throw mapFoundationModelsError(error)

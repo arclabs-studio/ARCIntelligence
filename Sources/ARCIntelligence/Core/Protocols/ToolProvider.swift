@@ -22,8 +22,8 @@ import Foundation
 ///     let name = "getWeather"
 ///     let description = "Get current weather for a city"
 ///
-///     func execute(arguments: [String: Any]) async throws -> String {
-///         let city = arguments["city"] as? String ?? "Unknown"
+///     func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+///         let city = arguments["city"]?.stringValue ?? "Unknown"
 ///         return "Weather in \(city): 72°F, Sunny"
 ///     }
 /// }
@@ -48,11 +48,9 @@ public protocol ToolProvider: IntelligenceProvider {
     ///   - configuration: Configuration for the generation.
     /// - Returns: The generated response, potentially informed by tool calls.
     /// - Throws: `IntelligenceError` if generation or tool execution fails.
-    func respond(
-        to prompt: String,
-        tools: [any IntelligenceTool],
-        configuration: CompletionConfiguration
-    ) async throws -> IntelligenceResponse
+    func respond(to prompt: String,
+                 tools: [any IntelligenceTool],
+                 configuration: CompletionConfiguration) async throws -> IntelligenceResponse
 
     /// Generate a response with tools, returning tool call information.
     ///
@@ -62,11 +60,10 @@ public protocol ToolProvider: IntelligenceProvider {
     ///   - configuration: Configuration for the generation.
     /// - Returns: A tuple containing the response and any tool calls made.
     /// - Throws: `IntelligenceError` if generation or tool execution fails.
-    func respondWithToolCalls(
-        to prompt: String,
-        tools: [any IntelligenceTool],
-        configuration: CompletionConfiguration
-    ) async throws -> (response: IntelligenceResponse, toolCalls: [ToolCallRecord])
+    func respondWithToolCalls(to prompt: String,
+                              tools: [any IntelligenceTool],
+                              configuration: CompletionConfiguration) async throws -> (response: IntelligenceResponse,
+                                                                                       toolCalls: [ToolCallRecord])
 }
 
 // MARK: - Tool Protocol
@@ -95,7 +92,7 @@ public protocol IntelligenceTool: Sendable {
     /// - Parameter arguments: Arguments provided by the model.
     /// - Returns: The tool's output as a string.
     /// - Throws: Any error that occurs during execution.
-    func execute(arguments: [String: Any]) async throws -> String
+    func execute(arguments: [String: ToolArgumentValue]) async throws -> String
 }
 
 // MARK: - Tool Parameters Schema
@@ -131,13 +128,11 @@ public struct ToolParameter: Sendable, Equatable {
     /// Range constraints for numeric types.
     public let range: ClosedRange<Double>?
 
-    public init(
-        name: String,
-        type: ParameterType,
-        description: String,
-        enumValues: [String]? = nil,
-        range: ClosedRange<Double>? = nil
-    ) {
+    public init(name: String,
+                type: ParameterType,
+                description: String,
+                enumValues: [String]? = nil,
+                range: ClosedRange<Double>? = nil) {
         self.name = name
         self.type = type
         self.description = description
@@ -172,12 +167,10 @@ public struct ToolCallRecord: Sendable, Equatable {
     /// Duration of the tool call in seconds.
     public let duration: TimeInterval
 
-    public init(
-        toolName: String,
-        arguments: [String: String],
-        output: String,
-        duration: TimeInterval
-    ) {
+    public init(toolName: String,
+                arguments: [String: String],
+                output: String,
+                duration: TimeInterval) {
         self.toolName = toolName
         self.arguments = arguments
         self.output = output
@@ -189,21 +182,19 @@ public struct ToolCallRecord: Sendable, Equatable {
 
 extension IntelligenceTool {
     /// Default: no parameters schema.
-    public var parametersSchema: ToolParametersSchema? { nil }
+    public var parametersSchema: ToolParametersSchema? {
+        nil
+    }
 }
 
 extension ToolProvider {
     /// Default implementation that discards tool call information.
-    public func respond(
-        to prompt: String,
-        tools: [any IntelligenceTool],
-        configuration: CompletionConfiguration
-    ) async throws -> IntelligenceResponse {
-        let (response, _) = try await respondWithToolCalls(
-            to: prompt,
-            tools: tools,
-            configuration: configuration
-        )
+    public func respond(to prompt: String,
+                        tools: [any IntelligenceTool],
+                        configuration: CompletionConfiguration) async throws -> IntelligenceResponse {
+        let (response, _) = try await respondWithToolCalls(to: prompt,
+                                                           tools: tools,
+                                                           configuration: configuration)
         return response
     }
 }

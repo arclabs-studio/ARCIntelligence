@@ -6,13 +6,10 @@
 //
 
 import Testing
-
 @testable import ARCIntelligence
 
-@Suite("Embedding Tests")
-struct EmbeddingTests {
-    @Test("Embedding initializes with correct values")
-    func init_setsValuesCorrectly() {
+@Suite("Embedding Tests", .tags(.unit)) struct EmbeddingTests {
+    @Test("Embedding initializes with correct values") func init_setsValuesCorrectly() {
         // Arrange & Act
         let vector: [Float] = [0.1, 0.2, 0.3, 0.4]
         let embedding = Embedding(vector: vector, text: "test text")
@@ -23,8 +20,7 @@ struct EmbeddingTests {
         #expect(embedding.dimension == 4)
     }
 
-    @Test("Cosine similarity of identical vectors is 1.0")
-    func cosineSimilarity_identicalVectorsReturnsOne() {
+    @Test("Cosine similarity of identical vectors is 1.0") func cosineSimilarity_identicalVectorsReturnsOne() {
         // Arrange
         let vector: [Float] = [1.0, 0.0, 0.0]
         let embedding1 = Embedding(vector: vector, text: "text1")
@@ -37,8 +33,7 @@ struct EmbeddingTests {
         #expect(abs(similarity - 1.0) < 0.0001)
     }
 
-    @Test("Cosine similarity of orthogonal vectors is 0.0")
-    func cosineSimilarity_orthogonalVectorsReturnsZero() {
+    @Test("Cosine similarity of orthogonal vectors is 0.0") func cosineSimilarity_orthogonalVectorsReturnsZero() {
         // Arrange
         let embedding1 = Embedding(vector: [1.0, 0.0, 0.0], text: "text1")
         let embedding2 = Embedding(vector: [0.0, 1.0, 0.0], text: "text2")
@@ -63,8 +58,7 @@ struct EmbeddingTests {
         #expect(similarity == 0.0)
     }
 
-    @Test("Cosine similarity with zero magnitude vector is 0.0")
-    func cosineSimilarity_zeroMagnitudeReturnsZero() {
+    @Test("Cosine similarity with zero magnitude vector is 0.0") func cosineSimilarity_zeroMagnitudeReturnsZero() {
         // Arrange
         let embedding1 = Embedding(vector: [0.0, 0.0, 0.0], text: "text1")
         let embedding2 = Embedding(vector: [1.0, 0.0, 0.0], text: "text2")

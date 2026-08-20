@@ -8,10 +8,8 @@
 import Testing
 @testable import ARCIntelligence
 
-@Suite("Conversation Tests")
-struct ConversationTests {
-    @Test("Conversation initializes empty")
-    func conversationInitializesEmpty() {
+@Suite("Conversation Tests", .tags(.unit)) struct ConversationTests {
+    @Test("Conversation initializes empty") func conversationInitializesEmpty() {
         let conversation = Conversation()
 
         #expect(conversation.messages.isEmpty)
@@ -19,8 +17,7 @@ struct ConversationTests {
         #expect(conversation.messageCount == 0)
     }
 
-    @Test("Conversation tracks message count")
-    func conversationTracksMessageCount() {
+    @Test("Conversation tracks message count") func conversationTracksMessageCount() {
         var conversation = Conversation()
 
         #expect(conversation.messageCount == 0)
@@ -33,8 +30,7 @@ struct ConversationTests {
         #expect(conversation.messageCount == 2)
     }
 
-    @Test("Conversation with system prompt")
-    func conversationWithSystemPrompt() {
+    @Test("Conversation with system prompt") func conversationWithSystemPrompt() {
         let systemPrompt = "You are a helpful assistant"
         let conversation = Conversation(systemPrompt: systemPrompt)
 

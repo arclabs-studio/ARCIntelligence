@@ -5,8 +5,8 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct AboutView: View {
     var body: some View {
@@ -43,41 +43,33 @@ struct AboutView: View {
                     Text("Features")
                         .font(.headline)
 
-                    FeatureRow(
-                        icon: "sparkles",
-                        title: "Text Completions",
-                        description: "Generate AI-powered text completions"
-                    )
+                    FeatureRow(icon: "sparkles",
+                               title: "Text Completions",
+                               description: "Generate AI-powered text completions")
 
-                    FeatureRow(
-                        icon: "wave.3.right",
-                        title: "Streaming",
-                        description: "Real-time token-by-token streaming"
-                    )
+                    FeatureRow(icon: "wave.3.right",
+                               title: "Streaming",
+                               description: "Real-time token-by-token streaming")
 
-                    FeatureRow(
-                        icon: "bubble.left.and.bubble.right",
-                        title: "Conversations",
-                        description: "Multi-turn dialogue management"
-                    )
+                    FeatureRow(icon: "bubble.left.and.bubble.right",
+                               title: "Conversations",
+                               description: "Multi-turn dialogue management")
 
-                    FeatureRow(
-                        icon: "lock.shield",
-                        title: "Privacy First",
-                        description: "On-device processing with Foundation Models"
-                    )
+                    FeatureRow(icon: "cloud.fill",
+                               title: "Multi-Provider",
+                               description: "OpenAI, Anthropic, Grok (xAI), and on-device Foundation Models")
 
-                    FeatureRow(
-                        icon: "swift",
-                        title: "Swift 6",
-                        description: "Modern concurrency with async/await"
-                    )
+                    FeatureRow(icon: "lock.shield",
+                               title: "Privacy First",
+                               description: "On-device processing with Foundation Models")
 
-                    FeatureRow(
-                        icon: "testtube.2",
-                        title: "Testing",
-                        description: "Comprehensive mocks for easy testing"
-                    )
+                    FeatureRow(icon: "swift",
+                               title: "Swift 6",
+                               description: "Modern concurrency with async/await")
+
+                    FeatureRow(icon: "testtube.2",
+                               title: "Testing",
+                               description: "Comprehensive mocks for easy testing")
                 }
                 .padding(.horizontal)
 

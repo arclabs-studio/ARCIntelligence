@@ -27,6 +27,18 @@ import Foundation
 /// ### Providers
 /// - ``FoundationModelsProvider``
 /// - ``FoundationModelsConfiguration``
+/// - ``AnthropicProvider``
+/// - ``AnthropicConfiguration``
+/// - ``AnthropicModel``
+/// - ``AnthropicAuthentication``
+/// - ``OpenAIProvider``
+/// - ``OpenAIConfiguration``
+/// - ``OpenAIModel``
+/// - ``OpenAIAuthentication``
+/// - ``GrokProvider``
+/// - ``GrokConfiguration``
+/// - ``GrokModel``
+/// - ``GrokAuthentication``
 ///
 /// ### Use Cases
 /// - ``ConversationalAssistant``
@@ -62,165 +74,6 @@ public enum ARCIntelligence {
     // MARK: - Logging
 
     /// Shared logger for the ARCIntelligence package.
-    static let logger = ARCLogger(
-        subsystem: "com.arclabs.intelligence",
-        category: "ARCIntelligence"
-    )
-
-    // MARK: - Factory Methods
-
-    /// Create a Foundation Models provider with default configuration
-    /// - Returns: Configured Foundation Models provider
-    public static func foundationModels() -> FoundationModelsProvider {
-        logger.debug("Creating FoundationModelsProvider with default configuration")
-        return FoundationModelsProvider(configuration: .default)
-    }
-
-    /// Create a Foundation Models provider with custom configuration
-    /// - Parameter configuration: Custom configuration
-    /// - Returns: Configured Foundation Models provider
-    public static func foundationModels(
-        configuration: FoundationModelsConfiguration
-    ) -> FoundationModelsProvider {
-        logger.debug("Creating FoundationModelsProvider with custom configuration")
-        return FoundationModelsProvider(configuration: configuration)
-    }
-
-    // MARK: - Use Case Factories
-
-    /// Create a conversational assistant with a provider
-    /// - Parameter provider: The conversation provider to use
-    /// - Returns: Configured conversational assistant
-    public static func conversationalAssistant(
-        provider: ConversationProvider
-    ) -> ConversationalAssistant {
-        logger.debug("Creating ConversationalAssistant")
-        return ConversationalAssistant(provider: provider)
-    }
-
-    /// Create a recommendation engine with a provider
-    /// - Parameter provider: The recommendation provider to use
-    /// - Returns: Configured recommendation engine
-    public static func recommendationEngine(
-        provider: RecommendationProvider
-    ) -> RecommendationEngine {
-        logger.debug("Creating RecommendationEngine")
-        return RecommendationEngine(provider: provider)
-    }
-
-    /// Create a semantic search engine with a provider
-    /// - Parameter provider: The embedding provider to use
-    /// - Returns: Configured semantic search engine
-    public static func semanticSearch(
-        provider: EmbeddingProvider
-    ) -> SemanticSearch {
-        logger.debug("Creating SemanticSearch")
-        return SemanticSearch(provider: provider)
-    }
-
-    // MARK: - Specialized Provider Factories
-
-    /// Create a generable provider for structured output generation.
-    ///
-    /// Uses Foundation Models to generate structured data conforming to Codable types.
-    ///
-    /// ## Example
-    /// ```swift
-    /// struct MovieReview: Codable, Sendable {
-    ///     let title: String
-    ///     let rating: Int
-    /// }
-    ///
-    /// let provider = ARCIntelligence.generableProvider()
-    /// let review: MovieReview = try await provider.generate(
-    ///     MovieReview.self,
-    ///     prompt: "Review the movie Inception",
-    ///     configuration: .default
-    /// )
-    /// ```
-    ///
-    /// - Returns: A provider capable of guided generation.
-    public static func generableProvider() -> some GenerableProvider {
-        logger.debug("Creating GenerableProvider (FoundationModels)")
-        return FoundationModelsProvider(configuration: .default)
-    }
-
-    /// Create a generable provider with custom configuration.
-    /// - Parameter configuration: Custom Foundation Models configuration.
-    /// - Returns: A provider capable of guided generation.
-    public static func generableProvider(
-        configuration: FoundationModelsConfiguration
-    ) -> some GenerableProvider {
-        logger.debug("Creating GenerableProvider with custom configuration")
-        return FoundationModelsProvider(configuration: configuration)
-    }
-
-    /// Create a tool provider for tool-assisted generation.
-    ///
-    /// Uses Foundation Models to generate responses that can call external tools.
-    ///
-    /// ## Example
-    /// ```swift
-    /// struct WeatherTool: IntelligenceTool {
-    ///     let name = "getWeather"
-    ///     let description = "Get weather for a city"
-    ///
-    ///     func execute(arguments: [String: Any]) async throws -> String {
-    ///         return "72°F, Sunny"
-    ///     }
-    /// }
-    ///
-    /// let provider = ARCIntelligence.toolProvider()
-    /// let response = try await provider.respond(
-    ///     to: "What's the weather in Boston?",
-    ///     tools: [WeatherTool()],
-    ///     configuration: .default
-    /// )
-    /// ```
-    ///
-    /// - Returns: A provider capable of tool calling.
-    public static func toolProvider() -> some ToolProvider {
-        logger.debug("Creating ToolProvider (FoundationModels)")
-        return FoundationModelsProvider(configuration: .default)
-    }
-
-    /// Create a tool provider with custom configuration.
-    /// - Parameter configuration: Custom Foundation Models configuration.
-    /// - Returns: A provider capable of tool calling.
-    public static func toolProvider(
-        configuration: FoundationModelsConfiguration
-    ) -> some ToolProvider {
-        logger.debug("Creating ToolProvider with custom configuration")
-        return FoundationModelsProvider(configuration: configuration)
-    }
-
-    /// Create a content tagging provider for text analysis.
-    ///
-    /// Uses Foundation Models to extract tags from text content.
-    ///
-    /// ## Example
-    /// ```swift
-    /// let provider = ARCIntelligence.contentTaggingProvider()
-    /// let tags = try await provider.generateTags(
-    ///     for: "I love hiking in the mountains!",
-    ///     categories: [.topic, .emotion],
-    ///     maxTags: 5
-    /// )
-    /// ```
-    ///
-    /// - Returns: A provider capable of content tagging.
-    public static func contentTaggingProvider() -> some ContentTaggingProvider {
-        logger.debug("Creating ContentTaggingProvider (FoundationModels)")
-        return FoundationModelsProvider(configuration: .default)
-    }
-
-    /// Create a content tagging provider with custom configuration.
-    /// - Parameter configuration: Custom Foundation Models configuration.
-    /// - Returns: A provider capable of content tagging.
-    public static func contentTaggingProvider(
-        configuration: FoundationModelsConfiguration
-    ) -> some ContentTaggingProvider {
-        logger.debug("Creating ContentTaggingProvider with custom configuration")
-        return FoundationModelsProvider(configuration: configuration)
-    }
+    static let logger = ARCLogger(subsystem: "com.arclabs.intelligence",
+                                  category: "ARCIntelligence")
 }

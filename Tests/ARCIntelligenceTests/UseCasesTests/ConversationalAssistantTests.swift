@@ -9,10 +9,8 @@ import Testing
 @testable import ARCIntelligence
 @testable import ARCIntelligenceMocks
 
-@Suite("Conversational Assistant Tests")
-struct ConversationalAssistantTests {
-    @Test("Start conversation creates new conversation")
-    func startConversationCreatesNew() async {
+@Suite("Conversational Assistant Tests", .tags(.unit)) struct ConversationalAssistantTests {
+    @Test("Start conversation creates new conversation") func startConversationCreatesNew() async {
         let provider = MockIntelligenceProvider()
         let assistant = ConversationalAssistant(provider: provider)
 
@@ -20,8 +18,7 @@ struct ConversationalAssistantTests {
         #expect(conversation.messages.isEmpty)
     }
 
-    @Test("Start conversation with system prompt")
-    func startConversationWithSystemPrompt() async {
+    @Test("Start conversation with system prompt") func startConversationWithSystemPrompt() async {
         let provider = MockIntelligenceProvider()
         let assistant = ConversationalAssistant(provider: provider)
         let systemPrompt = "You are helpful"
@@ -30,8 +27,7 @@ struct ConversationalAssistantTests {
         #expect(conversation.systemPrompt == systemPrompt)
     }
 
-    @Test("Send message updates conversation")
-    func sendMessageUpdatesConversation() async throws {
+    @Test("Send message updates conversation") func sendMessageUpdatesConversation() async throws {
         let provider = MockIntelligenceProvider(responses: ["Mock response"])
         let assistant = ConversationalAssistant(provider: provider)
 
@@ -54,8 +50,7 @@ struct ConversationalAssistantTests {
         }
     }
 
-    @Test("End conversation clears active conversation")
-    func endConversationClears() async {
+    @Test("End conversation clears active conversation") func endConversationClears() async {
         let provider = MockIntelligenceProvider()
         let assistant = ConversationalAssistant(provider: provider)
 

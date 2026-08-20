@@ -22,11 +22,9 @@ public struct RecommendationConfiguration: Sendable, Equatable {
 
     // MARK: - Initialization
 
-    public init(
-        diversity: Float = 0.7,
-        contextWindow: Int = 10,
-        filters: [String: String] = [:]
-    ) {
+    public init(diversity: Float = 0.7,
+                contextWindow: Int = 10,
+                filters: [String: String] = [:]) {
         self.diversity = max(0.0, min(1.0, diversity))
         self.contextWindow = max(1, contextWindow)
         self.filters = filters
@@ -38,14 +36,10 @@ public struct RecommendationConfiguration: Sendable, Equatable {
     public static let `default` = RecommendationConfiguration()
 
     /// High diversity configuration
-    public static let diverse = RecommendationConfiguration(
-        diversity: 0.9,
-        contextWindow: 15
-    )
+    public static let diverse = RecommendationConfiguration(diversity: 0.9,
+                                                            contextWindow: 15)
 
     /// High similarity configuration
-    public static let similar = RecommendationConfiguration(
-        diversity: 0.3,
-        contextWindow: 5
-    )
+    public static let similar = RecommendationConfiguration(diversity: 0.3,
+                                                            contextWindow: 5)
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var appState: AppState
+    @Environment(AppState.self) private var appState
 
     var body: some View {
         NavigationView {
@@ -17,41 +17,57 @@ struct ContentView: View {
                     NavigationLink {
                         CompletionsView()
                     } label: {
-                        ExampleRow(
-                            icon: "doc.text.fill",
-                            title: "Text Completions",
-                            description: "Generate AI completions"
-                        )
+                        ExampleRow(icon: "doc.text.fill",
+                                   title: "Text Completions",
+                                   description: "Generate AI completions")
                     }
 
                     NavigationLink {
                         StreamingView()
                     } label: {
-                        ExampleRow(
-                            icon: "wave.3.right",
-                            title: "Streaming Responses",
-                            description: "Real-time token streaming"
-                        )
+                        ExampleRow(icon: "wave.3.right",
+                                   title: "Streaming Responses",
+                                   description: "Real-time token streaming")
                     }
 
                     NavigationLink {
                         ConversationView()
                     } label: {
-                        ExampleRow(
-                            icon: "bubble.left.and.bubble.right.fill",
-                            title: "Conversations",
-                            description: "Multi-turn dialogues"
-                        )
+                        ExampleRow(icon: "bubble.left.and.bubble.right.fill",
+                                   title: "Conversations",
+                                   description: "Multi-turn dialogues")
                     }
 
                     NavigationLink {
                         UtilitiesView()
                     } label: {
-                        ExampleRow(
-                            icon: "wrench.and.screwdriver.fill",
-                            title: "Utilities",
-                            description: "Prompt builder & token counter"
-                        )
+                        ExampleRow(icon: "wrench.and.screwdriver.fill",
+                                   title: "Utilities",
+                                   description: "Prompt builder & token counter")
+                    }
+
+                    NavigationLink {
+                        GuidedGenerationView()
+                    } label: {
+                        ExampleRow(icon: "wand.and.stars",
+                                   title: "Guided Generation",
+                                   description: "Structured output via GenerableProvider")
+                    }
+
+                    NavigationLink {
+                        ContentTaggingView()
+                    } label: {
+                        ExampleRow(icon: "tag.fill",
+                                   title: "Content Tagging",
+                                   description: "Topic, action & emotion tags")
+                    }
+
+                    NavigationLink {
+                        ToolCallingView()
+                    } label: {
+                        ExampleRow(icon: "wrench.and.screwdriver",
+                                   title: "Tool Calling",
+                                   description: "AI that calls local functions")
                     }
                 }
 
@@ -59,11 +75,9 @@ struct ContentView: View {
                     NavigationLink {
                         SettingsView()
                     } label: {
-                        ExampleRow(
-                            icon: "gearshape.fill",
-                            title: "Settings",
-                            description: "Configure AI provider"
-                        )
+                        ExampleRow(icon: "gearshape.fill",
+                                   title: "Settings",
+                                   description: "Configure AI provider")
                     }
                 }
 
@@ -71,11 +85,9 @@ struct ContentView: View {
                     NavigationLink {
                         AboutView()
                     } label: {
-                        ExampleRow(
-                            icon: "info.circle.fill",
-                            title: "About ARCIntelligence",
-                            description: "Learn more about the package"
-                        )
+                        ExampleRow(icon: "info.circle.fill",
+                                   title: "About ARCIntelligence",
+                                   description: "Learn more about the package")
                     }
                 }
             }
@@ -113,5 +125,5 @@ struct ExampleRow: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AppState())
+        .environment(AppState())
 }

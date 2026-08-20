@@ -1,5 +1,6 @@
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
+
 categories:
   - title: 'Features'
     labels:
@@ -10,17 +11,25 @@ categories:
       - 'fix'
       - 'bugfix'
       - 'bug'
-  - title: 'Maintenance'
-    labels:
-      - 'chore'
-      - 'maintenance'
-      - 'dependencies'
   - title: 'Documentation'
     labels:
       - 'documentation'
       - 'docs'
+  - title: 'Architecture'
+    labels:
+      - 'architecture'
+      - 'refactor'
+  - title: 'Maintenance'
+    labels:
+      - 'chore'
+      - 'dependencies'
+  - title: 'Security'
+    labels:
+      - 'security'
+
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
-change-title-escapes: '\<*_&'
+change-title-escapes: '\<*_&' # Escape special characters in titles
+
 version-resolver:
   major:
     labels:
@@ -36,12 +45,33 @@ version-resolver:
       - 'patch'
       - 'fix'
       - 'bugfix'
+      - 'documentation'
+      - 'chore'
   default: patch
+
 template: |
-  ## Changes
+  ## What's Changed
 
   $CHANGES
+
+  ## Installation
+
+  Add ARCDevTools to your Swift package dependencies:
+
+  ```swift
+  dependencies: [
+      .package(url: "https://github.com/arclabs-studio/ARCDevTools.git", from: "$RESOLVED_VERSION")
+  ]
+  ```
+
+  Or use the one-command setup:
+
+  ```bash
+  swift run arcdevtools-setup
+  ```
 
   ## Contributors
 
   $CONTRIBUTORS
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION

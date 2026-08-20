@@ -5,12 +5,12 @@
 //  Created by ARC Labs Studio on 18/11/2025.
 //
 
-import SwiftUI
 import ARCIntelligence
+import SwiftUI
 
 struct StreamingView: View {
-    @EnvironmentObject var appState: AppState
-    @StateObject private var viewModel = StreamingViewModel()
+    @Environment(AppState.self) private var appState
+    @State private var viewModel = StreamingViewModel()
 
     var body: some View {
         ScrollView {
@@ -25,10 +25,8 @@ struct StreamingView: View {
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color(.systemGray4), lineWidth: 1)
-                        )
+                        .overlay(RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(.systemGray4), lineWidth: 1))
                 }
                 .padding()
 
@@ -129,11 +127,11 @@ struct StreamingView: View {
 // MARK: - View Model
 
 @MainActor
-class StreamingViewModel: ObservableObject {
-    @Published var prompt = "Write a short story about AI and humans working together"
-    @Published var streamedResponse = ""
-    @Published var isStreaming = false
-    @Published var error: String?
+@Observable final class StreamingViewModel {
+    var prompt = "Write a short story about AI and humans working together"
+    var streamedResponse = ""
+    var isStreaming = false
+    var error: String?
 
     private var streamTask: Task<Void, Never>?
 
@@ -142,15 +140,16 @@ class StreamingViewModel: ObservableObject {
         error = nil
         streamedResponse = ""
 
-        streamTask = Task {
+        streamTask = Task { [weak self] in
+            guard let self else { return }
             do {
-                let stream = provider.streamComplete(
-                    prompt: prompt,
-                    configuration: .creative
-                )
+                let stream = provider.streamComplete(prompt: prompt,
+                                                     configuration: .creative)
 
                 for try await chunk in stream {
-                    if Task.isCancelled { break }
+                    if Task.isCancelled {
+                        break
+                    }
                     streamedResponse += chunk
                 }
 
@@ -173,6 +172,6 @@ class StreamingViewModel: ObservableObject {
 #Preview {
     NavigationView {
         StreamingView()
-            .environmentObject(AppState())
+            .environment(AppState())
     }
 }
