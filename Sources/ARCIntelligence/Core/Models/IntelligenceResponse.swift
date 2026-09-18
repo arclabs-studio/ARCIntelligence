@@ -17,6 +17,12 @@ public struct IntelligenceResponse: Sendable, Equatable {
     /// Number of tokens used in the request and response
     public let tokensUsed: Int
 
+    /// Number of tokens in the prompt/input, when the provider reports the split.
+    public let tokensIn: Int?
+
+    /// Number of tokens in the completion/output, when the provider reports the split.
+    public let tokensOut: Int?
+
     /// Reason why generation finished
     public let finishReason: FinishReason
 
@@ -33,11 +39,15 @@ public struct IntelligenceResponse: Sendable, Equatable {
 
     public init(content: String,
                 tokensUsed: Int,
+                tokensIn: Int? = nil,
+                tokensOut: Int? = nil,
                 finishReason: FinishReason = .completed,
                 metadata: [String: String] = [:],
                 groundingMetadata: GroundingMetadata? = nil) {
         self.content = content
         self.tokensUsed = tokensUsed
+        self.tokensIn = tokensIn
+        self.tokensOut = tokensOut
         self.finishReason = finishReason
         self.metadata = metadata
         self.groundingMetadata = groundingMetadata
