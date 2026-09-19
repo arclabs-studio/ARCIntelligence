@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `IntelligenceResponse.tokensIn` / `.tokensOut` — optional, defaulted fields carrying the
+  prompt/completion token split when a provider reports it. `tokensUsed` is unchanged and
+  still reflects the total. Additive and non-breaking; every existing call site compiles
+  unchanged.
+
 ## [1.0.0] - 2026-08-20
 
 First public release of **ARCIntelligence**.
