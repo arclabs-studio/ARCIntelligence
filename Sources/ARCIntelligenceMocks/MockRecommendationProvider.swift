@@ -60,19 +60,24 @@ public final class MockRecommendationProvider: RecommendationProvider, Sendable 
     public func streamComplete(prompt _: String,
                                configuration _: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
-            Task {
-                if shouldFail {
-                    continuation.finish(throwing: IntelligenceError.requestFailed("Mock failure"))
-                    return
-                }
+            let task = Task {
+                do {
+                    if shouldFail {
+                        continuation.finish(throwing: IntelligenceError.requestFailed("Mock failure"))
+                        return
+                    }
 
-                let response = "Mock streaming response"
-                for char in response {
-                    try await Task.sleep(for: .milliseconds(10))
-                    continuation.yield(String(char))
+                    let response = "Mock streaming response"
+                    for char in response {
+                        try await Task.sleep(for: .milliseconds(10))
+                        continuation.yield(String(char))
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
-                continuation.finish()
             }
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 
