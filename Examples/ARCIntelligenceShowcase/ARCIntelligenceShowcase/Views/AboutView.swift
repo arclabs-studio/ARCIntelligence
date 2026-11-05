@@ -81,9 +81,12 @@ struct AboutView: View {
                     Text("Architecture")
                         .font(.headline)
 
-                    Text("ARCIntelligence uses a protocol-based architecture that makes it easy to swap AI providers without changing your code.")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    Text("""
+                    ARCIntelligence uses a protocol-based architecture that makes it easy to swap AI providers \
+                    without changing your code.
+                    """)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
 
                     VStack(alignment: .leading, spacing: 8) {
                         ArchitectureLayer(name: "Protocols", color: .blue)

@@ -27,7 +27,10 @@ struct GuidedGenerationView: View {
         ScrollView {
             VStack(spacing: 20) {
                 if appState.generableProvider == nil {
-                    UnavailableFeatureView(message: "Guided generation requires Foundation Models, Anthropic, OpenAI, or Grok. Switch provider in Settings.")
+                    UnavailableFeatureView(message: """
+                    Guided generation requires Foundation Models, Anthropic, OpenAI, or Grok. Switch provider in \
+                    Settings.
+                    """)
                 } else {
                     inputSection
                     generateButton
@@ -157,7 +160,10 @@ private struct FieldRow: View {
         do {
             result = try await provider.generate(BookSummary.self,
                                                  prompt: "Describe the book '\(prompt)'. Fill in all fields.",
-                                                 schemaDescription: "A book summary with title, genre, a 2-sentence synopsis, and recommended age range",
+                                                 schemaDescription: """
+                                                 A book summary with title, genre, a 2-sentence synopsis, and \
+                                                 recommended age range
+                                                 """,
                                                  configuration: .factual)
         } catch {
             self.error = error.localizedDescription

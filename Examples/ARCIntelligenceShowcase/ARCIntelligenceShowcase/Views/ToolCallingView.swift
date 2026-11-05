@@ -86,7 +86,10 @@ struct ToolCallingView: View {
     var body: some View {
         VStack(spacing: 0) {
             if appState.toolProvider == nil {
-                UnavailableFeatureView(message: "Tool calling requires Foundation Models, Anthropic, OpenAI, or Grok. Switch provider in Settings.")
+                UnavailableFeatureView(message: """
+                Tool calling requires Foundation Models, Anthropic, OpenAI, or Grok. Switch provider in \
+                Settings.
+                """)
             } else {
                 toolsInfoBanner
                     .padding()
@@ -124,11 +127,14 @@ struct ToolCallingView: View {
         ScrollView {
             LazyVStack(spacing: 12) {
                 if viewModel.turns.isEmpty {
-                    Text("Ask something that uses one of the tools above.\nTry: \"How many words are in 'Hello World'?\"")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 40)
+                    Text("""
+                    Ask something that uses one of the tools above.
+                    Try: "How many words are in 'Hello World'?"
+                    """)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 40)
                 }
 
                 ForEach(viewModel.turns) { turn in

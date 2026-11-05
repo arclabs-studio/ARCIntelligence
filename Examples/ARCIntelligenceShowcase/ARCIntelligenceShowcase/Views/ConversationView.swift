@@ -150,7 +150,6 @@ struct MessageBubble: View {
             let assistantMessage = Message(role: .assistant,
                                            content: responseText)
             messages.append(assistantMessage)
-
         } catch {
             let errorMessage = Message(role: .assistant,
                                        content: "Error: \(error.localizedDescription)")
