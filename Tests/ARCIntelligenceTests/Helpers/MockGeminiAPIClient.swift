@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import os
 @testable import ARCIntelligence
 
 /// Mock implementation of `GeminiAPIClient` for testing.
 ///
-/// Uses `NSLock` to protect mutable state, making it safe for `Sendable`
+/// Uses `OSAllocatedUnfairLock` to protect mutable state, making it safe for `Sendable`
 /// conformance without `@unchecked`.
 final class MockGeminiAPIClient: GeminiAPIClient, Sendable {
     // MARK: - Thread-safe State
@@ -18,72 +19,64 @@ final class MockGeminiAPIClient: GeminiAPIClient, Sendable {
     private let state = MockState()
 
     /// Mutable mock state protected by a lock.
-    private final class MockState: @unchecked Sendable {
-        private let lock = NSLock()
-
-        private var _responses: [GeminiGenerateContentResponse] = []
-        private var _streamChunks: [GeminiGenerateContentResponse] = []
-        private var _errorToThrow: Error?
-        private var _generateCallCount = 0
-        private var _streamCallCount = 0
-        private var _lastRequest: GeminiGenerateContentRequest?
-        private var _allRequests: [GeminiGenerateContentRequest] = []
+    private final class MockState: Sendable {
+        private let storage = OSAllocatedUnfairLock(initialState: GeminiMockStorage())
 
         var responses: [GeminiGenerateContentResponse] {
-            get { lock.withLock { _responses } }
-            set { lock.withLock { _responses = newValue } }
+            get { storage.withLock { state in state.responses } }
+            set { storage.withLock { state in state.responses = newValue } }
         }
 
         var streamChunks: [GeminiGenerateContentResponse] {
-            get { lock.withLock { _streamChunks } }
-            set { lock.withLock { _streamChunks = newValue } }
+            get { storage.withLock { state in state.streamChunks } }
+            set { storage.withLock { state in state.streamChunks = newValue } }
         }
 
         var errorToThrow: Error? {
-            get { lock.withLock { _errorToThrow } }
-            set { lock.withLock { _errorToThrow = newValue } }
+            get { storage.withLock { state in state.errorToThrow } }
+            set { storage.withLock { state in state.errorToThrow = newValue } }
         }
 
         var generateCallCount: Int {
-            get { lock.withLock { _generateCallCount } }
-            set { lock.withLock { _generateCallCount = newValue } }
+            get { storage.withLock { state in state.generateCallCount } }
+            set { storage.withLock { state in state.generateCallCount = newValue } }
         }
 
         var streamCallCount: Int {
-            get { lock.withLock { _streamCallCount } }
-            set { lock.withLock { _streamCallCount = newValue } }
+            get { storage.withLock { state in state.streamCallCount } }
+            set { storage.withLock { state in state.streamCallCount = newValue } }
         }
 
         var lastRequest: GeminiGenerateContentRequest? {
-            get { lock.withLock { _lastRequest } }
-            set { lock.withLock { _lastRequest = newValue } }
+            get { storage.withLock { state in state.lastRequest } }
+            set { storage.withLock { state in state.lastRequest = newValue } }
         }
 
         var allRequests: [GeminiGenerateContentRequest] {
-            get { lock.withLock { _allRequests } }
-            set { lock.withLock { _allRequests = newValue } }
+            get { storage.withLock { state in state.allRequests } }
+            set { storage.withLock { state in state.allRequests = newValue } }
         }
 
         func removeFirstResponse() -> GeminiGenerateContentResponse? {
-            lock.withLock {
-                guard !_responses.isEmpty else { return nil }
-                return _responses.removeFirst()
+            storage.withLock { state in
+                guard !state.responses.isEmpty else { return nil }
+                return state.responses.removeFirst()
             }
         }
 
         func recordGenerate(_ request: GeminiGenerateContentRequest) {
-            lock.withLock {
-                _generateCallCount += 1
-                _lastRequest = request
-                _allRequests.append(request)
+            storage.withLock { state in
+                state.generateCallCount += 1
+                state.lastRequest = request
+                state.allRequests.append(request)
             }
         }
 
         func recordStream(_ request: GeminiGenerateContentRequest) {
-            lock.withLock {
-                _streamCallCount += 1
-                _lastRequest = request
-                _allRequests.append(request)
+            storage.withLock { state in
+                state.streamCallCount += 1
+                state.lastRequest = request
+                state.allRequests.append(request)
             }
         }
     }
@@ -215,4 +208,17 @@ final class MockGeminiAPIClient: GeminiAPIClient, Sendable {
                                                                          totalTokenCount: promptTokens + outputTokens),
                                       modelVersion: model)
     }
+}
+
+// MARK: - Storage
+
+/// Mutable state of `MockGeminiAPIClient`, guarded by its lock.
+private struct GeminiMockStorage {
+    var responses: [GeminiGenerateContentResponse] = []
+    var streamChunks: [GeminiGenerateContentResponse] = []
+    var errorToThrow: Error?
+    var generateCallCount: Int = 0
+    var streamCallCount: Int = 0
+    var lastRequest: GeminiGenerateContentRequest?
+    var allRequests: [GeminiGenerateContentRequest] = []
 }
