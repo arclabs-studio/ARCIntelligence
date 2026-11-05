@@ -56,18 +56,12 @@ template: |
 
   ## Installation
 
-  Add ARCDevTools to your Swift package dependencies:
+  Add $REPOSITORY to your Swift package dependencies:
 
   ```swift
   dependencies: [
-      .package(url: "https://github.com/arclabs-studio/ARCDevTools.git", from: "$RESOLVED_VERSION")
+      .package(url: "https://github.com/$OWNER/$REPOSITORY.git", from: "$RESOLVED_VERSION")
   ]
-  ```
-
-  Or use the one-command setup:
-
-  ```bash
-  swift run arcdevtools-setup
   ```
 
   ## Contributors
