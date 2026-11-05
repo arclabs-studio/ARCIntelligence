@@ -9,6 +9,8 @@ import ARCIntelligence
 import SwiftUI
 
 struct AboutView: View {
+    private static let websiteURL = URL(string: "https://arclabs.studio")
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -109,8 +111,10 @@ struct AboutView: View {
                         .font(.title3)
                         .bold()
 
-                    Link("Visit arclabs.studio", destination: URL(string: "https://arclabs.studio")!)
-                        .font(.subheadline)
+                    if let websiteURL = Self.websiteURL {
+                        Link("Visit arclabs.studio", destination: websiteURL)
+                            .font(.subheadline)
+                    }
                 }
                 .padding(.bottom, 40)
             }
@@ -171,7 +175,7 @@ struct ArchitectureLayer: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         AboutView()
     }
 }

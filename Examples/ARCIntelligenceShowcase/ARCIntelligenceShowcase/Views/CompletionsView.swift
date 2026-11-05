@@ -45,7 +45,7 @@ struct CompletionsView: View {
                     HStack {
                         Text("Temperature:")
                         Spacer()
-                        Text(String(format: "%.1f", viewModel.temperature))
+                        Text(viewModel.temperature.formatted(.number.precision(.fractionLength(1))))
                             .foregroundColor(.secondary)
                     }
 
@@ -180,7 +180,7 @@ enum ConfigPreset {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         CompletionsView()
             .environment(AppState())
     }

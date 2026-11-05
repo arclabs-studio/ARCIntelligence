@@ -128,7 +128,7 @@ struct PromptBuilderDemo: View {
 struct TokenCounterDemo: View {
     @State private var text = "This is a sample text to count tokens"
     @State private var estimatedTokens = 0
-    @State private var tokenLimit = 100
+    @State private var tokenLimit: Double = 100
     @State private var fitsWithinLimit = false
     @State private var truncatedText = ""
 
@@ -191,12 +191,11 @@ struct TokenCounterDemo: View {
                     HStack {
                         Text("Limit:")
                         Spacer()
-                        Text("\(tokenLimit) tokens")
+                        Text("\(Int(tokenLimit)) tokens")
                             .foregroundColor(.secondary)
                     }
 
-                    Slider(value: Binding(get: { Double(tokenLimit) },
-                                          set: { tokenLimit = Int($0) }), in: 10 ... 500, step: 10)
+                    Slider(value: $tokenLimit, in: 10 ... 500, step: 10)
 
                     HStack {
                         Text("Fits within limit:")
@@ -227,10 +226,10 @@ struct TokenCounterDemo: View {
 
     private func updateTokenCount() {
         estimatedTokens = counter.estimateTokens(for: text)
-        fitsWithinLimit = counter.fitsWithinLimit(text, limit: tokenLimit)
+        fitsWithinLimit = counter.fitsWithinLimit(text, limit: Int(tokenLimit))
 
         if !fitsWithinLimit {
-            truncatedText = counter.truncate(text, toLimit: tokenLimit)
+            truncatedText = counter.truncate(text, toLimit: Int(tokenLimit))
         }
     }
 }
@@ -256,7 +255,7 @@ struct InfoRow: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         UtilitiesView()
     }
 }

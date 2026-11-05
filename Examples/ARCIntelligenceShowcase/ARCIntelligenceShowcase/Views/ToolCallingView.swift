@@ -63,10 +63,12 @@ private struct TemperatureConverterTool: IntelligenceTool {
         switch from.lowercased() {
         case "celsius":
             let fahrenheit = value * 9 / 5 + 32
-            return String(format: "%.1f°C = %.1f°F", value, fahrenheit)
+            let oneDecimal = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(1))
+            return "\(value.formatted(oneDecimal))°C = \(fahrenheit.formatted(oneDecimal))°F"
         case "fahrenheit":
             let celsius = (value - 32) * 5 / 9
-            return String(format: "%.1f°F = %.1f°C", value, celsius)
+            let oneDecimal = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(1))
+            return "\(value.formatted(oneDecimal))°F = \(celsius.formatted(oneDecimal))°C"
         default:
             throw IntelligenceError.invalidRequest("Unknown unit: \(from)")
         }
@@ -245,7 +247,7 @@ private struct ToolCallCard: View {
                     .font(.caption)
                     .fontWeight(.medium)
                 Spacer()
-                Text(String(format: "%.0fms", call.duration * 1000))
+                Text(Duration.seconds(call.duration).formatted(.units(allowed: [.milliseconds], width: .narrow)))
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -327,7 +329,7 @@ struct ToolCallingTurn: Identifiable {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ToolCallingView()
             .environment(AppState())
     }

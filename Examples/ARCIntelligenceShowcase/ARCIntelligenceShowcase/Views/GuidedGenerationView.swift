@@ -174,7 +174,7 @@ private struct FieldRow: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         GuidedGenerationView()
             .environment(AppState())
     }

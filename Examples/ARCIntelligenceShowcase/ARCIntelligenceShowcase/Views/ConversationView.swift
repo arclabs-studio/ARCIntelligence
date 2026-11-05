@@ -168,7 +168,7 @@ struct MessageBubble: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ConversationView()
             .environment(AppState())
     }

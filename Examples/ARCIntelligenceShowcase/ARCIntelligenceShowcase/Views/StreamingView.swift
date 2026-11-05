@@ -169,7 +169,7 @@ struct StreamingView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         StreamingView()
             .environment(AppState())
     }

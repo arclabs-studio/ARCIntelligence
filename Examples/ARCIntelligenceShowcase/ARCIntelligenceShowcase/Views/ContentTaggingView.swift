@@ -167,7 +167,7 @@ private struct TagChip: View {
                 .font(.caption)
 
             if tag.confidence < 1.0 {
-                Text(String(format: "%.0f%%", tag.confidence * 100))
+                Text(tag.confidence.formatted(.percent.precision(.fractionLength(0))))
                     .font(.caption2)
                     .foregroundColor(color.opacity(0.7))
             }
@@ -291,7 +291,7 @@ extension TagCategory {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ContentTaggingView()
             .environment(AppState())
     }
