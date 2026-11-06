@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import os
 @testable import ARCIntelligence
 
 /// Mock implementation of `AnthropicAPIClient` for testing.
 ///
-/// Uses `NSLock` to protect mutable state, making it safe for `Sendable`
+/// Uses `OSAllocatedUnfairLock` to protect mutable state, making it safe for `Sendable`
 /// conformance without `@unchecked`.
 final class MockAnthropicAPIClient: AnthropicAPIClient, Sendable {
     // MARK: - Thread-safe State
@@ -18,72 +19,64 @@ final class MockAnthropicAPIClient: AnthropicAPIClient, Sendable {
     private let state = MockState()
 
     /// Mutable mock state protected by a lock.
-    private final class MockState: @unchecked Sendable {
-        private let lock = NSLock()
-
-        private var _messageResponses: [AnthropicMessageResponse] = []
-        private var _streamEvents: [AnthropicStreamEvent] = []
-        private var _errorToThrow: Error?
-        private var _sendMessageCallCount = 0
-        private var _streamMessageCallCount = 0
-        private var _lastRequest: AnthropicMessageRequest?
-        private var _allRequests: [AnthropicMessageRequest] = []
+    private final class MockState: Sendable {
+        private let storage = OSAllocatedUnfairLock(initialState: AnthropicMockStorage())
 
         var messageResponses: [AnthropicMessageResponse] {
-            get { lock.withLock { _messageResponses } }
-            set { lock.withLock { _messageResponses = newValue } }
+            get { storage.withLock { state in state.messageResponses } }
+            set { storage.withLock { state in state.messageResponses = newValue } }
         }
 
         var streamEvents: [AnthropicStreamEvent] {
-            get { lock.withLock { _streamEvents } }
-            set { lock.withLock { _streamEvents = newValue } }
+            get { storage.withLock { state in state.streamEvents } }
+            set { storage.withLock { state in state.streamEvents = newValue } }
         }
 
         var errorToThrow: Error? {
-            get { lock.withLock { _errorToThrow } }
-            set { lock.withLock { _errorToThrow = newValue } }
+            get { storage.withLock { state in state.errorToThrow } }
+            set { storage.withLock { state in state.errorToThrow = newValue } }
         }
 
         var sendMessageCallCount: Int {
-            get { lock.withLock { _sendMessageCallCount } }
-            set { lock.withLock { _sendMessageCallCount = newValue } }
+            get { storage.withLock { state in state.sendMessageCallCount } }
+            set { storage.withLock { state in state.sendMessageCallCount = newValue } }
         }
 
         var streamMessageCallCount: Int {
-            get { lock.withLock { _streamMessageCallCount } }
-            set { lock.withLock { _streamMessageCallCount = newValue } }
+            get { storage.withLock { state in state.streamMessageCallCount } }
+            set { storage.withLock { state in state.streamMessageCallCount = newValue } }
         }
 
         var lastRequest: AnthropicMessageRequest? {
-            get { lock.withLock { _lastRequest } }
-            set { lock.withLock { _lastRequest = newValue } }
+            get { storage.withLock { state in state.lastRequest } }
+            set { storage.withLock { state in state.lastRequest = newValue } }
         }
 
         var allRequests: [AnthropicMessageRequest] {
-            get { lock.withLock { _allRequests } }
-            set { lock.withLock { _allRequests = newValue } }
+            get { storage.withLock { state in state.allRequests } }
+            set { storage.withLock { state in state.allRequests = newValue } }
         }
 
         func removeFirstResponse() -> AnthropicMessageResponse? {
-            lock.withLock {
-                guard !_messageResponses.isEmpty else { return nil }
-                return _messageResponses.removeFirst()
+            storage.withLock { state in
+                guard !state.messageResponses.isEmpty else { return nil }
+                return state.messageResponses.removeFirst()
             }
         }
 
         func recordSendMessage(_ request: AnthropicMessageRequest) {
-            lock.withLock {
-                _sendMessageCallCount += 1
-                _lastRequest = request
-                _allRequests.append(request)
+            storage.withLock { state in
+                state.sendMessageCallCount += 1
+                state.lastRequest = request
+                state.allRequests.append(request)
             }
         }
 
         func recordStreamMessage(_ request: AnthropicMessageRequest) {
-            lock.withLock {
-                _streamMessageCallCount += 1
-                _lastRequest = request
-                _allRequests.append(request)
+            storage.withLock { state in
+                state.streamMessageCallCount += 1
+                state.lastRequest = request
+                state.allRequests.append(request)
             }
         }
     }
@@ -200,4 +193,17 @@ final class MockAnthropicAPIClient: AnthropicAPIClient, Sendable {
             }
         }
     }
+}
+
+// MARK: - Storage
+
+/// Mutable state of `MockAnthropicAPIClient`, guarded by its lock.
+private struct AnthropicMockStorage {
+    var messageResponses: [AnthropicMessageResponse] = []
+    var streamEvents: [AnthropicStreamEvent] = []
+    var errorToThrow: Error?
+    var sendMessageCallCount: Int = 0
+    var streamMessageCallCount: Int = 0
+    var lastRequest: AnthropicMessageRequest?
+    var allRequests: [AnthropicMessageRequest] = []
 }

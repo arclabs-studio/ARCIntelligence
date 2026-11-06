@@ -216,7 +216,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         SettingsView()
             .environment(AppState())
     }
