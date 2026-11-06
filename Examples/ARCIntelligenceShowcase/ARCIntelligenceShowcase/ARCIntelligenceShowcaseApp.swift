@@ -40,8 +40,8 @@ import SwiftUI
     var grokModel: GrokModel = .grok3Fast
 
     init() {
-        currentProvider =
-            MockIntelligenceProvider(responses: ["This is a mock response. Switch to Foundation Models in Settings for real AI."])
+        let responses = ["This is a mock response. Switch to Foundation Models in Settings for real AI."]
+        currentProvider = MockIntelligenceProvider(responses: responses)
     }
 
     func updateProvider(to type: ProviderType) {
@@ -49,9 +49,10 @@ import SwiftUI
 
         switch type {
         case .mock:
-            currentProvider = MockIntelligenceProvider(responses: ["This is a mock response from ARCIntelligence.",
-                                                                   "Mock providers are great for testing and development!",
-                                                                   "Switch to a cloud provider for real AI capabilities."])
+            let responses = ["This is a mock response from ARCIntelligence.",
+                             "Mock providers are great for testing and development!",
+                             "Switch to a cloud provider for real AI capabilities."]
+            currentProvider = MockIntelligenceProvider(responses: responses)
 
         case .foundationModels:
             currentProvider = ARCIntelligence.foundationModels()

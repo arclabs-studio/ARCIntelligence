@@ -159,7 +159,6 @@ struct CompletionsView: View {
 
             response = result.content
             tokensUsed = result.tokensUsed
-
         } catch {
             self.error = error.localizedDescription
         }

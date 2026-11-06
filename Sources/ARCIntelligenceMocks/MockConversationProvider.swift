@@ -43,14 +43,19 @@ public final class MockConversationProvider: ConversationProvider, Sendable {
     public func streamComplete(prompt: String,
                                configuration _: CompletionConfiguration) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
-            Task {
-                let response = responsePrefix + prompt
-                for char in response {
-                    try await Task.sleep(for: .milliseconds(10))
-                    continuation.yield(String(char))
+            let task = Task {
+                do {
+                    let response = responsePrefix + prompt
+                    for char in response {
+                        try await Task.sleep(for: .milliseconds(10))
+                        continuation.yield(String(char))
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
-                continuation.finish()
             }
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 

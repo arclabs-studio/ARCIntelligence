@@ -152,7 +152,6 @@ struct StreamingView: View {
                     }
                     streamedResponse += chunk
                 }
-
             } catch {
                 self.error = error.localizedDescription
             }

@@ -89,8 +89,12 @@ jobs:
 
       # Uses the project's own .swiftformat (same file the git hooks use),
       # not ARCDevTools/configs/swiftformat, so project overrides apply.
+      # Examples/ holds the package demo app — checked too when present.
       - name: Check formatting (${{ steps.versions.outputs.SWIFTFORMAT_VERSION }})
-        run: .arc-tools/bin/swiftformat --config .swiftformat --lint Sources/ Tests/
+        run: |
+          PATHS="Sources/ Tests/"
+          [ -d Examples ] && PATHS="$PATHS Examples/"
+          .arc-tools/bin/swiftformat --config .swiftformat --lint $PATHS
 
   markdown-links:
     name: Validate Markdown Links
