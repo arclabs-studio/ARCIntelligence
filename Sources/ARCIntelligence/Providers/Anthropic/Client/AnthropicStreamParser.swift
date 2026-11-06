@@ -57,11 +57,7 @@ struct AnthropicStreamParser: Sendable {
 
         let jsonString = String(line.dropFirst(6))
 
-        guard !jsonString.isEmpty, jsonString != "[DONE]" else {
-            return nil
-        }
-
-        guard let data = jsonString.data(using: .utf8) else {
+        guard !jsonString.isEmpty, jsonString != "[DONE]", let data = jsonString.data(using: .utf8) else {
             return nil
         }
 

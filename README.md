@@ -296,7 +296,7 @@ struct WeatherTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments: [String: JSONValue]) async throws -> String {
         let city = arguments["city"]?.stringValue ?? "Unknown"
         // Call your weather API here
         return "Weather in \(city): 72°F, Sunny"

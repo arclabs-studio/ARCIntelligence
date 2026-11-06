@@ -253,7 +253,7 @@ enum OpenAICompatibleMapping {
     /// Parse tool call arguments and extract `json_output` value.
     static func extractJsonOutput(from arguments: String) throws -> String? {
         guard let data = arguments.data(using: .utf8),
-              let dict = try? JSONDecoder().decode([String: ToolArgumentValue].self, from: data),
+              let dict = try? JSONDecoder().decode([String: JSONValue].self, from: data),
               let jsonOutput = dict["json_output"]?.stringValue
         else {
             return nil

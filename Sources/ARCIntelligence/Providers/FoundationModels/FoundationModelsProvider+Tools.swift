@@ -128,9 +128,9 @@ extension FoundationModelsProvider: ToolProvider {
         return try await wrappedTool.execute(arguments: parsedArgs)
     }
 
-    private func parseJSONArguments(_ json: String) -> [String: ToolArgumentValue] {
+    private func parseJSONArguments(_ json: String) -> [String: JSONValue] {
         guard let data = json.data(using: .utf8),
-              let dict = try? JSONDecoder().decode([String: ToolArgumentValue].self, from: data)
+              let dict = try? JSONDecoder().decode([String: JSONValue].self, from: data)
         else {
             return [:]
         }
