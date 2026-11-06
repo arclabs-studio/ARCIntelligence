@@ -379,16 +379,16 @@ extension AnyCodableValue: Codable {
 }
 
 extension AnyCodableValue {
-    /// Convert to `ToolArgumentValue` for tool execution arguments.
-    var toToolArgumentValue: ToolArgumentValue {
+    /// Convert to `JSONValue` for tool execution arguments.
+    var toJSONValue: JSONValue {
         switch self {
         case let .string(value): .string(value)
         case let .int(value): .int(value)
         case let .double(value): .double(value)
         case let .bool(value): .bool(value)
         case .null: .null
-        case let .array(value): .array(value.map(\.toToolArgumentValue))
-        case let .object(value): .object(value.mapValues(\.toToolArgumentValue))
+        case let .array(value): .array(value.map(\.toJSONValue))
+        case let .object(value): .object(value.mapValues(\.toJSONValue))
         }
     }
 }
