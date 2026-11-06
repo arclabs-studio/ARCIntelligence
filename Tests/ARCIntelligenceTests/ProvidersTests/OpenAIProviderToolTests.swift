@@ -34,7 +34,7 @@ import Testing
             self.responseToReturn = responseToReturn
         }
 
-        func execute(arguments _: [String: ToolArgumentValue]) async throws -> String {
+        func execute(arguments _: [String: JSONValue]) async throws -> String {
             responseToReturn
         }
     }

@@ -143,8 +143,8 @@ extension GeminiProvider {
     private func executeSingleFunction(_ call: ExtractedFunctionCall,
                                        context: GeminiToolCallingContext) async -> (GeminiPart, ToolCallRecord) {
         let startTime = CFAbsoluteTimeGetCurrent()
-        let arguments = call.args.mapValues { $0.toToolArgumentValue }
-        let stringArguments = ToolArgumentValue.toStringDictionary(arguments)
+        let arguments = call.args.mapValues { $0.toJSONValue }
+        let stringArguments = JSONValue.toStringDictionary(arguments)
 
         let output: String
 

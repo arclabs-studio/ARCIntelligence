@@ -140,8 +140,8 @@ extension AnthropicProvider {
     private func executeSingleTool(_ toolUse: ExtractedToolUse,
                                    context: ToolCallingContext) async -> (AnthropicContentBlock, ToolCallRecord) {
         let startTime = CFAbsoluteTimeGetCurrent()
-        let arguments = toolUse.input.mapValues { $0.toToolArgumentValue }
-        let stringArguments = ToolArgumentValue.toStringDictionary(arguments)
+        let arguments = toolUse.input.mapValues { $0.toJSONValue }
+        let stringArguments = JSONValue.toStringDictionary(arguments)
 
         var output: String
         var isError = false

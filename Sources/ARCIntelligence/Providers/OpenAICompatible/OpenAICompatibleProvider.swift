@@ -291,13 +291,13 @@ extension OpenAICompatibleProvider {
     -> (OpenAIChatMessage, ToolCallRecord) {
         let startTime = CFAbsoluteTimeGetCurrent()
 
-        let arguments: [String: ToolArgumentValue]
+        let arguments: [String: JSONValue]
         let stringArguments: [String: String]
 
         if let data = toolCall.arguments.data(using: .utf8),
-           let dict = try? JSONDecoder().decode([String: ToolArgumentValue].self, from: data) {
+           let dict = try? JSONDecoder().decode([String: JSONValue].self, from: data) {
             arguments = dict
-            stringArguments = ToolArgumentValue.toStringDictionary(dict)
+            stringArguments = JSONValue.toStringDictionary(dict)
         } else {
             arguments = [:]
             stringArguments = [:]
