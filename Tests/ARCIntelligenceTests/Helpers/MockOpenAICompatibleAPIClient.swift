@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import os
 @testable import ARCIntelligence
 
 /// Mock implementation of `OpenAICompatibleAPIClient` for testing.
 ///
-/// Uses `NSLock` to protect mutable state, making it safe for `Sendable`
+/// Uses `OSAllocatedUnfairLock` to protect mutable state, making it safe for `Sendable`
 /// conformance without `@unchecked`.
 final class MockOpenAICompatibleAPIClient: OpenAICompatibleAPIClient, Sendable {
     // MARK: - Thread-safe State
@@ -18,72 +19,64 @@ final class MockOpenAICompatibleAPIClient: OpenAICompatibleAPIClient, Sendable {
     private let state = MockState()
 
     /// Mutable mock state protected by a lock.
-    private final class MockState: @unchecked Sendable {
-        private let lock = NSLock()
-
-        private var _chatResponses: [OpenAIChatResponse] = []
-        private var _streamChunks: [OpenAIStreamChunk] = []
-        private var _errorToThrow: Error?
-        private var _sendCallCount = 0
-        private var _streamCallCount = 0
-        private var _lastRequest: OpenAIChatRequest?
-        private var _allRequests: [OpenAIChatRequest] = []
+    private final class MockState: Sendable {
+        private let storage = OSAllocatedUnfairLock(initialState: OpenAICompatibleMockStorage())
 
         var chatResponses: [OpenAIChatResponse] {
-            get { lock.withLock { _chatResponses } }
-            set { lock.withLock { _chatResponses = newValue } }
+            get { storage.withLock { state in state.chatResponses } }
+            set { storage.withLock { state in state.chatResponses = newValue } }
         }
 
         var streamChunks: [OpenAIStreamChunk] {
-            get { lock.withLock { _streamChunks } }
-            set { lock.withLock { _streamChunks = newValue } }
+            get { storage.withLock { state in state.streamChunks } }
+            set { storage.withLock { state in state.streamChunks = newValue } }
         }
 
         var errorToThrow: Error? {
-            get { lock.withLock { _errorToThrow } }
-            set { lock.withLock { _errorToThrow = newValue } }
+            get { storage.withLock { state in state.errorToThrow } }
+            set { storage.withLock { state in state.errorToThrow = newValue } }
         }
 
         var sendCallCount: Int {
-            get { lock.withLock { _sendCallCount } }
-            set { lock.withLock { _sendCallCount = newValue } }
+            get { storage.withLock { state in state.sendCallCount } }
+            set { storage.withLock { state in state.sendCallCount = newValue } }
         }
 
         var streamCallCount: Int {
-            get { lock.withLock { _streamCallCount } }
-            set { lock.withLock { _streamCallCount = newValue } }
+            get { storage.withLock { state in state.streamCallCount } }
+            set { storage.withLock { state in state.streamCallCount = newValue } }
         }
 
         var lastRequest: OpenAIChatRequest? {
-            get { lock.withLock { _lastRequest } }
-            set { lock.withLock { _lastRequest = newValue } }
+            get { storage.withLock { state in state.lastRequest } }
+            set { storage.withLock { state in state.lastRequest = newValue } }
         }
 
         var allRequests: [OpenAIChatRequest] {
-            get { lock.withLock { _allRequests } }
-            set { lock.withLock { _allRequests = newValue } }
+            get { storage.withLock { state in state.allRequests } }
+            set { storage.withLock { state in state.allRequests = newValue } }
         }
 
         func removeFirstResponse() -> OpenAIChatResponse? {
-            lock.withLock {
-                guard !_chatResponses.isEmpty else { return nil }
-                return _chatResponses.removeFirst()
+            storage.withLock { state in
+                guard !state.chatResponses.isEmpty else { return nil }
+                return state.chatResponses.removeFirst()
             }
         }
 
         func recordSend(_ request: OpenAIChatRequest) {
-            lock.withLock {
-                _sendCallCount += 1
-                _lastRequest = request
-                _allRequests.append(request)
+            storage.withLock { state in
+                state.sendCallCount += 1
+                state.lastRequest = request
+                state.allRequests.append(request)
             }
         }
 
         func recordStream(_ request: OpenAIChatRequest) {
-            lock.withLock {
-                _streamCallCount += 1
-                _lastRequest = request
-                _allRequests.append(request)
+            storage.withLock { state in
+                state.streamCallCount += 1
+                state.lastRequest = request
+                state.allRequests.append(request)
             }
         }
     }
@@ -227,4 +220,17 @@ final class MockOpenAICompatibleAPIClient: OpenAICompatibleAPIClient, Sendable {
             }
         }
     }
+}
+
+// MARK: - Storage
+
+/// Mutable state of `MockOpenAICompatibleAPIClient`, guarded by its lock.
+private struct OpenAICompatibleMockStorage {
+    var chatResponses: [OpenAIChatResponse] = []
+    var streamChunks: [OpenAIStreamChunk] = []
+    var errorToThrow: Error?
+    var sendCallCount: Int = 0
+    var streamCallCount: Int = 0
+    var lastRequest: OpenAIChatRequest?
+    var allRequests: [OpenAIChatRequest] = []
 }

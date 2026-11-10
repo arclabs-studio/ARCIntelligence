@@ -152,7 +152,6 @@ struct StreamingView: View {
                     }
                     streamedResponse += chunk
                 }
-
             } catch {
                 self.error = error.localizedDescription
             }
@@ -170,7 +169,7 @@ struct StreamingView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         StreamingView()
             .environment(AppState())
     }

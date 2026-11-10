@@ -16,7 +16,10 @@ struct ContentTaggingView: View {
         ScrollView {
             VStack(spacing: 20) {
                 if appState.contentTaggingProvider == nil {
-                    UnavailableFeatureView(message: "Content tagging requires Foundation Models (on-device). Switch to Foundation Models in Settings.")
+                    UnavailableFeatureView(message: """
+                    Content tagging requires Foundation Models (on-device). Switch to Foundation Models in \
+                    Settings.
+                    """)
                 } else {
                     inputSection
                     categorySection
@@ -164,7 +167,7 @@ private struct TagChip: View {
                 .font(.caption)
 
             if tag.confidence < 1.0 {
-                Text(String(format: "%.0f%%", tag.confidence * 100))
+                Text(tag.confidence.formatted(.percent.precision(.fractionLength(0))))
                     .font(.caption2)
                     .foregroundColor(color.opacity(0.7))
             }
@@ -253,7 +256,10 @@ extension TagCategory {
 
 @MainActor
 @Observable final class ContentTaggingViewModel {
-    var inputText = "I love hiking through the mountains on a sunny afternoon. The fresh air and beautiful views make me feel truly alive and at peace."
+    var inputText = """
+    I love hiking through the mountains on a sunny afternoon. The fresh air and beautiful views make me feel \
+    truly alive and at peace.
+    """
     var selectedCategories: Set<TagCategory> = Set(TagCategory.allCases)
     var isTagging = false
     var tags: [ContentTag] = []
@@ -285,7 +291,7 @@ extension TagCategory {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ContentTaggingView()
             .environment(AppState())
     }

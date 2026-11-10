@@ -45,7 +45,7 @@ struct CompletionsView: View {
                     HStack {
                         Text("Temperature:")
                         Spacer()
-                        Text(String(format: "%.1f", viewModel.temperature))
+                        Text(viewModel.temperature.formatted(.number.precision(.fractionLength(1))))
                             .foregroundColor(.secondary)
                     }
 
@@ -159,7 +159,6 @@ struct CompletionsView: View {
 
             response = result.content
             tokensUsed = result.tokensUsed
-
         } catch {
             self.error = error.localizedDescription
         }
@@ -181,7 +180,7 @@ enum ConfigPreset {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         CompletionsView()
             .environment(AppState())
     }
