@@ -1,5 +1,5 @@
 //
-//  ToolArgumentValueTests.swift
+//  JSONValueTests.swift
 //  ARCIntelligence
 //
 //  Created by ARC Labs Studio on 18/02/2026.
@@ -9,12 +9,12 @@ import Foundation
 import Testing
 @testable import ARCIntelligence
 
-// MARK: - ToolArgumentValue Tests
+// MARK: - JSONValue Tests
 
-@Suite("ToolArgumentValue Tests", .tags(.unit)) struct ToolArgumentValueTests {
+@Suite("JSONValue Tests", .tags(.unit)) struct JSONValueTests {
     // MARK: - Helpers
 
-    private func makeSUT() -> [String: ToolArgumentValue] {
+    private func makeSUT() -> [String: JSONValue] {
         ["name": .string("Paris"),
          "count": .int(5),
          "ratio": .double(0.75),
@@ -22,19 +22,19 @@ import Testing
          "nothing": .null]
     }
 
-    private func encode(_ value: ToolArgumentValue) throws -> Data {
+    private func encode(_ value: JSONValue) throws -> Data {
         try JSONEncoder().encode(value)
     }
 
-    private func decode(_ data: Data) throws -> ToolArgumentValue {
-        try JSONDecoder().decode(ToolArgumentValue.self, from: data)
+    private func decode(_ data: Data) throws -> JSONValue {
+        try JSONDecoder().decode(JSONValue.self, from: data)
     }
 
     // MARK: - Accessors
 
     @Test("stringValue returns value for .string case", .tags(.unit)) func stringValue_returnsValueForStringCase() {
         // Given
-        let sut = ToolArgumentValue.string("hello")
+        let sut = JSONValue.string("hello")
 
         // When / Then
         #expect(sut.stringValue == "hello")
@@ -45,7 +45,7 @@ import Testing
 
     @Test("intValue returns value for .int case", .tags(.unit)) func intValue_returnsValueForIntCase() {
         // Given
-        let sut = ToolArgumentValue.int(42)
+        let sut = JSONValue.int(42)
 
         // When / Then
         #expect(sut.intValue == 42)
@@ -56,7 +56,7 @@ import Testing
 
     @Test("doubleValue returns value for .double case", .tags(.unit)) func doubleValue_returnsValueForDoubleCase() {
         // Given
-        let sut = ToolArgumentValue.double(3.14)
+        let sut = JSONValue.double(3.14)
 
         // When / Then
         #expect(sut.doubleValue == 3.14)
@@ -67,7 +67,7 @@ import Testing
 
     @Test("boolValue returns value for .bool case", .tags(.unit)) func boolValue_returnsValueForBoolCase() {
         // Given
-        let sut = ToolArgumentValue.bool(false)
+        let sut = JSONValue.bool(false)
 
         // When / Then
         #expect(sut.boolValue == false)
@@ -80,16 +80,16 @@ import Testing
 
     @Test("asString converts all cases to string representation", .tags(.unit)) func asString_convertsAllCases() {
         // Given / When / Then
-        #expect(ToolArgumentValue.string("hi").asString == "hi")
-        #expect(ToolArgumentValue.int(7).asString == "7")
-        #expect(ToolArgumentValue.double(1.5).asString == "1.5")
-        #expect(ToolArgumentValue.bool(true).asString == "true")
-        #expect(ToolArgumentValue.null.asString == "null")
+        #expect(JSONValue.string("hi").asString == "hi")
+        #expect(JSONValue.int(7).asString == "7")
+        #expect(JSONValue.double(1.5).asString == "1.5")
+        #expect(JSONValue.bool(true).asString == "true")
+        #expect(JSONValue.null.asString == "null")
     }
 
     @Test("description matches asString", .tags(.unit)) func description_matchesAsString() {
         // Given
-        let values: [ToolArgumentValue] = [.string("test"), .int(1), .double(2.0), .bool(false), .null]
+        let values: [JSONValue] = [.string("test"), .int(1), .double(2.0), .bool(false), .null]
 
         // When / Then
         for value in values {
@@ -100,26 +100,26 @@ import Testing
     // MARK: - Equatable
 
     @Test("equal values are equal", .tags(.unit)) func equatable_equalValuesAreEqual() {
-        #expect(ToolArgumentValue.string("a") == .string("a"))
-        #expect(ToolArgumentValue.int(1) == .int(1))
-        #expect(ToolArgumentValue.double(0.5) == .double(0.5))
-        #expect(ToolArgumentValue.bool(true) == .bool(true))
-        #expect(ToolArgumentValue.null == .null)
-        #expect(ToolArgumentValue.array([.int(1)]) == .array([.int(1)]))
-        #expect(ToolArgumentValue.object(["k": .string("v")]) == .object(["k": .string("v")]))
+        #expect(JSONValue.string("a") == .string("a"))
+        #expect(JSONValue.int(1) == .int(1))
+        #expect(JSONValue.double(0.5) == .double(0.5))
+        #expect(JSONValue.bool(true) == .bool(true))
+        #expect(JSONValue.null == .null)
+        #expect(JSONValue.array([.int(1)]) == .array([.int(1)]))
+        #expect(JSONValue.object(["k": .string("v")]) == .object(["k": .string("v")]))
     }
 
     @Test("different cases are not equal", .tags(.unit)) func equatable_differentCasesAreNotEqual() {
-        #expect(ToolArgumentValue.string("a") != .int(1))
-        #expect(ToolArgumentValue.int(1) != .int(2))
-        #expect(ToolArgumentValue.null != .bool(false))
+        #expect(JSONValue.string("a") != .int(1))
+        #expect(JSONValue.int(1) != .int(2))
+        #expect(JSONValue.null != .bool(false))
     }
 
     // MARK: - Codable: Encode
 
     @Test("encode string produces JSON string", .tags(.unit)) func encode_stringProducesJSONString() throws {
         // Given
-        let sut = ToolArgumentValue.string("Paris")
+        let sut = JSONValue.string("Paris")
 
         // When
         let data = try encode(sut)
@@ -131,7 +131,7 @@ import Testing
 
     @Test("encode int produces JSON number", .tags(.unit)) func encode_intProducesJSONNumber() throws {
         // Given
-        let sut = ToolArgumentValue.int(42)
+        let sut = JSONValue.int(42)
 
         // When
         let data = try encode(sut)
@@ -143,7 +143,7 @@ import Testing
 
     @Test("encode double produces JSON number", .tags(.unit)) func encode_doubleProducesJSONNumber() throws {
         // Given
-        let sut = ToolArgumentValue.double(1.5)
+        let sut = JSONValue.double(1.5)
 
         // When
         let data = try encode(sut)
@@ -155,7 +155,7 @@ import Testing
 
     @Test("encode bool produces JSON bool", .tags(.unit)) func encode_boolProducesJSONBool() throws {
         // Given
-        let sut = ToolArgumentValue.bool(true)
+        let sut = JSONValue.bool(true)
 
         // When
         let data = try encode(sut)
@@ -167,7 +167,7 @@ import Testing
 
     @Test("encode null produces JSON null", .tags(.unit)) func encode_nullProducesJSONNull() throws {
         // Given
-        let sut = ToolArgumentValue.null
+        let sut = JSONValue.null
 
         // When
         let data = try encode(sut)
@@ -178,7 +178,7 @@ import Testing
 
     @Test("encode array produces JSON array", .tags(.unit)) func encode_arrayProducesJSONArray() throws {
         // Given
-        let sut = ToolArgumentValue.array([.string("a"), .int(1)])
+        let sut = JSONValue.array([.string("a"), .int(1)])
 
         // When
         let data = try encode(sut)
@@ -192,7 +192,7 @@ import Testing
 
     @Test("encode object produces JSON object", .tags(.unit)) func encode_objectProducesJSONObject() throws {
         // Given
-        let sut = ToolArgumentValue.object(["city": .string("Rome"), "pop": .int(3_000_000)])
+        let sut = JSONValue.object(["city": .string("Rome"), "pop": .int(3_000_000)])
 
         // When
         let data = try encode(sut)
@@ -290,14 +290,14 @@ import Testing
     @Test("encode then decode produces equal value for all cases", .tags(.unit))
     func codable_roundTripProducesEqualValue() throws {
         // Given
-        let values: [ToolArgumentValue] = [.string("test"),
-                                           .int(123),
-                                           .double(4.56),
-                                           .bool(true),
-                                           .bool(false),
-                                           .null,
-                                           .array([.string("a"), .int(1), .bool(false)]),
-                                           .object(["key": .string("value"), "count": .int(3)])]
+        let values: [JSONValue] = [.string("test"),
+                                   .int(123),
+                                   .double(4.56),
+                                   .bool(true),
+                                   .bool(false),
+                                   .null,
+                                   .array([.string("a"), .int(1), .bool(false)]),
+                                   .object(["key": .string("value"), "count": .int(3)])]
 
         for original in values {
             // When
@@ -317,7 +317,7 @@ import Testing
         let dict = makeSUT()
 
         // When
-        let result = ToolArgumentValue.toStringDictionary(dict)
+        let result = JSONValue.toStringDictionary(dict)
 
         // Then
         #expect(result["name"] == "Paris")
@@ -329,10 +329,10 @@ import Testing
 
     @Test("toStringDictionary preserves all keys", .tags(.unit)) func toStringDictionary_preservesAllKeys() {
         // Given
-        let dict: [String: ToolArgumentValue] = ["a": .string("x"), "b": .int(1), "c": .null]
+        let dict: [String: JSONValue] = ["a": .string("x"), "b": .int(1), "c": .null]
 
         // When
-        let result = ToolArgumentValue.toStringDictionary(dict)
+        let result = JSONValue.toStringDictionary(dict)
 
         // Then
         #expect(result.keys.sorted() == ["a", "b", "c"])

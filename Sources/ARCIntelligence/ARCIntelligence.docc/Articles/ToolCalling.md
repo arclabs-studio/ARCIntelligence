@@ -32,7 +32,7 @@ struct WeatherTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments: [String: JSONValue]) async throws -> String {
         guard let city = arguments["city"]?.stringValue else {
             throw IntelligenceError.invalidRequest("Missing city parameter")
         }
@@ -115,7 +115,7 @@ struct CalculatorTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments: [String: JSONValue]) async throws -> String {
         guard let operation = arguments["operation"]?.stringValue,
               let a = arguments["a"]?.doubleValue,
               let b = arguments["b"]?.doubleValue else {
@@ -163,7 +163,7 @@ struct SearchTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments: [String: JSONValue]) async throws -> String {
         let query = arguments["query"]?.stringValue ?? ""
         // Perform search
         return "Search results for: \(query)"
@@ -189,7 +189,7 @@ struct CurrentTimeTool: IntelligenceTool {
 
     // parametersSchema defaults to nil
 
-    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments: [String: JSONValue]) async throws -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .full
         formatter.timeStyle = .medium
@@ -220,7 +220,7 @@ struct DatabaseTool: IntelligenceTool {
         )
     }
 
-    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments: [String: JSONValue]) async throws -> String {
         guard let userId = arguments["userId"]?.stringValue else {
             return "Error: Missing user ID"
         }

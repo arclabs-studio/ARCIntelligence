@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed (breaking)
+
+- **`ResponseFormat.json(schema:)` takes a `JSONValue?` instead of `[String: Any]?`.** `ResponseFormat` is now compiler-checked `Sendable` instead of `@unchecked Sendable`, and its `Equatable` conformance now compares schemas. Before, any two `.json` values compared equal. Build schemas with `JSONValue` cases, for example `.object(["type": .string("ARRAY")])`.
+- **`ToolArgumentValue` is renamed `JSONValue`**, since the same type now describes response schemas as well as tool arguments. `ToolArgumentValue` remains as a deprecated typealias, so existing tool code compiles with a warning.
+
 ## [1.1.1] - 2026-11-06
 
 ### Changed

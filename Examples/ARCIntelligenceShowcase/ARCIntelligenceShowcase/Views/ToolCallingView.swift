@@ -20,7 +20,7 @@ private struct WordCountTool: IntelligenceTool {
                              required: ["text"])
     }
 
-    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments: [String: JSONValue]) async throws -> String {
         let text = arguments["text"]?.stringValue ?? ""
         let count = text.split(separator: " ").count
         return "\(count) word\(count == 1 ? "" : "s")"
@@ -31,7 +31,7 @@ private struct CurrentDateTool: IntelligenceTool {
     let name = "getCurrentDate"
     let description = "Get the current date and time"
 
-    func execute(arguments _: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments _: [String: JSONValue]) async throws -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .full
         formatter.timeStyle = .short
@@ -53,7 +53,7 @@ private struct TemperatureConverterTool: IntelligenceTool {
                              required: ["value", "from"])
     }
 
-    func execute(arguments: [String: ToolArgumentValue]) async throws -> String {
+    func execute(arguments: [String: JSONValue]) async throws -> String {
         guard let value = arguments["value"]?.doubleValue,
               let from = arguments["from"]?.stringValue
         else {

@@ -159,7 +159,7 @@ public struct MockTool: IntelligenceTool {
         self.shouldFail = shouldFail
     }
 
-    public func execute(arguments _: [String: ToolArgumentValue]) async throws -> String {
+    public func execute(arguments _: [String: JSONValue]) async throws -> String {
         if shouldFail {
             throw IntelligenceError.requestFailed("Mock tool execution failed")
         }
