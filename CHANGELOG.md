@@ -5,8 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.1] - 2026-11-06
 
+### Changed
+
+- **Examples.** The showcase app uses `NavigationStack` instead of `NavigationView` and FormatStyle / `Duration`
+  instead of `String(format:)`, and no longer force-unwraps URLs. The demo is now linted in CI.
+  ([#29](https://github.com/arclabs-studio/ARCIntelligence/pull/29), [#30](https://github.com/arclabs-studio/ARCIntelligence/pull/30))
+
+### Fixed
+
+- **`ARCIntelligenceMocks` streaming now stops when the consumer stops.** `MockIntelligenceProvider`,
+  `MockConversationProvider`, `MockEmbeddingProvider` and `MockRecommendationProvider` cancel their
+  producer task from the stream's `onTermination`. Before, the task kept emitting characters in the
+  background after the consumer cancelled or stopped iterating. ([#29](https://github.com/arclabs-studio/ARCIntelligence/pull/29))
+- **Errors in mock streams now reach the consumer.** If the producer throws (for example
+  `CancellationError` from `Task.sleep`), the stream finishes with that error. Before, the
+  unhandled task error was dropped and the stream never finished. ([#29](https://github.com/arclabs-studio/ARCIntelligence/pull/29))
+
+## [1.1.0] - 2026-09-20
 ### Added
 - `IntelligenceResponse.tokensIn` / `.tokensOut` — optional, defaulted fields carrying the
   prompt/completion token split when a provider reports it. `tokensUsed` is unchanged and
